@@ -41,7 +41,7 @@ function sendScan(page, text){
   await page.locator('.tv-waybill-area canvas').waitFor({ state: 'visible', timeout: 8000 });
   console.log('OK: virtual waybill barcode still detected via fallback selector (#waybill-modal-submit) despite mismatched dialog class');
 
-  await sendScan(page, 'TVCTL_WAYBILL');
+  await sendScan(page, 'TVCW');
   await page.waitForFunction(function(){ return !document.querySelector('#waybill-modal-submit'); }, null, { timeout: 5000 });
   console.log('OK: fallback-detected modal still closes correctly on virtual barcode scan');
 

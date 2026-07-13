@@ -35,7 +35,7 @@ function sendScan(page, text){
   if (verifyShown) { console.error('FAIL: verify modal should NOT have opened for an already-generated tote'); process.exitCode = 1; }
   else console.log('OK: verify modal correctly skipped');
 
-  await sendScan(page, 'TVCTL_REPRINT');
+  await sendScan(page, 'TVCR');
   await page.waitForSelector('#modalWaybillPrintList', { timeout: 5000, state: 'attached' }).catch(function(){});
   await page.waitForFunction(function(){ return !document.querySelector('#modalWaybillPrintList'); }, null, { timeout: 5000 });
   console.log('OK: scanning the reprint barcode completes reprint end to end');

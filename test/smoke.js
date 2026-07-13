@@ -110,7 +110,7 @@ function sendScan(page, text){
   if (boxInputVal !== '') { console.error('FAIL: box input should remain untouched, got', boxInputVal); process.exitCode = 1; }
   else console.log('OK: waybill box input untouched by our script');
 
-  await sendScan(page, 'TVCTL_WAYBILL');
+  await sendScan(page, 'TVCW');
 
   await page.waitForFunction(function(){ return !document.querySelector('.waybill-dialog'); }, null, { timeout: 5000 });
   console.log('OK: waybill-dialog closed after virtual barcode scan (submit clicked)');
@@ -125,7 +125,7 @@ function sendScan(page, text){
   console.log('search count after waybill flow:', searchCount);
   if (Number(searchCount) < 2) { console.error('FAIL: expected re-search to have run'); process.exitCode = 1; }
 
-  await sendScan(page, 'TVCTL_REPRINT');
+  await sendScan(page, 'TVCR');
 
   await page.waitForSelector('#modalWaybillPrintList', { timeout: 5000, state: 'attached' }).catch(function(){});
   await page.waitForFunction(function(){ return !document.querySelector('#modalWaybillPrintList'); }, null, { timeout: 5000 });

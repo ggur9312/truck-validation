@@ -40,7 +40,7 @@ assert(patterns.length === 5, 'HI patterns: start+2 chars+checksum+stop = 5');
 assert(patterns[4] === C128_STOP, 'last pattern is stop');
 
 // control code round trip
-['TVCTL_SKIP','TVCTL_WAYBILL','TVCTL_REPRINT'].forEach(function(code){
+['TVCS','TVCW','TVCR'].forEach(function(code){
   var vals = code128Values(code);
   assert(vals.every(function(x){ return x >= 0 && x <= 106; }), code + ' values in range');
 });
