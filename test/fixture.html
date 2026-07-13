@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Mock WMS</title></head>
+<body>
+  <input name="toteBarcode" />
+  <w-date-range-input id="date-range-input" block="" size="medium" startdate="2026-07-13" enddate="2026-07-13"></w-date-range-input>
+  <button id="search" onclick="doSearch()">조회</button>
+
+  <table id="vendorReturnTotePage">
+    <tbody></tbody>
+  </table>
+
+  <script>
+    var searchCount = 0;
+    function doSearch(){
+      searchCount++;
+      var tote = document.querySelector('input[name="toteBarcode"]').value || 'TOTE001';
+      var table = document.querySelector('#vendorReturnTotePage tbody');
+      table.innerHTML = '<tr>' +
+        '<td><a href="/detail/' + tote + '">상세1</a></td>' +
+        '<td><a href="/type/' + tote + '">타입1</a></td>' +
+        '<td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td>' +
+        '<td><button data-action="open-waybill-modal" onclick="openWaybillModal()">운송장생성</button>' +
+        '<button class="btn-waybill-print-single" onclick="openReprintModal()">재출력</button>' +
+        '<span data-search-count="' + searchCount + '">(' + searchCount + ')</span></td>' +
+        '</tr>';
+    }
+    function openWaybillModal(){
+      var d = document.createElement('div');
+      d.className = 'waybill-dialog';
+      d.innerHTML = '<input id="waybill-modal-barcode-input"/><button id="waybill-modal-submit" onclick="this.closest(\'.waybill-dialog\').remove()">생성</button>';
+      document.body.appendChild(d);
+    }
+    function openReprintModal(){
+      var d = document.createElement('div');
+      d.id = 'modalWaybillPrintList';
+      d.innerHTML = '<button id="waybill-print-all" onclick="document.getElementById(\'modalWaybillPrintList\').remove()">전체출력</button>';
+      document.body.appendChild(d);
+    }
+  </script>
+
+  <!-- detail pages served as separate routes below, simulated via fetch intercept in test -->
+</body>
+</html>
