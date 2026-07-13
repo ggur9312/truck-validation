@@ -30,8 +30,9 @@
     }
     function openWaybillModal(){
       var d = document.createElement('div');
-      d.className = 'waybill-dialog';
-      d.innerHTML = '<input id="waybill-modal-barcode-input"/><button id="waybill-modal-submit" onclick="this.closest(\'.waybill-dialog\').remove()">생성</button>';
+      var mismatch = location.search.indexOf('mismatch=1') !== -1;
+      d.className = mismatch ? 'unknown-dialog-xyz' : 'waybill-dialog';
+      d.innerHTML = '<input id="waybill-modal-barcode-input"/><button id="waybill-modal-submit" onclick="this.parentElement.remove()">생성</button>';
       document.body.appendChild(d);
     }
     function openReprintModal(){

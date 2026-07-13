@@ -10,6 +10,7 @@ var SEL = {
   resultTable: '#vendorReturnTotePage',
   waybillDialog: 'div.waybill-dialog',
   waybillSubmit: '#waybill-modal-submit',
+  waybillBoxInput: '#waybill-modal-barcode-input',
   reprintModal: '#modalWaybillPrintList',
   reprintAllBtn: '#waybill-print-all'
 };
@@ -82,83 +83,88 @@ function drawCode128(canvas, text, opts){
 }
 
 var CSS =
-  ':host{all:initial;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Pretendard,sans-serif;' +
-  '--tv-primary:#3b6fed;--tv-primary-dark:#2451c9;--tv-success:#1f9d5c;--tv-error:#e0453a;' +
-  '--tv-surface:#ffffff;--tv-surface-2:#f2f4f9;--tv-text:#161a22;--tv-text-soft:#63697a;' +
-  '--tv-border:rgba(20,25,40,.1);--tv-shadow:0 26px 70px rgba(15,20,35,.3),0 6px 18px rgba(15,20,35,.14);' +
-  '--tv-truck-bg:#e8f0ff;--tv-truck-fg:#2f5fd6;--tv-courier-bg:#fff2e2;--tv-courier-fg:#c96a0a;--tv-success-tint:#e3f6ec}' +
-  '@media(prefers-color-scheme:dark){:host{' +
-  '--tv-primary:#6d93ff;--tv-primary-dark:#4a72e6;--tv-success:#3fcf87;--tv-error:#ff7466;' +
-  '--tv-surface:#1c1f28;--tv-surface-2:#262a35;--tv-text:#f3f5f9;--tv-text-soft:#a7acba;' +
-  '--tv-border:rgba(255,255,255,.1);--tv-shadow:0 26px 70px rgba(0,0,0,.6),0 6px 18px rgba(0,0,0,.35);' +
-  '--tv-truck-bg:#1d2c4d;--tv-truck-fg:#8fb1ff;--tv-courier-bg:#4a3319;--tv-courier-fg:#ffb15c;--tv-success-tint:#173626}}' +
+  ':host{all:initial;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic","Apple SD Gothic Neo",sans-serif;' +
+  '--tv-surface:#1b1d23;--tv-surface-2:#25272f;--tv-text:#f4f5f7;--tv-text-soft:#9ba0ac;' +
+  '--tv-accent:#ffb020;--tv-accent-ink:#1a1300;--tv-border:#34363f;--tv-success:#3fcf87;--tv-success-tint:#16321f;--tv-error:#ff6b5e;' +
+  '--tv-truck-bg:#1e2a4d;--tv-truck-fg:#82a6ff;--tv-courier-bg:#4a3315;--tv-courier-fg:#ffb56b;' +
+  '--tv-shadow:0 30px 80px rgba(0,0,0,.55),0 6px 20px rgba(0,0,0,.35)}' +
 
   '.tv-toast-area{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:2147483647;display:flex;flex-direction:column;gap:10px;pointer-events:none}' +
-  '.tv-toast{padding:13px 22px;border-radius:14px;background:#20242e;color:#fff;font-size:15px;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.3);opacity:0;transform:translateY(-10px);transition:opacity .25s,transform .25s}' +
+  '.tv-toast{padding:13px 22px;border-radius:10px;background:var(--tv-surface-2);color:var(--tv-text);border:1px solid var(--tv-border);font-size:15px;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.4);opacity:0;transform:translateY(-10px);transition:opacity .25s,transform .25s}' +
   '.tv-toast-in{opacity:1;transform:translateY(0)}' +
-  '.tv-toast-err{background:#d1443a}' +
+  '.tv-toast-err{background:var(--tv-error);color:#2a0d09;border-color:var(--tv-error)}' +
 
-  '.tv-overlay{position:fixed;inset:0;z-index:2147483000;display:none;align-items:center;justify-content:center;background:rgba(10,12,22,.5);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}' +
+  '.tv-overlay{position:fixed;inset:0;z-index:2147483000;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}' +
   '.tv-overlay.tv-show{display:flex}' +
   '.tv-overlay.tv-corner{align-items:flex-end;justify-content:flex-start;background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;padding:0 0 92px 22px}' +
+  '.tv-verify-overlay{background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;pointer-events:none}' +
+  '.tv-verify-overlay .tv-card{pointer-events:auto}' +
 
-  '.tv-card{background:var(--tv-surface);color:var(--tv-text);border-radius:26px;padding:32px;width:400px;max-width:92vw;box-shadow:var(--tv-shadow);box-sizing:border-box;animation:tvPop .22s cubic-bezier(.2,.9,.3,1.2)}' +
+  '.tv-card{background:var(--tv-surface);color:var(--tv-text);border-radius:14px;width:400px;max-width:92vw;box-shadow:var(--tv-shadow);border:1px solid var(--tv-border);box-sizing:border-box;overflow:hidden;animation:tvPop .22s cubic-bezier(.2,.9,.3,1.2)}' +
   '@keyframes tvPop{from{opacity:0;transform:scale(.94) translateY(6px)}to{opacity:1;transform:scale(1) translateY(0)}}' +
   '.tv-overlay.tv-corner .tv-card{animation:tvSlideUp .3s cubic-bezier(.2,.9,.3,1.2)}' +
   '@keyframes tvSlideUp{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:translateY(0)}}' +
 
-  '.tv-settings-title{font-size:22px;font-weight:800;margin-bottom:20px;letter-spacing:-.3px}' +
+  '.tv-head-bar{background:var(--tv-accent);color:var(--tv-accent-ink);padding:18px 26px;font-size:19px;font-weight:900;letter-spacing:-.2px}' +
+  '.tv-card-body{padding:26px}' +
+
   '.tv-toggle-row{display:flex;align-items:center;justify-content:space-between;padding:15px 0;font-size:15px;font-weight:500;border-top:1px solid var(--tv-border)}' +
   '.tv-toggle-row input{display:none}' +
-  '.tv-switch{position:relative;width:48px;height:28px;border-radius:14px;background:#c7c9d1;transition:background .2s;flex-shrink:0}' +
-  '.tv-switch:before{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 2px 5px rgba(0,0,0,.3)}' +
+  '.tv-switch{position:relative;width:48px;height:28px;border-radius:14px;background:#43454f;transition:background .2s;flex-shrink:0}' +
+  '.tv-switch:before{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 2px 5px rgba(0,0,0,.4)}' +
   '.tv-toggle-row input:checked + .tv-switch{background:var(--tv-success)}' +
   '.tv-toggle-row input:checked + .tv-switch:before{transform:translateX(20px)}' +
   '.tv-empty-hint{font-size:14px;color:var(--tv-text-soft);padding:10px 0}' +
 
-  '.tv-activate-btn{margin-top:22px;width:100%;padding:17px;border:none;border-radius:16px;background:linear-gradient(135deg,var(--tv-primary),var(--tv-primary-dark));color:#fff;font-size:17px;font-weight:800;letter-spacing:.2px;cursor:pointer;box-shadow:0 12px 26px rgba(59,111,237,.38);transition:transform .15s,box-shadow .15s}' +
-  '.tv-activate-btn:hover{transform:translateY(-2px);box-shadow:0 16px 32px rgba(59,111,237,.46)}' +
+  '.tv-activate-btn{margin-top:22px;width:100%;padding:18px;border:none;border-radius:10px;background:var(--tv-accent);color:var(--tv-accent-ink);font-size:17px;font-weight:900;letter-spacing:.2px;cursor:pointer;box-shadow:0 14px 28px rgba(255,176,32,.28);transition:transform .15s,box-shadow .15s}' +
+  '.tv-activate-btn:hover{transform:translateY(-2px);box-shadow:0 18px 34px rgba(255,176,32,.36)}' +
   '.tv-activate-btn:active{transform:scale(.97)}' +
 
-  '.tv-gear-btn{position:fixed;left:22px;bottom:22px;z-index:2147483600;width:56px;height:56px;border-radius:50%;border:none;background:#20242e;color:#fff;font-size:24px;cursor:pointer;box-shadow:0 10px 26px rgba(0,0,0,.35);transition:transform .18s}' +
+  '.tv-gear-btn{position:fixed;left:22px;bottom:22px;z-index:2147483600;width:56px;height:56px;border-radius:50%;border:2px solid var(--tv-accent);background:var(--tv-surface-2);color:var(--tv-accent);font-size:24px;cursor:pointer;box-shadow:0 10px 26px rgba(0,0,0,.45);transition:transform .18s}' +
   '.tv-gear-btn:hover{transform:rotate(30deg) scale(1.05)}' +
   '.tv-gear-btn.tv-hidden{display:none}' +
 
-  '.tv-type-badge{display:inline-flex;align-items:center;gap:10px;padding:10px 20px 10px 10px;border-radius:999px;font-weight:800;font-size:18px;margin-bottom:20px}' +
-  '.tv-type-icon{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.55);font-size:18px}' +
-  '.tv-type-badge.truck{background:var(--tv-truck-bg);color:var(--tv-truck-fg)}' +
-  '.tv-type-badge.courier{background:var(--tv-courier-bg);color:var(--tv-courier-fg)}' +
+  '.tv-status-badge{position:fixed;top:20px;right:24px;z-index:2147483600;display:flex;align-items:center;gap:9px;padding:10px 18px;border-radius:10px;background:var(--tv-surface-2);color:var(--tv-text);border:2px solid var(--tv-accent);font-size:14px;font-weight:800;box-shadow:0 10px 26px rgba(0,0,0,.4);letter-spacing:.1px}' +
+  '.tv-status-badge.tv-hidden{display:none}' +
+  '.tv-status-dot{width:9px;height:9px;border-radius:50%;background:var(--tv-success);box-shadow:0 0 0 0 rgba(63,207,135,.6);animation:tvStatusPulse 2s ease-in-out infinite}' +
+  '@keyframes tvStatusPulse{0%{box-shadow:0 0 0 0 rgba(63,207,135,.55)}70%{box-shadow:0 0 0 7px rgba(63,207,135,0)}100%{box-shadow:0 0 0 0 rgba(63,207,135,0)}}' +
 
-  '.tv-info-row{display:flex;justify-content:space-between;font-size:15px;padding:6px 0;color:var(--tv-text-soft)}' +
-  '.tv-info-row b{color:var(--tv-text);font-weight:700}' +
+  '.tv-type-badge{display:inline-flex;align-items:center;gap:10px;padding:10px 18px;border-radius:10px;font-weight:900;font-size:18px;margin-bottom:20px;border:2px solid}' +
+  '.tv-type-badge.truck{background:var(--tv-truck-bg);color:var(--tv-truck-fg);border-color:var(--tv-truck-fg)}' +
+  '.tv-type-badge.courier{background:var(--tv-courier-bg);color:var(--tv-courier-fg);border-color:var(--tv-courier-fg)}' +
+
+  '.tv-info-row{display:flex;justify-content:space-between;font-size:14px;padding:7px 0;color:var(--tv-text-soft);border-bottom:1px solid var(--tv-border)}' +
+  '.tv-info-row b{color:var(--tv-text);font-weight:800;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}' +
 
   '.tv-product-list{margin-top:20px;max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:10px}' +
-  '.tv-product-row{padding:14px 16px;border-radius:16px;background:var(--tv-surface-2);transition:background .2s}' +
-  '.tv-product-top{display:flex;justify-content:space-between;align-items:center;font-size:15px;font-weight:600;margin-bottom:8px}' +
-  '.tv-product-count{color:var(--tv-text-soft);font-weight:700;font-variant-numeric:tabular-nums}' +
-  '.tv-progress{height:7px;border-radius:4px;background:var(--tv-border);overflow:hidden}' +
-  '.tv-progress-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--tv-primary),var(--tv-primary-dark));transition:width .25s ease}' +
-  '.tv-product-row.done{background:var(--tv-success-tint)}' +
+  '.tv-product-row{padding:14px 16px;border-radius:10px;background:var(--tv-surface-2);border:2px solid var(--tv-border);transition:background .2s,border-color .2s}' +
+  '.tv-product-top{display:flex;justify-content:space-between;align-items:flex-start;font-size:15px;font-weight:800;margin-bottom:8px;gap:12px}' +
+  '.tv-product-name{display:flex;flex-direction:column;gap:2px;min-width:0}' +
+  '.tv-product-barcode{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;font-weight:600;color:var(--tv-text-soft);letter-spacing:.3px}' +
+  '.tv-product-count{flex-shrink:0;color:var(--tv-text-soft);font-weight:800;font-variant-numeric:tabular-nums;padding-top:2px;font-family:ui-monospace,monospace}' +
+  '.tv-progress{height:8px;border-radius:2px;background:var(--tv-border);overflow:hidden}' +
+  '.tv-progress-fill{height:100%;background:var(--tv-accent);transition:width .25s ease}' +
+  '.tv-product-row.done{background:var(--tv-success-tint);border-color:var(--tv-success)}' +
   '.tv-product-row.done .tv-progress-fill{background:var(--tv-success)}' +
   '.tv-product-row.pulse{animation:tvPulse 1s ease-in-out infinite}' +
-  '@keyframes tvPulse{0%,100%{box-shadow:0 0 0 0 rgba(59,111,237,.35)}50%{box-shadow:0 0 0 8px rgba(59,111,237,0)}}' +
+  '@keyframes tvPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,176,32,.4)}50%{box-shadow:0 0 0 8px rgba(255,176,32,0)}}' +
   '.tv-check{color:var(--tv-success);font-weight:900}' +
 
-  '.tv-barcode-wrap{display:inline-block;background:#fff;padding:14px 16px;border-radius:14px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.06)}' +
-  '.tv-skip-area{margin-top:22px;text-align:center;border-top:1px solid var(--tv-border);padding-top:18px}' +
-  '.tv-skip-label{font-size:13px;font-weight:700;letter-spacing:.2px;color:var(--tv-text-soft);margin-bottom:10px}' +
+  '.tv-barcode-wrap{display:inline-block;background:#fff;padding:14px 16px;border-radius:10px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.06)}' +
+  '.tv-skip-area{margin-top:22px;text-align:center;border-top:2px solid var(--tv-border);padding-top:18px}' +
+  '.tv-skip-label{font-size:13px;font-weight:900;letter-spacing:.3px;color:var(--tv-accent);margin-bottom:10px}' +
 
   '.tv-flash-ok{animation:tvFlashOk .4s}.tv-flash-err{animation:tvFlashErr .4s}' +
-  '@keyframes tvFlashOk{0%{box-shadow:0 0 0 0 rgba(31,157,92,.6)}100%{box-shadow:0 0 0 16px rgba(31,157,92,0)}}' +
+  '@keyframes tvFlashOk{0%{box-shadow:0 0 0 0 rgba(63,207,135,.6)}100%{box-shadow:0 0 0 16px rgba(63,207,135,0)}}' +
   '@keyframes tvFlashErr{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}' +
   '.tv-complete{animation:tvComplete .65s ease}' +
   '@keyframes tvComplete{0%{transform:scale(1)}50%{transform:scale(1.03)}100%{transform:scale(1);opacity:.4}}' +
 
   '.tv-float-area{position:fixed;z-index:2147483400;display:none}' +
   '.tv-float-area.tv-show{display:block}' +
-  '.tv-float-barcode{background:var(--tv-surface);border-radius:20px;padding:16px 18px;box-shadow:var(--tv-shadow);text-align:center;animation:tvSlideUp .3s cubic-bezier(.2,.9,.3,1.2)}' +
-  '.tv-float-label{font-size:14px;font-weight:800;color:var(--tv-text);margin-bottom:10px}' +
-  '.tv-top-right{top:88px;right:26px}.tv-top-left{top:88px;left:26px}';
+  '.tv-float-barcode{background:var(--tv-surface);border-radius:12px;border:2px solid var(--tv-border);padding:16px 18px;box-shadow:var(--tv-shadow);text-align:center;animation:tvSlideUp .3s cubic-bezier(.2,.9,.3,1.2)}' +
+  '.tv-float-label{font-size:13px;font-weight:900;letter-spacing:.2px;color:var(--tv-accent);margin-bottom:10px}' +
+  '.tv-top-right{top:96px;right:26px}.tv-top-left{top:96px;left:26px}';
 
 var ui = {};
 
@@ -174,6 +180,7 @@ function initUI(){
     '<div class="tv-overlay tv-verify-overlay"></div>' +
     '<div class="tv-float-area tv-waybill-area"></div>' +
     '<div class="tv-float-area tv-reprint-area"></div>' +
+    '<div class="tv-status-badge tv-hidden"><span class="tv-status-dot"></span>트럭검증 활성화</div>' +
     '<button class="tv-gear-btn tv-hidden" title="프로그램 설정">⚙</button>';
   ui.shadow = shadow;
   ui.toastArea = shadow.querySelector('.tv-toast-area');
@@ -181,6 +188,7 @@ function initUI(){
   ui.verifyOverlay = shadow.querySelector('.tv-verify-overlay');
   ui.waybillOverlay = shadow.querySelector('.tv-waybill-area');
   ui.reprintOverlay = shadow.querySelector('.tv-reprint-area');
+  ui.statusBadge = shadow.querySelector('.tv-status-badge');
   ui.gearBtn = shadow.querySelector('.tv-gear-btn');
   ui.gearBtn.addEventListener('click', function(){ openSettingsModal(false); });
 }
@@ -228,10 +236,11 @@ function renderSettingsHTML(){
       '<span class="tv-switch"></span></label>';
   }).join('');
   return '<div class="tv-card tv-settings-card">' +
-    '<div class="tv-settings-title">트럭검증 설정</div>' +
+    '<div class="tv-head-bar">트럭검증 설정</div>' +
+    '<div class="tv-card-body">' +
     (toggles || '<div class="tv-empty-hint">추가 설정 예정</div>') +
     '<button class="tv-activate-btn">' + (state.settings.enabled ? '실행 중 ✓' : '활성화') + '</button>' +
-    '</div>';
+    '</div></div>';
 }
 
 function bindSettingsEvents(){
@@ -247,9 +256,14 @@ function bindSettingsEvents(){
     state.settings.enabled = true;
     saveSettings();
     closeSettingsModal();
-    ui.gearBtn.classList.remove('tv-hidden');
+    showActiveIndicators();
     showToast('트럭검증 활성화됨');
   });
+}
+
+function showActiveIndicators(){
+  ui.gearBtn.classList.remove('tv-hidden');
+  ui.statusBadge.classList.remove('tv-hidden');
 }
 
 function setNativeValue(el, value){
@@ -478,13 +492,15 @@ function openVerifyModal(){
   var typeClass = info.isTruck ? 'truck' : 'courier';
   ui.verifyOverlay.innerHTML =
     '<div class="tv-card tv-verify">' +
-    '<div class="tv-type-badge ' + typeClass + '"><span class="tv-type-icon">' + typeIcon + '</span><span>' + typeText + '</span></div>' +
+    '<div class="tv-head-bar">상품 검증</div>' +
+    '<div class="tv-card-body">' +
+    '<div class="tv-type-badge ' + typeClass + '"><span>' + typeIcon + '</span><span>' + typeText + '</span></div>' +
     '<div class="tv-info-row"><span>업체명</span><b>' + escapeHtml(info.vendor) + '</b></div>' +
     '<div class="tv-info-row"><span>토트바코드</span><b>' + escapeHtml(info.toteBarcode) + '</b></div>' +
     '<div class="tv-info-row"><span>전체 집품수량</span><b>' + info.totalQty + '</b></div>' +
     '<div class="tv-product-list"></div>' +
     '<div class="tv-skip-area"><div class="tv-skip-label">검증 건너뛰기 (스캔)</div><div class="tv-barcode-wrap"><canvas class="tv-skip-barcode"></canvas></div></div>' +
-    '</div>';
+    '</div></div>';
   ui.verifyOverlay.classList.add('tv-show');
   drawCode128(ui.verifyOverlay.querySelector('.tv-skip-barcode'), CTRL.SKIP);
   updateVerifyProgress();
@@ -495,14 +511,14 @@ function updateVerifyProgress(){
   if (!list) return;
   var html = '';
   var allDone = true;
-  state.expected.forEach(function(p){
+  state.expected.forEach(function(p, barcode){
     var done = p.scanned >= p.required;
     if (!done) allDone = false;
     var pulsing = p.required > 1 && p.scanned > 0 && !done;
     var pct = Math.min(100, Math.round((p.scanned / p.required) * 100));
     html += '<div class="tv-product-row ' + (done ? 'done' : '') + ' ' + (pulsing ? 'pulse' : '') + '">' +
       '<div class="tv-product-top">' +
-      '<span class="tv-product-name">' + escapeHtml(p.name) + '</span>' +
+      '<span class="tv-product-name">' + escapeHtml(p.name) + '<span class="tv-product-barcode">' + escapeHtml(barcode) + '</span></span>' +
       '<span class="tv-product-count">' + p.scanned + '/' + p.required + (done ? ' <span class="tv-check">✓</span>' : '') + '</span>' +
       '</div>' +
       '<div class="tv-progress"><div class="tv-progress-fill" style="width:' + pct + '%"></div></div>' +
@@ -556,22 +572,46 @@ function afterVerification(){
   watchWaybillDialog();
 }
 
+function findWaybillModalNode(){
+  return document.querySelector(SEL.waybillDialog) ||
+    document.querySelector(SEL.waybillSubmit) ||
+    document.querySelector(SEL.waybillBoxInput);
+}
+
 var waybillObserver = null;
+var waybillPollId = null;
+var waybillTimeoutId = null;
+
+function clearWaybillWatchers(){
+  if (waybillObserver) { waybillObserver.disconnect(); waybillObserver = null; }
+  if (waybillPollId) { clearInterval(waybillPollId); waybillPollId = null; }
+  if (waybillTimeoutId) { clearTimeout(waybillTimeoutId); waybillTimeoutId = null; }
+}
 
 function watchWaybillDialog(){
-  if (waybillObserver) waybillObserver.disconnect();
+  clearWaybillWatchers();
   function check(){
-    var dialog = document.querySelector(SEL.waybillDialog);
-    if (dialog && state.mode === 'WAITING_WAYBILL_OPEN') {
+    var found = findWaybillModalNode();
+    if (found && state.mode === 'WAITING_WAYBILL_OPEN') {
+      if (waybillTimeoutId) { clearTimeout(waybillTimeoutId); waybillTimeoutId = null; }
       state.mode = 'WAITING_WAYBILL';
       showWaybillOverlay();
-    } else if (!dialog && state.mode === 'WAITING_WAYBILL') {
+    } else if (!found && state.mode === 'WAITING_WAYBILL') {
+      clearWaybillWatchers();
       hideWaybillOverlay();
       afterWaybillClosed();
     }
   }
   waybillObserver = new MutationObserver(check);
   waybillObserver.observe(document.body, { childList: true, subtree: true });
+  waybillPollId = setInterval(check, 400);
+  waybillTimeoutId = setTimeout(function(){
+    if (state.mode === 'WAITING_WAYBILL_OPEN') {
+      clearWaybillWatchers();
+      showToast('운송장 모달을 찾지 못했습니다', 'error');
+      state.mode = 'IDLE';
+    }
+  }, 6000);
   check();
 }
 
@@ -626,7 +666,7 @@ function doReprint(){
 
 function boot(){
   initUI();
-  if (state.settings.enabled) ui.gearBtn.classList.remove('tv-hidden');
+  if (state.settings.enabled) showActiveIndicators();
   document.addEventListener('keydown', onGlobalKeydown, true);
   openSettingsModal(true);
 }

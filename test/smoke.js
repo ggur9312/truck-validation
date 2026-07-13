@@ -71,6 +71,26 @@ function sendScan(page, text){
   if (toteText.indexOf('TOTE001') === -1 || toteText.indexOf('7') === -1) { console.error('FAIL: tote info missing'); process.exitCode = 1; }
   else console.log('OK: tote barcode + qty shown');
 
+  var barcodeTexts = await page.locator('.tv-product-barcode').allTextContents();
+  if (barcodeTexts.indexOf('BAR001') === -1 || barcodeTexts.indexOf('BAR002') === -1) {
+    console.error('FAIL: product barcode values not shown in verify modal', barcodeTexts);
+    process.exitCode = 1;
+  } else {
+    console.log('OK: product barcode values shown:', barcodeTexts.join(', '));
+  }
+
+  var verifyBg = await page.locator('.tv-verify-overlay').evaluate(function(el){ return getComputedStyle(el).backgroundColor; });
+  if (verifyBg !== 'rgba(0, 0, 0, 0)' && verifyBg !== 'transparent') {
+    console.error('FAIL: verify overlay should have no background tint, got', verifyBg);
+    process.exitCode = 1;
+  } else {
+    console.log('OK: verify overlay background is transparent (no dim tint)');
+  }
+
+  var badgeVisible = await page.locator('.tv-status-badge').isVisible();
+  if (!badgeVisible) { console.error('FAIL: active status badge should be visible after activation'); process.exitCode = 1; }
+  else console.log('OK: top-right active status badge visible');
+
   await sendScan(page, 'BAR001');
   await sendScan(page, 'BAR001');
   var afterFirstTwo = await page.locator('.tv-product-row').first().textContent();
