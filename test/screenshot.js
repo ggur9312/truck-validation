@@ -40,6 +40,11 @@ function sendScan(page, text){
     await page.waitForTimeout(300);
     await page.screenshot({ path: path.join(outDir, 'verify-partial-' + scheme + '.png') });
 
+    await sendScan(page, 'BAR001');
+    await sendScan(page, 'BAR002');
+    await page.locator('.tv-waybill-area canvas').waitFor({ state: 'visible', timeout: 5000 });
+    await page.screenshot({ path: path.join(outDir, 'waybill-' + scheme + '.png') });
+
     await page.close();
   }
 

@@ -14,24 +14,32 @@
 
   <script>
     var searchCount = 0;
+    // real WMS only shows the reprint button once a waybill has actually been
+    // generated for that tote; TOTE_REPRINT is preset to simulate a tote that
+    // already has one from an earlier session.
+    var generatedTotes = { TOTE_REPRINT: true };
     function doSearch(){
       searchCount++;
       var tote = document.querySelector('input[name="toteBarcode"]').value || 'TOTE001';
       var table = document.querySelector('#vendorReturnTotePage tbody');
+      var actionBtn = generatedTotes[tote]
+        ? '<button class="btn-waybill-print-single" onclick="openReprintModal()">재출력</button>'
+        : '<button data-action="open-waybill-modal" onclick="openWaybillModal(\'' + tote + '\')">운송장생성</button>';
       table.innerHTML = '<tr>' +
         '<td><a href="/detail/' + tote + '">상세1</a></td>' +
         '<td><a href="/type/' + tote + '">타입1</a></td>' +
         '<td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td>' +
-        '<td><button data-action="open-waybill-modal" onclick="openWaybillModal()">운송장생성</button>' +
-        '<button class="btn-waybill-print-single" onclick="openReprintModal()">재출력</button>' +
+        '<td>' + actionBtn +
         '<span data-search-count="' + searchCount + '">(' + searchCount + ')</span></td>' +
         '</tr>';
     }
-    function openWaybillModal(){
+    function openWaybillModal(tote){
       var d = document.createElement('dialog');
       var mismatch = location.search.indexOf('mismatch=1') !== -1;
       d.className = mismatch ? 'unknown-dialog-xyz' : 'waybill-dialog';
-      d.innerHTML = '<input id="waybill-modal-barcode-input"/><button id="waybill-modal-submit" onclick="var dlg=this.closest(\'dialog\'); dlg.close(); dlg.remove();">생성</button>';
+      d.innerHTML = '<input id="waybill-modal-barcode-input"/>' +
+        '<button id="waybill-modal-submit" onclick="generatedTotes[\'' + tote + '\']=true; var dlg=this.closest(\'dialog\'); dlg.close(); dlg.remove();">생성</button>' +
+        '<button id="manual-close-x" onclick="this.closest(\'dialog\').close();">직접닫기(재출력X)</button>';
       document.body.appendChild(d);
       d.showModal();
     }

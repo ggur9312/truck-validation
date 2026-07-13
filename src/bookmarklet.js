@@ -86,7 +86,7 @@ function drawCode128(canvas, text, opts){
 }
 
 var CSS =
-  ':host{all:initial;font-family:"Noto Sans KR",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Segoe UI",sans-serif;' +
+  ':host{all:initial;font-family:"Pretendard","Noto Sans KR",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Segoe UI",sans-serif;' +
   '--tv-surface:#ffffff;--tv-surface-2:#eef0f5;--tv-text:#181a20;--tv-text-soft:#666b78;' +
   '--tv-accent:#5b4fe8;--tv-accent-dark:#4638d1;--tv-border:#dcdfe8;--tv-success:#1f9d5c;--tv-success-tint:#e6f7ee;--tv-error:#e14b3f;' +
   '--tv-truck-bg:#fdeceb;--tv-truck-fg:#d33d2e;--tv-courier-bg:#e8f7ee;--tv-courier-fg:#1f9d5c;' +
@@ -108,24 +108,26 @@ var CSS =
   '.tv-verify-overlay{background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;pointer-events:none}' +
   '.tv-verify-overlay .tv-card{pointer-events:auto}' +
 
-  '.tv-card{background:var(--tv-surface);color:var(--tv-text);border-radius:20px;box-shadow:var(--tv-shadow);border:1px solid var(--tv-border);box-sizing:border-box;animation:tvPop .22s cubic-bezier(.2,.9,.3,1.2)}' +
+  '.tv-card{background:var(--tv-surface);color:var(--tv-text);border-radius:28px;box-shadow:var(--tv-shadow);border:1px solid var(--tv-border);box-sizing:border-box;animation:tvPop .22s cubic-bezier(.2,.9,.3,1.2)}' +
   '@keyframes tvPop{from{opacity:0;transform:scale(.94) translateY(6px)}to{opacity:1;transform:scale(1) translateY(0)}}' +
   '.tv-overlay.tv-corner .tv-card{animation:tvSlideUp .3s cubic-bezier(.2,.9,.3,1.2)}' +
   '@keyframes tvSlideUp{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:translateY(0)}}' +
 
-  '.tv-settings-card{width:300px;max-width:88vw;padding:22px}' +
+  '.tv-settings-card{width:300px;max-width:88vw;padding:24px}' +
   '.tv-settings-title{font-size:17px;font-weight:800;margin-bottom:14px;letter-spacing:-.2px}' +
-  '.tv-verify{width:600px;max-width:95vw;padding:0;overflow:hidden}' +
+  '.tv-verify{width:680px;max-width:95vw;padding:0;overflow:hidden}' +
+  '.tv-verify.truck{box-shadow:0 0 0 3px rgba(211,61,46,.16),var(--tv-shadow)}' +
+  '.tv-verify.courier{box-shadow:0 0 0 3px rgba(31,157,92,.16),var(--tv-shadow)}' +
 
-  '.tv-type-banner{width:100%;box-sizing:border-box;padding:18px 20px 18px 26px;display:flex;align-items:center;justify-content:space-between;color:#fff;font-size:20px;font-weight:800}' +
+  '.tv-type-banner{position:relative;width:100%;box-sizing:border-box;padding:20px 26px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:21px;font-weight:800}' +
   '.tv-type-banner-text{display:flex;align-items:center;gap:10px}' +
   '.tv-type-banner.truck{background:var(--tv-truck-fg)}' +
   '.tv-type-banner.courier{background:var(--tv-courier-fg)}' +
-  '.tv-verify-close{width:34px;height:34px;border-radius:50%;border:none;background:rgba(255,255,255,.28);color:#fff;font-size:16px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}' +
+  '.tv-verify-close{position:absolute;right:18px;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:50%;border:none;background:rgba(255,255,255,.28);color:#fff;font-size:16px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}' +
   '.tv-verify-close:hover{background:rgba(255,255,255,.44)}' +
-  '.tv-verify-body{padding:26px 30px 30px}' +
+  '.tv-verify-body{padding:28px 32px 32px}' +
 
-  '.tv-info-panel{background:var(--tv-surface-2);border:1px solid var(--tv-border);border-radius:14px;padding:2px 18px;margin-bottom:22px}' +
+  '.tv-info-panel{background:var(--tv-surface-2);border:1px solid var(--tv-border);border-radius:18px;padding:2px 20px;margin-bottom:22px}' +
 
   '.tv-toggle-row{display:flex;align-items:center;justify-content:space-between;padding:13px 0;font-size:14px;font-weight:500;border-top:1px solid var(--tv-border)}' +
   '.tv-toggle-row input{display:none}' +
@@ -135,7 +137,7 @@ var CSS =
   '.tv-toggle-row input:checked + .tv-switch:before{transform:translateX(18px)}' +
   '.tv-empty-hint{font-size:13px;color:var(--tv-text-soft);padding:8px 0}' +
 
-  '.tv-activate-btn{margin-top:16px;width:100%;padding:14px;border:none;border-radius:12px;background:var(--tv-accent);color:#fff;font-size:15px;font-weight:800;letter-spacing:.1px;cursor:pointer;box-shadow:0 12px 24px rgba(91,79,232,.28);transition:transform .15s,box-shadow .15s}' +
+  '.tv-activate-btn{margin-top:16px;width:100%;padding:14px;border:none;border-radius:16px;background:var(--tv-accent);color:#fff;font-size:15px;font-weight:800;letter-spacing:.1px;cursor:pointer;box-shadow:0 12px 24px rgba(91,79,232,.28);transition:transform .15s,box-shadow .15s}' +
   '.tv-activate-btn:hover{transform:translateY(-2px);box-shadow:0 16px 30px rgba(91,79,232,.36)}' +
   '.tv-activate-btn:active{transform:scale(.97)}' +
 
@@ -148,15 +150,15 @@ var CSS =
   '.tv-status-dot{width:11px;height:11px;border-radius:50%;background:var(--tv-success);box-shadow:0 0 0 0 rgba(31,157,92,.6);animation:tvStatusPulse 2s ease-in-out infinite}' +
   '@keyframes tvStatusPulse{0%{box-shadow:0 0 0 0 rgba(31,157,92,.5)}70%{box-shadow:0 0 0 8px rgba(31,157,92,0)}100%{box-shadow:0 0 0 0 rgba(31,157,92,0)}}' +
 
-  '.tv-info-row{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;font-weight:700;letter-spacing:.2px;color:var(--tv-text-soft);padding:11px 0}' +
+  '.tv-info-row{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;font-weight:700;letter-spacing:.2px;color:var(--tv-text-soft);padding:11px 0}' +
   '.tv-info-row:not(:last-child){border-bottom:1px solid var(--tv-border)}' +
-  '.tv-info-row b{color:var(--tv-text);font-weight:800;font-size:16px;letter-spacing:0}' +
+  '.tv-info-row b{color:var(--tv-text);font-weight:800;font-size:19px;letter-spacing:0}' +
 
   '.tv-product-list{margin-top:18px;max-height:320px;overflow-y:auto;display:flex;flex-direction:column;gap:9px}' +
-  '.tv-product-row{padding:13px 15px;border-radius:14px;background:var(--tv-surface-2);border:1px solid var(--tv-border);transition:background .2s,border-color .2s}' +
-  '.tv-product-top{display:flex;justify-content:space-between;align-items:flex-start;font-size:14px;font-weight:700;margin-bottom:7px;gap:12px}' +
-  '.tv-product-name{display:flex;flex-direction:column;gap:2px;min-width:0}' +
-  '.tv-product-barcode{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;font-weight:500;color:var(--tv-text-soft);letter-spacing:.3px}' +
+  '.tv-product-row{padding:14px 16px;border-radius:18px;background:var(--tv-surface-2);border:1px solid var(--tv-border);transition:background .2s,border-color .2s}' +
+  '.tv-product-top{display:flex;justify-content:space-between;align-items:flex-start;font-size:16px;font-weight:700;margin-bottom:8px;gap:12px}' +
+  '.tv-product-name{display:flex;flex-direction:column;gap:3px;min-width:0}' +
+  '.tv-product-barcode{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:14px;font-weight:500;color:var(--tv-text-soft);letter-spacing:.3px}' +
   '.tv-product-count{flex-shrink:0;color:var(--tv-text-soft);font-weight:700;font-variant-numeric:tabular-nums;padding-top:2px}' +
   '.tv-progress{height:6px;border-radius:3px;background:var(--tv-border);overflow:hidden}' +
   '.tv-progress-fill{height:100%;border-radius:3px;background:var(--tv-accent);transition:width .25s ease}' +
@@ -176,11 +178,11 @@ var CSS =
   '.tv-complete{animation:tvComplete .65s ease}' +
   '@keyframes tvComplete{0%{transform:scale(1)}50%{transform:scale(1.03)}100%{transform:scale(1);opacity:.4}}' +
 
-  '.tv-float-area{position:fixed;z-index:2147483400;display:none;inset:auto;margin:0;padding:0;border:none;background:none;color:inherit;overflow:visible}' +
+  '.tv-float-area{position:fixed;z-index:2147483400;display:none;inset:auto;margin:0;color:inherit;overflow:visible;box-sizing:border-box;background:var(--tv-surface);border-radius:20px;border:1px solid var(--tv-border);padding:12px 14px;box-shadow:var(--tv-shadow);text-align:center;animation:tvSlideUp .3s cubic-bezier(.2,.9,.3,1.2)}' +
   '.tv-float-area.tv-show,.tv-float-area:popover-open{display:block}' +
-  '.tv-float-barcode{background:var(--tv-surface);border-radius:16px;border:1px solid var(--tv-border);padding:16px 18px;box-shadow:var(--tv-shadow);text-align:center;animation:tvSlideUp .3s cubic-bezier(.2,.9,.3,1.2)}' +
-  '.tv-float-label{font-size:12px;font-weight:700;letter-spacing:.1px;color:var(--tv-text-soft);margin-bottom:9px}' +
-  '.tv-top-right{top:96px;right:26px}.tv-top-left{top:96px;left:26px}';
+  '.tv-float-label{font-size:12px;font-weight:700;letter-spacing:.1px;color:var(--tv-text-soft);margin-bottom:7px}' +
+  '.tv-float-area .tv-barcode-wrap{padding:10px 12px;border-radius:14px}' +
+  '.tv-top-right{top:76px;right:24px}.tv-top-left{top:20px;left:24px}';
 
 var ui = {};
 
@@ -194,8 +196,8 @@ function initUI(){
     '<div class="tv-status-overlay"><div class="tv-status-card"></div></div>' +
     '<div class="tv-overlay tv-settings-overlay"></div>' +
     '<div class="tv-overlay tv-verify-overlay"></div>' +
-    '<div class="tv-float-area tv-waybill-area" popover="manual"></div>' +
-    '<div class="tv-float-area tv-reprint-area" popover="manual"></div>' +
+    '<div class="tv-float-area tv-waybill-area tv-top-right" popover="manual"></div>' +
+    '<div class="tv-float-area tv-reprint-area tv-top-left" popover="manual"></div>' +
     '<div class="tv-status-badge tv-hidden"><span class="tv-status-dot"></span>트럭검증 활성화</div>' +
     '<button class="tv-gear-btn tv-hidden" title="프로그램 설정">⚙</button>';
   ui.shadow = shadow;
@@ -504,13 +506,21 @@ function fetchDoc(url){
     .then(function(text){ return new DOMParser().parseFromString(text, 'text/html'); });
 }
 
+var deliveryTypeDebugLogged = false;
+
 function parseDeliveryType(doc){
   var table = getTable(doc, 1);
   if (!table) return null;
   var rows = getRows(table);
   if (!rows[0]) return null;
   var val = td(rows[0], 3);
-  return val.indexOf('트럭') !== -1;
+  if (!deliveryTypeDebugLogged) {
+    deliveryTypeDebugLogged = true;
+    try { console.log('[트럭검증] 트럭/택배 판별 값 (문제 재발 시 이 내용을 알려주세요):', JSON.stringify(val)); } catch (e) {}
+  }
+  if (val.indexOf('트럭') !== -1) return true;
+  if (val.indexOf('택배') !== -1) return false;
+  return false;
 }
 
 function parseToteAndProducts(doc){
@@ -540,6 +550,12 @@ function buildExpectedMap(products){
 
 function processRow(row){
   var tds = row.querySelectorAll('td');
+  var last = tds[tds.length - 1];
+  if (last && last.querySelector('.btn-waybill-print-single')) {
+    hideStatus();
+    showReprintOverlay();
+    return;
+  }
   var linkProduct = tds[0] && tds[0].querySelector('a[href]');
   var linkType = tds[1] && tds[1].querySelector('a[href]');
   if (!linkProduct || !linkType) { showStatus('링크를 찾을 수 없습니다', 'error'); state.mode = 'IDLE'; return; }
@@ -565,7 +581,7 @@ function openVerifyModal(){
   var typeText = info.isTruck ? '트럭' : '택배';
   var typeClass = info.isTruck ? 'truck' : 'courier';
   ui.verifyOverlay.innerHTML =
-    '<div class="tv-card tv-verify">' +
+    '<div class="tv-card tv-verify ' + typeClass + '">' +
     '<div class="tv-type-banner ' + typeClass + '">' +
     '<span class="tv-type-banner-text"><span>' + typeIcon + '</span><span>' + typeText + '</span></span>' +
     '<button class="tv-verify-close" title="닫기">✕</button>' +
@@ -660,10 +676,20 @@ function afterVerification(){
   watchWaybillDialog();
 }
 
+function isElementVisible(el){
+  return !!(el && (el.offsetWidth || el.offsetHeight || el.getClientRects().length));
+}
+
 function findWaybillModalNode(){
-  return document.querySelector(SEL.waybillDialog) ||
-    document.querySelector(SEL.waybillSubmit) ||
-    document.querySelector(SEL.waybillBoxInput);
+  var candidates = [
+    document.querySelector(SEL.waybillDialog),
+    document.querySelector(SEL.waybillSubmit),
+    document.querySelector(SEL.waybillBoxInput)
+  ];
+  for (var i = 0; i < candidates.length; i++) {
+    if (isElementVisible(candidates[i])) return candidates[i];
+  }
+  return null;
 }
 
 var waybillObserver = null;
@@ -703,10 +729,12 @@ function watchWaybillDialog(){
   check();
 }
 
+var FLOAT_BARCODE_OPTS = { moduleWidth: 1.6, height: 34, quiet: 8 };
+
 function showWaybillOverlay(){
   var overlay = ui.waybillOverlay;
-  overlay.innerHTML = '<div class="tv-float-barcode tv-top-right"><div class="tv-float-label">📮 스캔하여 운송장생성</div><div class="tv-barcode-wrap"><canvas></canvas></div></div>';
-  drawCode128(overlay.querySelector('canvas'), CTRL.WAYBILL);
+  overlay.innerHTML = '<div class="tv-float-label">📮 스캔하여 운송장생성</div><div class="tv-barcode-wrap"><canvas></canvas></div>';
+  drawCode128(overlay.querySelector('canvas'), CTRL.WAYBILL, FLOAT_BARCODE_OPTS);
   setPopoverVisible(overlay, true);
 }
 function hideWaybillOverlay(){ setPopoverVisible(ui.waybillOverlay, false); ui.waybillOverlay.innerHTML = ''; }
@@ -730,8 +758,8 @@ function showReprintOverlay(){
   state.mode = 'REPRINT_READY';
   hideStatus();
   var overlay = ui.reprintOverlay;
-  overlay.innerHTML = '<div class="tv-float-barcode tv-top-left"><div class="tv-float-label">🖨 운송장 재출력</div><div class="tv-barcode-wrap"><canvas></canvas></div></div>';
-  drawCode128(overlay.querySelector('canvas'), CTRL.REPRINT);
+  overlay.innerHTML = '<div class="tv-float-label">🖨 운송장 재출력</div><div class="tv-barcode-wrap"><canvas></canvas></div>';
+  drawCode128(overlay.querySelector('canvas'), CTRL.REPRINT, FLOAT_BARCODE_OPTS);
   setPopoverVisible(overlay, true);
 }
 function hideReprintOverlay(){ setPopoverVisible(ui.reprintOverlay, false); ui.reprintOverlay.innerHTML = ''; }
