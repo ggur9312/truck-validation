@@ -31,6 +31,8 @@ function sendScan(page, text){
 
     await page.locator('.tv-activate-btn').click();
     await sendScan(page, 'TOTE001');
+    await page.locator('.tv-status-text').waitFor({ timeout: 2000 }).catch(function(){});
+    await page.screenshot({ path: path.join(outDir, 'loading-' + scheme + '.png') });
     await page.locator('.tv-verify').filter({ hasText: '업체A' }).waitFor({ timeout: 5000 });
     await page.screenshot({ path: path.join(outDir, 'verify-' + scheme + '.png') });
 

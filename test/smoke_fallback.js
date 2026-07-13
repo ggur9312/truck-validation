@@ -35,10 +35,10 @@ function sendScan(page, text){
   await sendScan(page, 'BAR002');
   await page.locator('.tv-verify-overlay').waitFor({ state: 'hidden', timeout: 5000 });
 
-  var dialogHasExpectedClass = await page.evaluate(function(){ return !!document.querySelector('div.waybill-dialog'); });
+  var dialogHasExpectedClass = await page.evaluate(function(){ return !!document.querySelector('dialog.waybill-dialog'); });
   if (dialogHasExpectedClass) { console.error('FAIL: test setup broken, dialog should NOT have waybill-dialog class'); process.exitCode = 1; }
 
-  await page.locator('.tv-waybill-area.tv-show canvas').waitFor({ timeout: 8000 });
+  await page.locator('.tv-waybill-area canvas').waitFor({ state: 'visible', timeout: 8000 });
   console.log('OK: virtual waybill barcode still detected via fallback selector (#waybill-modal-submit) despite mismatched dialog class');
 
   await sendScan(page, 'TVCTL_WAYBILL');

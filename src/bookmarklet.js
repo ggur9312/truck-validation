@@ -27,8 +27,11 @@ var state = {
 };
 
 function loadSettings(){
-  try { return Object.assign({ enabled: false }, JSON.parse(localStorage.getItem('tv_settings') || '{}')); }
-  catch (e) { return { enabled: false }; }
+  try {
+    var saved = JSON.parse(localStorage.getItem('tv_settings') || '{}');
+    saved.enabled = false;
+    return Object.assign({ enabled: false }, saved);
+  } catch (e) { return { enabled: false }; }
 }
 function saveSettings(){ localStorage.setItem('tv_settings', JSON.stringify(state.settings)); }
 
@@ -84,15 +87,20 @@ function drawCode128(canvas, text, opts){
 
 var CSS =
   ':host{all:initial;font-family:"Noto Sans KR",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Segoe UI",sans-serif;' +
-  '--tv-surface:#ffffff;--tv-surface-2:#f4f5f9;--tv-text:#181a20;--tv-text-soft:#666b78;' +
-  '--tv-accent:#5b4fe8;--tv-accent-dark:#4638d1;--tv-border:#e3e5ec;--tv-success:#1f9d5c;--tv-success-tint:#e6f7ee;--tv-error:#e14b3f;' +
-  '--tv-truck-bg:#eaf0ff;--tv-truck-fg:#2f5fd6;--tv-courier-bg:#fff1e0;--tv-courier-fg:#c96a0a;' +
+  '--tv-surface:#ffffff;--tv-surface-2:#eef0f5;--tv-text:#181a20;--tv-text-soft:#666b78;' +
+  '--tv-accent:#5b4fe8;--tv-accent-dark:#4638d1;--tv-border:#dcdfe8;--tv-success:#1f9d5c;--tv-success-tint:#e6f7ee;--tv-error:#e14b3f;' +
+  '--tv-truck-bg:#fdeceb;--tv-truck-fg:#d33d2e;--tv-courier-bg:#e8f7ee;--tv-courier-fg:#1f9d5c;' +
   '--tv-shadow:0 24px 60px rgba(20,25,45,.16),0 4px 14px rgba(20,25,45,.08)}' +
 
-  '.tv-toast-area{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:2147483647;display:flex;flex-direction:column;gap:10px;pointer-events:none}' +
-  '.tv-toast{padding:13px 22px;border-radius:10px;background:#20242e;color:#fff;font-size:15px;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.3);opacity:0;transform:translateY(-10px);transition:opacity .25s,transform .25s}' +
-  '.tv-toast-in{opacity:1;transform:translateY(0)}' +
-  '.tv-toast-err{background:var(--tv-error)}' +
+  '.tv-status-overlay{position:fixed;inset:0;z-index:2147483500;display:none;align-items:center;justify-content:center;pointer-events:none}' +
+  '.tv-status-overlay.tv-show{display:flex}' +
+  '.tv-status-card{background:var(--tv-surface);border-radius:16px;box-shadow:var(--tv-shadow);border:1px solid var(--tv-border);padding:20px 28px;display:flex;align-items:center;gap:14px;animation:tvPop .18s ease}' +
+  '.tv-status-icon{width:22px;height:22px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800}' +
+  '.tv-status-text{font-size:15px;font-weight:700;color:var(--tv-text)}' +
+  '.tv-status-card.error .tv-status-icon,.tv-status-card.error .tv-status-text{color:var(--tv-error)}' +
+  '.tv-status-card.success .tv-status-icon{color:var(--tv-success)}' +
+  '.tv-spinner{width:20px;height:20px;border-radius:50%;border:3px solid var(--tv-border);border-top-color:var(--tv-accent);animation:tvSpin .7s linear infinite}' +
+  '@keyframes tvSpin{to{transform:rotate(360deg)}}' +
 
   '.tv-overlay{position:fixed;inset:0;z-index:2147483000;display:none;align-items:center;justify-content:center;background:rgba(20,22,32,.4);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}' +
   '.tv-overlay.tv-show{display:flex}' +
@@ -107,7 +115,17 @@ var CSS =
 
   '.tv-settings-card{width:300px;max-width:88vw;padding:22px}' +
   '.tv-settings-title{font-size:17px;font-weight:800;margin-bottom:14px;letter-spacing:-.2px}' +
-  '.tv-verify{width:460px;max-width:92vw;padding:30px}' +
+  '.tv-verify{width:600px;max-width:95vw;padding:0;overflow:hidden}' +
+
+  '.tv-type-banner{width:100%;box-sizing:border-box;padding:18px 20px 18px 26px;display:flex;align-items:center;justify-content:space-between;color:#fff;font-size:20px;font-weight:800}' +
+  '.tv-type-banner-text{display:flex;align-items:center;gap:10px}' +
+  '.tv-type-banner.truck{background:var(--tv-truck-fg)}' +
+  '.tv-type-banner.courier{background:var(--tv-courier-fg)}' +
+  '.tv-verify-close{width:34px;height:34px;border-radius:50%;border:none;background:rgba(255,255,255,.28);color:#fff;font-size:16px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}' +
+  '.tv-verify-close:hover{background:rgba(255,255,255,.44)}' +
+  '.tv-verify-body{padding:26px 30px 30px}' +
+
+  '.tv-info-panel{background:var(--tv-surface-2);border:1px solid var(--tv-border);border-radius:14px;padding:2px 18px;margin-bottom:22px}' +
 
   '.tv-toggle-row{display:flex;align-items:center;justify-content:space-between;padding:13px 0;font-size:14px;font-weight:500;border-top:1px solid var(--tv-border)}' +
   '.tv-toggle-row input{display:none}' +
@@ -125,27 +143,24 @@ var CSS =
   '.tv-gear-btn:hover{transform:rotate(30deg) scale(1.05)}' +
   '.tv-gear-btn.tv-hidden{display:none}' +
 
-  '.tv-status-badge{position:fixed;top:20px;right:24px;z-index:2147483600;display:flex;align-items:center;gap:9px;padding:9px 16px;border-radius:999px;background:var(--tv-surface);color:var(--tv-text);border:1px solid var(--tv-border);font-size:13px;font-weight:700;box-shadow:var(--tv-shadow);letter-spacing:.1px}' +
+  '.tv-status-badge{position:fixed;top:20px;right:24px;z-index:2147483600;display:flex;align-items:center;gap:12px;padding:13px 22px;border-radius:999px;background:var(--tv-surface);color:var(--tv-text);border:1px solid var(--tv-border);font-size:16px;font-weight:800;box-shadow:var(--tv-shadow);letter-spacing:.1px}' +
   '.tv-status-badge.tv-hidden{display:none}' +
-  '.tv-status-dot{width:8px;height:8px;border-radius:50%;background:var(--tv-success);box-shadow:0 0 0 0 rgba(31,157,92,.6);animation:tvStatusPulse 2s ease-in-out infinite}' +
-  '@keyframes tvStatusPulse{0%{box-shadow:0 0 0 0 rgba(31,157,92,.5)}70%{box-shadow:0 0 0 6px rgba(31,157,92,0)}100%{box-shadow:0 0 0 0 rgba(31,157,92,0)}}' +
+  '.tv-status-dot{width:11px;height:11px;border-radius:50%;background:var(--tv-success);box-shadow:0 0 0 0 rgba(31,157,92,.6);animation:tvStatusPulse 2s ease-in-out infinite}' +
+  '@keyframes tvStatusPulse{0%{box-shadow:0 0 0 0 rgba(31,157,92,.5)}70%{box-shadow:0 0 0 8px rgba(31,157,92,0)}100%{box-shadow:0 0 0 0 rgba(31,157,92,0)}}' +
 
-  '.tv-type-badge{display:inline-flex;align-items:center;gap:9px;padding:9px 16px;border-radius:999px;font-weight:800;font-size:16px;margin-bottom:18px}' +
-  '.tv-type-badge.truck{background:var(--tv-truck-bg);color:var(--tv-truck-fg)}' +
-  '.tv-type-badge.courier{background:var(--tv-courier-bg);color:var(--tv-courier-fg)}' +
-
-  '.tv-info-row{display:flex;justify-content:space-between;font-size:14px;padding:6px 0;color:var(--tv-text-soft)}' +
-  '.tv-info-row b{color:var(--tv-text);font-weight:700}' +
+  '.tv-info-row{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;font-weight:700;letter-spacing:.2px;color:var(--tv-text-soft);padding:11px 0}' +
+  '.tv-info-row:not(:last-child){border-bottom:1px solid var(--tv-border)}' +
+  '.tv-info-row b{color:var(--tv-text);font-weight:800;font-size:16px;letter-spacing:0}' +
 
   '.tv-product-list{margin-top:18px;max-height:320px;overflow-y:auto;display:flex;flex-direction:column;gap:9px}' +
-  '.tv-product-row{padding:13px 15px;border-radius:14px;background:var(--tv-surface-2);transition:background .2s}' +
+  '.tv-product-row{padding:13px 15px;border-radius:14px;background:var(--tv-surface-2);border:1px solid var(--tv-border);transition:background .2s,border-color .2s}' +
   '.tv-product-top{display:flex;justify-content:space-between;align-items:flex-start;font-size:14px;font-weight:700;margin-bottom:7px;gap:12px}' +
   '.tv-product-name{display:flex;flex-direction:column;gap:2px;min-width:0}' +
   '.tv-product-barcode{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;font-weight:500;color:var(--tv-text-soft);letter-spacing:.3px}' +
   '.tv-product-count{flex-shrink:0;color:var(--tv-text-soft);font-weight:700;font-variant-numeric:tabular-nums;padding-top:2px}' +
   '.tv-progress{height:6px;border-radius:3px;background:var(--tv-border);overflow:hidden}' +
   '.tv-progress-fill{height:100%;border-radius:3px;background:var(--tv-accent);transition:width .25s ease}' +
-  '.tv-product-row.done{background:var(--tv-success-tint)}' +
+  '.tv-product-row.done{background:var(--tv-success-tint);border-color:var(--tv-success)}' +
   '.tv-product-row.done .tv-progress-fill{background:var(--tv-success)}' +
   '.tv-product-row.pulse{animation:tvPulse 1s ease-in-out infinite}' +
   '@keyframes tvPulse{0%,100%{box-shadow:0 0 0 0 rgba(91,79,232,.35)}50%{box-shadow:0 0 0 7px rgba(91,79,232,0)}}' +
@@ -161,8 +176,8 @@ var CSS =
   '.tv-complete{animation:tvComplete .65s ease}' +
   '@keyframes tvComplete{0%{transform:scale(1)}50%{transform:scale(1.03)}100%{transform:scale(1);opacity:.4}}' +
 
-  '.tv-float-area{position:fixed;z-index:2147483400;display:none}' +
-  '.tv-float-area.tv-show{display:block}' +
+  '.tv-float-area{position:fixed;z-index:2147483400;display:none;inset:auto;margin:0;padding:0;border:none;background:none;color:inherit;overflow:visible}' +
+  '.tv-float-area.tv-show,.tv-float-area:popover-open{display:block}' +
   '.tv-float-barcode{background:var(--tv-surface);border-radius:16px;border:1px solid var(--tv-border);padding:16px 18px;box-shadow:var(--tv-shadow);text-align:center;animation:tvSlideUp .3s cubic-bezier(.2,.9,.3,1.2)}' +
   '.tv-float-label{font-size:12px;font-weight:700;letter-spacing:.1px;color:var(--tv-text-soft);margin-bottom:9px}' +
   '.tv-top-right{top:96px;right:26px}.tv-top-left{top:96px;left:26px}';
@@ -176,15 +191,16 @@ function initUI(){
   var shadow = host.attachShadow({ mode: 'open' });
   shadow.innerHTML =
     '<style>' + CSS + '</style>' +
-    '<div class="tv-toast-area"></div>' +
+    '<div class="tv-status-overlay"><div class="tv-status-card"></div></div>' +
     '<div class="tv-overlay tv-settings-overlay"></div>' +
     '<div class="tv-overlay tv-verify-overlay"></div>' +
-    '<div class="tv-float-area tv-waybill-area"></div>' +
-    '<div class="tv-float-area tv-reprint-area"></div>' +
+    '<div class="tv-float-area tv-waybill-area" popover="manual"></div>' +
+    '<div class="tv-float-area tv-reprint-area" popover="manual"></div>' +
     '<div class="tv-status-badge tv-hidden"><span class="tv-status-dot"></span>트럭검증 활성화</div>' +
     '<button class="tv-gear-btn tv-hidden" title="프로그램 설정">⚙</button>';
   ui.shadow = shadow;
-  ui.toastArea = shadow.querySelector('.tv-toast-area');
+  ui.statusOverlay = shadow.querySelector('.tv-status-overlay');
+  ui.statusCard = shadow.querySelector('.tv-status-card');
   ui.settingsOverlay = shadow.querySelector('.tv-settings-overlay');
   ui.verifyOverlay = shadow.querySelector('.tv-verify-overlay');
   ui.waybillOverlay = shadow.querySelector('.tv-waybill-area');
@@ -200,16 +216,32 @@ function escapeHtml(s){
   });
 }
 
-function showToast(msg, kind){
-  var el = document.createElement('div');
-  el.className = 'tv-toast ' + (kind === 'error' ? 'tv-toast-err' : 'tv-toast-ok');
-  el.textContent = msg;
-  ui.toastArea.appendChild(el);
-  requestAnimationFrame(function(){ el.classList.add('tv-toast-in'); });
-  setTimeout(function(){
-    el.classList.remove('tv-toast-in');
-    setTimeout(function(){ el.remove(); }, 300);
-  }, 2200);
+var statusHideTimer = null;
+
+function showStatus(message, kind){
+  clearTimeout(statusHideTimer);
+  var icon = kind === 'loading' ? '<span class="tv-spinner"></span>' : (kind === 'error' ? '✕' : '✓');
+  ui.statusCard.className = 'tv-status-card' + (kind === 'error' ? ' error' : kind === 'loading' ? '' : ' success');
+  ui.statusCard.innerHTML = '<span class="tv-status-icon">' + icon + '</span><span class="tv-status-text">' + escapeHtml(message) + '</span>';
+  ui.statusOverlay.classList.add('tv-show');
+  if (kind !== 'loading') statusHideTimer = setTimeout(hideStatus, 2000);
+}
+
+function hideStatus(){
+  clearTimeout(statusHideTimer);
+  ui.statusOverlay.classList.remove('tv-show');
+}
+
+function setPopoverVisible(el, show){
+  if (typeof el.showPopover === 'function') {
+    try {
+      var isOpen = el.matches(':popover-open');
+      if (show && !isOpen) el.showPopover();
+      else if (!show && isOpen) el.hidePopover();
+      return;
+    } catch (e) {}
+  }
+  el.classList.toggle('tv-show', show);
 }
 
 function openSettingsModal(center){
@@ -257,7 +289,7 @@ function bindSettingsEvents(){
     saveSettings();
     closeSettingsModal();
     showActiveIndicators();
-    showToast('트럭검증 활성화됨');
+    showStatus('트럭검증 활성화됨');
   });
 }
 
@@ -294,7 +326,10 @@ function setDateRange(){
 
   el.setAttribute('enddate', endStr);
   el.setAttribute('startdate', startStr);
-  try { el.endDate = endStr; el.startDate = startStr; } catch (e) {}
+  try {
+    el.endDate = endStr; el.startDate = startStr;
+    el.enddate = endStr; el.startdate = startStr;
+  } catch (e) {}
   ['input', 'change'].forEach(function(t){ el.dispatchEvent(new Event(t, { bubbles: true })); });
 
   if (!dateDebugLogged) {
@@ -302,13 +337,22 @@ function setDateRange(){
     try { console.log('[트럭검증] date-range-input 구조 (문제 재발 시 이 내용을 알려주세요):', el.outerHTML); } catch (e) {}
   }
 
+  function isHiddenProxy(node){
+    var n = node;
+    while (n && n !== el) {
+      if (n.hasAttribute && (n.hasAttribute('data-hidden') || n.getAttribute('slot') === 'hidden')) return true;
+      n = n.parentElement;
+    }
+    return false;
+  }
+
   var roots = [el].concat(el.shadowRoot ? [el.shadowRoot] : []);
   var inputs = [];
   var candidates = [];
   roots.forEach(function(root){
-    inputs = inputs.concat(Array.prototype.slice.call(root.querySelectorAll('input')));
+    inputs = inputs.concat(Array.prototype.slice.call(root.querySelectorAll('input')).filter(function(n){ return !isHiddenProxy(n); }));
     candidates = candidates.concat(Array.prototype.slice.call(root.querySelectorAll('*')).filter(function(n){
-      return n.hasAttribute('contenteditable') || /date/i.test(n.tagName);
+      return !isHiddenProxy(n) && (n.hasAttribute('contenteditable') || /date/i.test(n.tagName));
     }));
   });
 
@@ -337,6 +381,14 @@ function resetScanBuf(){ scanBuf.chars = []; scanBuf.lastTs = 0; }
 
 function onGlobalKeydown(e){
   if (!state.settings.enabled) return;
+  if (e.key === 'Enter' && state.mode === 'IDLE') {
+    var active = document.activeElement;
+    if (active && active.matches && active.matches(SEL.toteInput) && active.value) {
+      resetScanBuf();
+      startSearch(active.value);
+      return;
+    }
+  }
   var now = Date.now();
   if (now - scanBuf.lastTs > SCAN_GAP_MS) resetScanBuf();
   if (e.key === 'Enter') {
@@ -425,15 +477,15 @@ function startSearch(toteBarcode){
   state.mode = 'SEARCHING';
   var input = document.querySelector(SEL.toteInput);
   var btn = document.querySelector(SEL.searchBtn);
-  if (!input || !btn) { showToast('조회 요소를 찾을 수 없습니다', 'error'); state.mode = 'IDLE'; return; }
-  showToast('조회 중...');
+  if (!input || !btn) { showStatus('조회 요소를 찾을 수 없습니다', 'error'); state.mode = 'IDLE'; return; }
+  showStatus('조회 중...', 'loading');
   setNativeValue(input, toteBarcode);
   setDateRange();
   var prevRow = getFirstRow();
   var prevSig = prevRow ? prevRow.textContent : null;
   btn.click();
   waitForRowChange(prevSig).then(processRow).catch(function(){
-    showToast('조회 결과를 가져오지 못했습니다', 'error');
+    showStatus('조회 결과를 가져오지 못했습니다', 'error');
     state.mode = 'IDLE';
   });
 }
@@ -490,18 +542,19 @@ function processRow(row){
   var tds = row.querySelectorAll('td');
   var linkProduct = tds[0] && tds[0].querySelector('a[href]');
   var linkType = tds[1] && tds[1].querySelector('a[href]');
-  if (!linkProduct || !linkType) { showToast('링크를 찾을 수 없습니다', 'error'); state.mode = 'IDLE'; return; }
-  showToast('상세정보 조회 중...');
+  if (!linkProduct || !linkType) { showStatus('링크를 찾을 수 없습니다', 'error'); state.mode = 'IDLE'; return; }
+  showStatus('상세정보 조회 중...', 'loading');
   Promise.all([fetchDoc(linkProduct.href), fetchDoc(linkType.href)]).then(function(docs){
     var isTruck = parseDeliveryType(docs[1]);
     var info = parseToteAndProducts(docs[0]);
-    if (!info) { showToast('상품 정보를 해석하지 못했습니다', 'error'); state.mode = 'IDLE'; return; }
+    if (!info) { showStatus('상품 정보를 해석하지 못했습니다', 'error'); state.mode = 'IDLE'; return; }
     state.toteInfo = Object.assign({ isTruck: isTruck }, info);
     state.expected = buildExpectedMap(info.products);
     state.mode = 'VERIFYING';
+    hideStatus();
     openVerifyModal();
   }).catch(function(){
-    showToast('상세페이지를 불러오지 못했습니다', 'error');
+    showStatus('상세페이지를 불러오지 못했습니다', 'error');
     state.mode = 'IDLE';
   });
 }
@@ -513,16 +566,32 @@ function openVerifyModal(){
   var typeClass = info.isTruck ? 'truck' : 'courier';
   ui.verifyOverlay.innerHTML =
     '<div class="tv-card tv-verify">' +
-    '<div class="tv-type-badge ' + typeClass + '"><span>' + typeIcon + '</span><span>' + typeText + '</span></div>' +
+    '<div class="tv-type-banner ' + typeClass + '">' +
+    '<span class="tv-type-banner-text"><span>' + typeIcon + '</span><span>' + typeText + '</span></span>' +
+    '<button class="tv-verify-close" title="닫기">✕</button>' +
+    '</div>' +
+    '<div class="tv-verify-body">' +
+    '<div class="tv-info-panel">' +
     '<div class="tv-info-row"><span>업체명</span><b>' + escapeHtml(info.vendor) + '</b></div>' +
     '<div class="tv-info-row"><span>토트바코드</span><b>' + escapeHtml(info.toteBarcode) + '</b></div>' +
     '<div class="tv-info-row"><span>전체 집품수량</span><b>' + info.totalQty + '</b></div>' +
+    '</div>' +
     '<div class="tv-product-list"></div>' +
     '<div class="tv-skip-area"><div class="tv-skip-label">검증 건너뛰기 (스캔)</div><div class="tv-barcode-wrap"><canvas class="tv-skip-barcode"></canvas></div></div>' +
+    '</div>' +
     '</div>';
   ui.verifyOverlay.classList.add('tv-show');
   drawCode128(ui.verifyOverlay.querySelector('.tv-skip-barcode'), CTRL.SKIP);
+  ui.verifyOverlay.querySelector('.tv-verify-close').addEventListener('click', closeVerifyModal);
   updateVerifyProgress();
+}
+
+function closeVerifyModal(){
+  state.mode = 'IDLE';
+  state.toteInfo = null;
+  state.expected = new Map();
+  ui.verifyOverlay.classList.remove('tv-show');
+  ui.verifyOverlay.innerHTML = '';
 }
 
 function updateVerifyProgress(){
@@ -578,14 +647,14 @@ function completeVerification(){
 function afterVerification(){
   if (state.toteInfo.isTruck) {
     state.mode = 'IDLE';
-    showToast('트럭 - 검증 완료');
+    showStatus('트럭 - 검증 완료');
     return;
   }
   var row = getFirstRow();
   var tds = row && row.querySelectorAll('td');
   var last = tds && tds[tds.length - 1];
   var openBtn = last && last.querySelector('[data-action="open-waybill-modal"]');
-  if (!openBtn) { showToast('운송장 생성 버튼을 찾을 수 없습니다', 'error'); state.mode = 'IDLE'; return; }
+  if (!openBtn) { showStatus('운송장 생성 버튼을 찾을 수 없습니다', 'error'); state.mode = 'IDLE'; return; }
   openBtn.click();
   state.mode = 'WAITING_WAYBILL_OPEN';
   watchWaybillDialog();
@@ -627,7 +696,7 @@ function watchWaybillDialog(){
   waybillTimeoutId = setTimeout(function(){
     if (state.mode === 'WAITING_WAYBILL_OPEN') {
       clearWaybillWatchers();
-      showToast('운송장 모달을 찾지 못했습니다', 'error');
+      showStatus('운송장 모달을 찾지 못했습니다', 'error');
       state.mode = 'IDLE';
     }
   }, 6000);
@@ -638,9 +707,9 @@ function showWaybillOverlay(){
   var overlay = ui.waybillOverlay;
   overlay.innerHTML = '<div class="tv-float-barcode tv-top-right"><div class="tv-float-label">📮 스캔하여 운송장생성</div><div class="tv-barcode-wrap"><canvas></canvas></div></div>';
   drawCode128(overlay.querySelector('canvas'), CTRL.WAYBILL);
-  overlay.classList.add('tv-show');
+  setPopoverVisible(overlay, true);
 }
-function hideWaybillOverlay(){ ui.waybillOverlay.classList.remove('tv-show'); ui.waybillOverlay.innerHTML = ''; }
+function hideWaybillOverlay(){ setPopoverVisible(ui.waybillOverlay, false); ui.waybillOverlay.innerHTML = ''; }
 
 function clickWaybillSubmit(){
   var btn = document.querySelector(SEL.waybillSubmit);
@@ -649,7 +718,7 @@ function clickWaybillSubmit(){
 
 function afterWaybillClosed(){
   state.mode = 'REFRESHING';
-  showToast('운송장 생성 완료 - 재조회 중...');
+  showStatus('운송장 생성 완료 - 재조회 중...', 'loading');
   var prevRow = getFirstRow();
   var prevSig = prevRow ? prevRow.textContent : null;
   var btn = document.querySelector(SEL.searchBtn);
@@ -659,12 +728,13 @@ function afterWaybillClosed(){
 
 function showReprintOverlay(){
   state.mode = 'REPRINT_READY';
+  hideStatus();
   var overlay = ui.reprintOverlay;
   overlay.innerHTML = '<div class="tv-float-barcode tv-top-left"><div class="tv-float-label">🖨 운송장 재출력</div><div class="tv-barcode-wrap"><canvas></canvas></div></div>';
   drawCode128(overlay.querySelector('canvas'), CTRL.REPRINT);
-  overlay.classList.add('tv-show');
+  setPopoverVisible(overlay, true);
 }
-function hideReprintOverlay(){ ui.reprintOverlay.classList.remove('tv-show'); ui.reprintOverlay.innerHTML = ''; }
+function hideReprintOverlay(){ setPopoverVisible(ui.reprintOverlay, false); ui.reprintOverlay.innerHTML = ''; }
 
 function doReprint(){
   hideReprintOverlay();
@@ -672,20 +742,19 @@ function doReprint(){
   var tds = row && row.querySelectorAll('td');
   var last = tds && tds[tds.length - 1];
   var btn = last && last.querySelector('.btn-waybill-print-single');
-  if (!btn) { showToast('재출력 버튼을 찾을 수 없습니다', 'error'); state.mode = 'IDLE'; return; }
+  if (!btn) { showStatus('재출력 버튼을 찾을 수 없습니다', 'error'); state.mode = 'IDLE'; return; }
   btn.click();
   waitForSelector(SEL.reprintModal).then(function(){
     var allBtn = document.querySelector(SEL.reprintAllBtn);
     if (allBtn) allBtn.click();
-    showToast('재출력 완료');
+    showStatus('재출력 완료');
   }).catch(function(){
-    showToast('재출력 모달을 찾지 못했습니다', 'error');
+    showStatus('재출력 모달을 찾지 못했습니다', 'error');
   }).then(function(){ state.mode = 'IDLE'; });
 }
 
 function boot(){
   initUI();
-  if (state.settings.enabled) showActiveIndicators();
   document.addEventListener('keydown', onGlobalKeydown, true);
   openSettingsModal(true);
 }

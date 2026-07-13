@@ -41,29 +41,28 @@ function sendScan(page, text){
     return {
       expectedStart: fmt(start),
       expectedEnd: fmt(end),
-      actualStart: document.querySelector('.start-input').value,
-      actualEnd: document.querySelector('.end-input').value,
       attrStart: document.querySelector('#date-range-input').getAttribute('startdate'),
-      attrEnd: document.querySelector('#date-range-input').getAttribute('enddate')
+      attrEnd: document.querySelector('#date-range-input').getAttribute('enddate'),
+      hiddenInputValue: document.querySelector('[data-hidden] input[shadow-input]').value
     };
   });
-  if (dateCheck.actualStart !== dateCheck.expectedStart || dateCheck.actualEnd !== dateCheck.expectedEnd) {
-    console.error('FAIL: internal date inputs not set correctly', dateCheck);
-    process.exitCode = 1;
-  } else {
-    console.log('OK: internal date inputs set to', dateCheck.actualStart, '~', dateCheck.actualEnd);
-  }
   if (dateCheck.attrStart !== dateCheck.expectedStart || dateCheck.attrEnd !== dateCheck.expectedEnd) {
     console.error('FAIL: startdate/enddate attributes not set correctly', dateCheck);
     process.exitCode = 1;
   } else {
-    console.log('OK: startdate/enddate attributes set correctly');
+    console.log('OK: startdate/enddate attributes set correctly:', dateCheck.attrStart, '~', dateCheck.attrEnd);
+  }
+  if (dateCheck.hiddenInputValue !== '') {
+    console.error('FAIL: hidden proxy input should NOT be touched, got', dateCheck.hiddenInputValue);
+    process.exitCode = 1;
+  } else {
+    console.log('OK: hidden proxy input left untouched (no longer corrupted)');
   }
 
   await page.locator('.tv-verify').filter({ hasText: '업체A' }).waitFor({ timeout: 5000 });
   console.log('OK: verify modal shows vendor 업체A');
 
-  var badgeText = await page.locator('.tv-type-badge').textContent();
+  var badgeText = await page.locator('.tv-type-banner').textContent();
   if (badgeText.indexOf('택배') === -1) { console.error('FAIL: expected courier badge, got', badgeText); process.exitCode = 1; }
   else console.log('OK: courier badge shown:', badgeText.trim());
 
@@ -102,10 +101,10 @@ function sendScan(page, text){
   console.log('OK: verify modal auto-closed after full scan');
 
   await page.waitForSelector('.waybill-dialog', { timeout: 5000 });
-  console.log('OK: WMS waybill-dialog opened automatically (courier flow)');
+  console.log('OK: WMS waybill-dialog (native <dialog> shown via showModal(), i.e. top-layer) opened automatically (courier flow)');
 
-  await page.locator('.tv-waybill-area.tv-show canvas').waitFor({ timeout: 5000 });
-  console.log('OK: virtual waybill barcode rendered top-right');
+  await page.locator('.tv-waybill-area canvas').waitFor({ state: 'visible', timeout: 5000 });
+  console.log('OK: virtual waybill barcode rendered top-right and visible even with a native top-layer <dialog> open');
 
   var boxInputVal = await page.locator('#waybill-modal-barcode-input').inputValue();
   if (boxInputVal !== '') { console.error('FAIL: box input should remain untouched, got', boxInputVal); process.exitCode = 1; }
@@ -116,7 +115,7 @@ function sendScan(page, text){
   await page.waitForFunction(function(){ return !document.querySelector('.waybill-dialog'); }, null, { timeout: 5000 });
   console.log('OK: waybill-dialog closed after virtual barcode scan (submit clicked)');
 
-  await page.locator('.tv-reprint-area.tv-show').waitFor({ timeout: 5000 });
+  await page.locator('.tv-reprint-area canvas').waitFor({ state: 'visible', timeout: 5000 });
   console.log('OK: reprint virtual barcode shown top-left after re-search');
 
   var searchCount = await page.evaluate(function(){
