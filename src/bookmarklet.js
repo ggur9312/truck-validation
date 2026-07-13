@@ -81,7 +81,84 @@ function drawCode128(canvas, text, opts){
   });
 }
 
-var CSS = ':host{all:initial}.tv-toast-area{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:2147483647;display:flex;flex-direction:column;gap:8px;pointer-events:none;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Pretendard,sans-serif}.tv-toast{padding:10px 18px;border-radius:10px;background:#1f2430;color:#fff;font-size:13px;font-weight:500;box-shadow:0 6px 20px rgba(0,0,0,.25);opacity:0;transform:translateY(-8px);transition:opacity .25s,transform .25s}.tv-toast-in{opacity:1;transform:translateY(0)}.tv-toast-err{background:#c0392b}.tv-toast-ok{background:#1f2430}.tv-overlay{position:fixed;inset:0;z-index:2147483000;display:none;align-items:center;justify-content:center;background:rgba(10,12,20,.45);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Pretendard,sans-serif}.tv-overlay.tv-show{display:flex}.tv-overlay.tv-corner{align-items:flex-end;justify-content:flex-start;background:transparent;padding:84px 0 0 20px}.tv-card{background:#fff;color:#1a1d24;border-radius:18px;padding:22px;width:340px;max-width:90vw;box-shadow:0 20px 60px rgba(0,0,0,.35);box-sizing:border-box}@media(prefers-color-scheme:dark){.tv-card{background:#1c1f27;color:#eef0f4}}.tv-overlay.tv-corner .tv-card{animation:tvSlideUp .28s ease-out}@keyframes tvSlideUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}.tv-settings-title{font-size:16px;font-weight:700;margin-bottom:14px}.tv-toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;font-size:13px;border-top:1px solid rgba(120,120,130,.18)}.tv-toggle-row input{display:none}.tv-switch{position:relative;width:38px;height:22px;border-radius:11px;background:#c7c9d1;transition:background .2s;flex-shrink:0}.tv-switch:before{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.3)}.tv-toggle-row input:checked + .tv-switch{background:#2f8f5b}.tv-toggle-row input:checked + .tv-switch:before{transform:translateX(16px)}.tv-empty-hint{font-size:12px;color:#888;padding:8px 0}.tv-activate-btn{margin-top:16px;width:100%;padding:12px;border:none;border-radius:12px;background:#2f6fed;color:#fff;font-size:14px;font-weight:700;cursor:pointer;transition:transform .12s,background .2s}.tv-activate-btn:hover{background:#265ac9}.tv-activate-btn:active{transform:scale(.97)}.tv-gear-btn{position:fixed;left:20px;bottom:20px;z-index:2147483600;width:46px;height:46px;border-radius:50%;border:none;background:#1f2430;color:#fff;font-size:20px;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,.3);transition:transform .15s}.tv-gear-btn:hover{transform:rotate(25deg)}.tv-gear-btn.tv-hidden{display:none}.tv-type-badge{display:inline-block;padding:6px 14px;border-radius:999px;font-weight:800;font-size:14px;margin-bottom:14px}.tv-type-badge.truck{background:#e7f0ff;color:#2f6fed}.tv-type-badge.courier{background:#fff1e0;color:#d6720b}@media(prefers-color-scheme:dark){.tv-type-badge.truck{background:#1c2c4d}.tv-type-badge.courier{background:#4d3417}}.tv-info-row{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;color:#5a5f6d}@media(prefers-color-scheme:dark){.tv-info-row{color:#a7acba}}.tv-info-row b{color:inherit;filter:brightness(.6)}@media(prefers-color-scheme:dark){.tv-info-row b{filter:brightness(1.4)}}.tv-product-list{margin-top:14px;max-height:260px;overflow-y:auto;display:flex;flex-direction:column;gap:6px}.tv-product-row{display:flex;justify-content:space-between;align-items:center;padding:9px 12px;border-radius:10px;background:rgba(120,130,150,.1);font-size:13px;transition:background .2s}.tv-product-row.done{background:rgba(47,143,91,.18)}.tv-product-row.pulse{animation:tvPulse 1s ease-in-out infinite}@keyframes tvPulse{0%,100%{box-shadow:0 0 0 0 rgba(47,111,237,.35)}50%{box-shadow:0 0 0 6px rgba(47,111,237,0)}}.tv-check{color:#2f8f5b;font-weight:800}.tv-skip-area{margin-top:16px;text-align:center;border-top:1px solid rgba(120,120,130,.18);padding-top:12px}.tv-skip-label{font-size:11px;color:#999;margin-bottom:6px}.tv-flash-ok{animation:tvFlashOk .4s}.tv-flash-err{animation:tvFlashErr .4s}@keyframes tvFlashOk{0%{box-shadow:0 0 0 0 rgba(47,143,91,.6)}100%{box-shadow:0 0 0 14px rgba(47,143,91,0)}}@keyframes tvFlashErr{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}.tv-complete{animation:tvComplete .6s ease}@keyframes tvComplete{0%{transform:scale(1)}50%{transform:scale(1.03)}100%{transform:scale(1);opacity:.4}}.tv-float-area{position:fixed;z-index:2147483400;display:none;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Pretendard,sans-serif}.tv-float-area.tv-show{display:block}.tv-float-barcode{background:#fff;border-radius:14px;padding:12px 14px;box-shadow:0 10px 30px rgba(0,0,0,.3);text-align:center;animation:tvSlideUp .25s ease-out}.tv-float-label{font-size:11px;font-weight:700;color:#333;margin-bottom:6px}.tv-top-right{top:80px;right:24px}.tv-top-left{top:80px;left:24px}';
+var CSS =
+  ':host{all:initial;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Pretendard,sans-serif;' +
+  '--tv-primary:#3b6fed;--tv-primary-dark:#2451c9;--tv-success:#1f9d5c;--tv-error:#e0453a;' +
+  '--tv-surface:#ffffff;--tv-surface-2:#f2f4f9;--tv-text:#161a22;--tv-text-soft:#63697a;' +
+  '--tv-border:rgba(20,25,40,.1);--tv-shadow:0 26px 70px rgba(15,20,35,.3),0 6px 18px rgba(15,20,35,.14);' +
+  '--tv-truck-bg:#e8f0ff;--tv-truck-fg:#2f5fd6;--tv-courier-bg:#fff2e2;--tv-courier-fg:#c96a0a;--tv-success-tint:#e3f6ec}' +
+  '@media(prefers-color-scheme:dark){:host{' +
+  '--tv-primary:#6d93ff;--tv-primary-dark:#4a72e6;--tv-success:#3fcf87;--tv-error:#ff7466;' +
+  '--tv-surface:#1c1f28;--tv-surface-2:#262a35;--tv-text:#f3f5f9;--tv-text-soft:#a7acba;' +
+  '--tv-border:rgba(255,255,255,.1);--tv-shadow:0 26px 70px rgba(0,0,0,.6),0 6px 18px rgba(0,0,0,.35);' +
+  '--tv-truck-bg:#1d2c4d;--tv-truck-fg:#8fb1ff;--tv-courier-bg:#4a3319;--tv-courier-fg:#ffb15c;--tv-success-tint:#173626}}' +
+
+  '.tv-toast-area{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:2147483647;display:flex;flex-direction:column;gap:10px;pointer-events:none}' +
+  '.tv-toast{padding:13px 22px;border-radius:14px;background:#20242e;color:#fff;font-size:15px;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.3);opacity:0;transform:translateY(-10px);transition:opacity .25s,transform .25s}' +
+  '.tv-toast-in{opacity:1;transform:translateY(0)}' +
+  '.tv-toast-err{background:#d1443a}' +
+
+  '.tv-overlay{position:fixed;inset:0;z-index:2147483000;display:none;align-items:center;justify-content:center;background:rgba(10,12,22,.5);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}' +
+  '.tv-overlay.tv-show{display:flex}' +
+  '.tv-overlay.tv-corner{align-items:flex-end;justify-content:flex-start;background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;padding:0 0 92px 22px}' +
+
+  '.tv-card{background:var(--tv-surface);color:var(--tv-text);border-radius:26px;padding:32px;width:400px;max-width:92vw;box-shadow:var(--tv-shadow);box-sizing:border-box;animation:tvPop .22s cubic-bezier(.2,.9,.3,1.2)}' +
+  '@keyframes tvPop{from{opacity:0;transform:scale(.94) translateY(6px)}to{opacity:1;transform:scale(1) translateY(0)}}' +
+  '.tv-overlay.tv-corner .tv-card{animation:tvSlideUp .3s cubic-bezier(.2,.9,.3,1.2)}' +
+  '@keyframes tvSlideUp{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:translateY(0)}}' +
+
+  '.tv-settings-title{font-size:22px;font-weight:800;margin-bottom:20px;letter-spacing:-.3px}' +
+  '.tv-toggle-row{display:flex;align-items:center;justify-content:space-between;padding:15px 0;font-size:15px;font-weight:500;border-top:1px solid var(--tv-border)}' +
+  '.tv-toggle-row input{display:none}' +
+  '.tv-switch{position:relative;width:48px;height:28px;border-radius:14px;background:#c7c9d1;transition:background .2s;flex-shrink:0}' +
+  '.tv-switch:before{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 2px 5px rgba(0,0,0,.3)}' +
+  '.tv-toggle-row input:checked + .tv-switch{background:var(--tv-success)}' +
+  '.tv-toggle-row input:checked + .tv-switch:before{transform:translateX(20px)}' +
+  '.tv-empty-hint{font-size:14px;color:var(--tv-text-soft);padding:10px 0}' +
+
+  '.tv-activate-btn{margin-top:22px;width:100%;padding:17px;border:none;border-radius:16px;background:linear-gradient(135deg,var(--tv-primary),var(--tv-primary-dark));color:#fff;font-size:17px;font-weight:800;letter-spacing:.2px;cursor:pointer;box-shadow:0 12px 26px rgba(59,111,237,.38);transition:transform .15s,box-shadow .15s}' +
+  '.tv-activate-btn:hover{transform:translateY(-2px);box-shadow:0 16px 32px rgba(59,111,237,.46)}' +
+  '.tv-activate-btn:active{transform:scale(.97)}' +
+
+  '.tv-gear-btn{position:fixed;left:22px;bottom:22px;z-index:2147483600;width:56px;height:56px;border-radius:50%;border:none;background:#20242e;color:#fff;font-size:24px;cursor:pointer;box-shadow:0 10px 26px rgba(0,0,0,.35);transition:transform .18s}' +
+  '.tv-gear-btn:hover{transform:rotate(30deg) scale(1.05)}' +
+  '.tv-gear-btn.tv-hidden{display:none}' +
+
+  '.tv-type-badge{display:inline-flex;align-items:center;gap:10px;padding:10px 20px 10px 10px;border-radius:999px;font-weight:800;font-size:18px;margin-bottom:20px}' +
+  '.tv-type-icon{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.55);font-size:18px}' +
+  '.tv-type-badge.truck{background:var(--tv-truck-bg);color:var(--tv-truck-fg)}' +
+  '.tv-type-badge.courier{background:var(--tv-courier-bg);color:var(--tv-courier-fg)}' +
+
+  '.tv-info-row{display:flex;justify-content:space-between;font-size:15px;padding:6px 0;color:var(--tv-text-soft)}' +
+  '.tv-info-row b{color:var(--tv-text);font-weight:700}' +
+
+  '.tv-product-list{margin-top:20px;max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:10px}' +
+  '.tv-product-row{padding:14px 16px;border-radius:16px;background:var(--tv-surface-2);transition:background .2s}' +
+  '.tv-product-top{display:flex;justify-content:space-between;align-items:center;font-size:15px;font-weight:600;margin-bottom:8px}' +
+  '.tv-product-count{color:var(--tv-text-soft);font-weight:700;font-variant-numeric:tabular-nums}' +
+  '.tv-progress{height:7px;border-radius:4px;background:var(--tv-border);overflow:hidden}' +
+  '.tv-progress-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--tv-primary),var(--tv-primary-dark));transition:width .25s ease}' +
+  '.tv-product-row.done{background:var(--tv-success-tint)}' +
+  '.tv-product-row.done .tv-progress-fill{background:var(--tv-success)}' +
+  '.tv-product-row.pulse{animation:tvPulse 1s ease-in-out infinite}' +
+  '@keyframes tvPulse{0%,100%{box-shadow:0 0 0 0 rgba(59,111,237,.35)}50%{box-shadow:0 0 0 8px rgba(59,111,237,0)}}' +
+  '.tv-check{color:var(--tv-success);font-weight:900}' +
+
+  '.tv-barcode-wrap{display:inline-block;background:#fff;padding:14px 16px;border-radius:14px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.06)}' +
+  '.tv-skip-area{margin-top:22px;text-align:center;border-top:1px solid var(--tv-border);padding-top:18px}' +
+  '.tv-skip-label{font-size:13px;font-weight:700;letter-spacing:.2px;color:var(--tv-text-soft);margin-bottom:10px}' +
+
+  '.tv-flash-ok{animation:tvFlashOk .4s}.tv-flash-err{animation:tvFlashErr .4s}' +
+  '@keyframes tvFlashOk{0%{box-shadow:0 0 0 0 rgba(31,157,92,.6)}100%{box-shadow:0 0 0 16px rgba(31,157,92,0)}}' +
+  '@keyframes tvFlashErr{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}' +
+  '.tv-complete{animation:tvComplete .65s ease}' +
+  '@keyframes tvComplete{0%{transform:scale(1)}50%{transform:scale(1.03)}100%{transform:scale(1);opacity:.4}}' +
+
+  '.tv-float-area{position:fixed;z-index:2147483400;display:none}' +
+  '.tv-float-area.tv-show{display:block}' +
+  '.tv-float-barcode{background:var(--tv-surface);border-radius:20px;padding:16px 18px;box-shadow:var(--tv-shadow);text-align:center;animation:tvSlideUp .3s cubic-bezier(.2,.9,.3,1.2)}' +
+  '.tv-float-label{font-size:14px;font-weight:800;color:var(--tv-text);margin-bottom:10px}' +
+  '.tv-top-right{top:88px;right:26px}.tv-top-left{top:88px;left:26px}';
 
 var ui = {};
 
@@ -198,10 +275,23 @@ function setDateRange(){
   start.setDate(start.getDate() - 7);
   var endStr = fmtDate(end);
   var startStr = fmtDate(start);
+
   el.setAttribute('enddate', endStr);
   el.setAttribute('startdate', startStr);
   try { el.endDate = endStr; el.startDate = startStr; } catch (e) {}
-  el.dispatchEvent(new Event('change', { bubbles: true }));
+  ['input', 'change'].forEach(function(t){ el.dispatchEvent(new Event(t, { bubbles: true })); });
+
+  var inner = []
+    .concat(el.shadowRoot ? Array.prototype.slice.call(el.shadowRoot.querySelectorAll('input')) : [])
+    .concat(Array.prototype.slice.call(el.querySelectorAll('input')));
+  if (inner.length >= 2) {
+    setNativeValue(inner[0], startStr);
+    setNativeValue(inner[1], endStr);
+    inner.forEach(function(i){ i.dispatchEvent(new Event('blur', { bubbles: true })); });
+  } else if (inner.length === 1) {
+    setNativeValue(inner[0], startStr + ' ~ ' + endStr);
+    inner[0].dispatchEvent(new Event('blur', { bubbles: true }));
+  }
 }
 
 var scanBuf = { chars: [], lastTs: 0 };
@@ -383,16 +473,17 @@ function processRow(row){
 
 function openVerifyModal(){
   var info = state.toteInfo;
-  var typeLabel = info.isTruck ? '🚚 트럭' : '📦 택배';
+  var typeIcon = info.isTruck ? '🚚' : '📦';
+  var typeText = info.isTruck ? '트럭' : '택배';
   var typeClass = info.isTruck ? 'truck' : 'courier';
   ui.verifyOverlay.innerHTML =
     '<div class="tv-card tv-verify">' +
-    '<div class="tv-type-badge ' + typeClass + '">' + typeLabel + '</div>' +
+    '<div class="tv-type-badge ' + typeClass + '"><span class="tv-type-icon">' + typeIcon + '</span><span>' + typeText + '</span></div>' +
     '<div class="tv-info-row"><span>업체명</span><b>' + escapeHtml(info.vendor) + '</b></div>' +
     '<div class="tv-info-row"><span>토트바코드</span><b>' + escapeHtml(info.toteBarcode) + '</b></div>' +
     '<div class="tv-info-row"><span>전체 집품수량</span><b>' + info.totalQty + '</b></div>' +
     '<div class="tv-product-list"></div>' +
-    '<div class="tv-skip-area"><div class="tv-skip-label">검증 건너뛰기 (스캔)</div><canvas class="tv-skip-barcode"></canvas></div>' +
+    '<div class="tv-skip-area"><div class="tv-skip-label">검증 건너뛰기 (스캔)</div><div class="tv-barcode-wrap"><canvas class="tv-skip-barcode"></canvas></div></div>' +
     '</div>';
   ui.verifyOverlay.classList.add('tv-show');
   drawCode128(ui.verifyOverlay.querySelector('.tv-skip-barcode'), CTRL.SKIP);
@@ -408,10 +499,13 @@ function updateVerifyProgress(){
     var done = p.scanned >= p.required;
     if (!done) allDone = false;
     var pulsing = p.required > 1 && p.scanned > 0 && !done;
+    var pct = Math.min(100, Math.round((p.scanned / p.required) * 100));
     html += '<div class="tv-product-row ' + (done ? 'done' : '') + ' ' + (pulsing ? 'pulse' : '') + '">' +
+      '<div class="tv-product-top">' +
       '<span class="tv-product-name">' + escapeHtml(p.name) + '</span>' +
-      '<span class="tv-product-count">' + p.scanned + '/' + p.required + '</span>' +
-      (done ? '<span class="tv-check">✓</span>' : '') +
+      '<span class="tv-product-count">' + p.scanned + '/' + p.required + (done ? ' <span class="tv-check">✓</span>' : '') + '</span>' +
+      '</div>' +
+      '<div class="tv-progress"><div class="tv-progress-fill" style="width:' + pct + '%"></div></div>' +
       '</div>';
   });
   list.innerHTML = html;
@@ -483,7 +577,7 @@ function watchWaybillDialog(){
 
 function showWaybillOverlay(){
   var overlay = ui.waybillOverlay;
-  overlay.innerHTML = '<div class="tv-float-barcode tv-top-right"><div class="tv-float-label">스캔하여 운송장생성</div><canvas></canvas></div>';
+  overlay.innerHTML = '<div class="tv-float-barcode tv-top-right"><div class="tv-float-label">📮 스캔하여 운송장생성</div><div class="tv-barcode-wrap"><canvas></canvas></div></div>';
   drawCode128(overlay.querySelector('canvas'), CTRL.WAYBILL);
   overlay.classList.add('tv-show');
 }
@@ -507,7 +601,7 @@ function afterWaybillClosed(){
 function showReprintOverlay(){
   state.mode = 'REPRINT_READY';
   var overlay = ui.reprintOverlay;
-  overlay.innerHTML = '<div class="tv-float-barcode tv-top-left"><div class="tv-float-label">운송장 재출력</div><canvas></canvas></div>';
+  overlay.innerHTML = '<div class="tv-float-barcode tv-top-left"><div class="tv-float-label">🖨 운송장 재출력</div><div class="tv-barcode-wrap"><canvas></canvas></div></div>';
   drawCode128(overlay.querySelector('canvas'), CTRL.REPRINT);
   overlay.classList.add('tv-show');
 }

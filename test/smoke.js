@@ -33,6 +33,33 @@ function sendScan(page, text){
 
   await sendScan(page, 'TOTE001');
 
+  var dateCheck = await page.evaluate(function(){
+    function fmt(d){ var y = d.getFullYear(); var m = String(d.getMonth() + 1).padStart(2, '0'); var day = String(d.getDate()).padStart(2, '0'); return y + '-' + m + '-' + day; }
+    var end = new Date();
+    var start = new Date();
+    start.setDate(start.getDate() - 7);
+    return {
+      expectedStart: fmt(start),
+      expectedEnd: fmt(end),
+      actualStart: document.querySelector('.start-input').value,
+      actualEnd: document.querySelector('.end-input').value,
+      attrStart: document.querySelector('#date-range-input').getAttribute('startdate'),
+      attrEnd: document.querySelector('#date-range-input').getAttribute('enddate')
+    };
+  });
+  if (dateCheck.actualStart !== dateCheck.expectedStart || dateCheck.actualEnd !== dateCheck.expectedEnd) {
+    console.error('FAIL: internal date inputs not set correctly', dateCheck);
+    process.exitCode = 1;
+  } else {
+    console.log('OK: internal date inputs set to', dateCheck.actualStart, '~', dateCheck.actualEnd);
+  }
+  if (dateCheck.attrStart !== dateCheck.expectedStart || dateCheck.attrEnd !== dateCheck.expectedEnd) {
+    console.error('FAIL: startdate/enddate attributes not set correctly', dateCheck);
+    process.exitCode = 1;
+  } else {
+    console.log('OK: startdate/enddate attributes set correctly');
+  }
+
   await page.locator('.tv-verify').filter({ hasText: '업체A' }).waitFor({ timeout: 5000 });
   console.log('OK: verify modal shows vendor 업체A');
 

@@ -3,7 +3,10 @@
 <head><meta charset="utf-8"><title>Mock WMS</title></head>
 <body>
   <input name="toteBarcode" />
-  <w-date-range-input id="date-range-input" block="" size="medium" startdate="2026-07-13" enddate="2026-07-13"></w-date-range-input>
+  <w-date-range-input id="date-range-input" block="" size="medium" startdate="2026-07-13" enddate="2026-07-13">
+    <input class="start-input" type="text" value="2026-07-13" />
+    <input class="end-input" type="text" value="2026-07-13" />
+  </w-date-range-input>
   <button id="search" onclick="doSearch()">조회</button>
 
   <table id="vendorReturnTotePage">
