@@ -197,7 +197,7 @@ var CSS =
   '.tv-type-banner.restricted{background:linear-gradient(135deg,#fb923c,#c2680f);animation:tvTypeGlowRestricted 1.8s ease-in-out infinite}' +
   '.tv-type-icon{width:40px;height:40px;margin:0 auto 8px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;background:rgba(255,255,255,.25);color:#fff}' +
   '.tv-type-label{font-size:13.5px;font-weight:600;color:rgba(255,255,255,.85);margin-bottom:4px;word-break:keep-all}' +
-  '.tv-type-value{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:5px;font-size:30px;font-weight:600;color:#fff;word-break:keep-all;margin-top:2px}' +
+  '.tv-type-value{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:5px;font-size:25px;font-weight:600;color:#fff;word-break:keep-all;margin-top:2px}' +
   '.tv-type-value.restricted{font-size:20px}' +
   '@keyframes tvTypeGlowTruck{0%,100%{box-shadow:0 8px 20px rgba(0,0,0,.2),inset 0 0 0 0 rgba(255,255,255,0);filter:brightness(1)}50%{box-shadow:0 8px 20px rgba(0,0,0,.2),inset 0 0 26px 6px rgba(255,255,255,.5);filter:brightness(1.15)}}' +
   '@keyframes tvTypeGlowCourier{0%,100%{box-shadow:0 8px 20px rgba(0,0,0,.2),inset 0 0 0 0 rgba(255,255,255,0);filter:brightness(1)}50%{box-shadow:0 8px 20px rgba(0,0,0,.2),inset 0 0 26px 6px rgba(255,255,255,.5);filter:brightness(1.15)}}' +
