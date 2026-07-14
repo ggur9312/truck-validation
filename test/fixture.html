@@ -13,15 +13,21 @@
   </table>
 
   <script>
-    var searchCount = 0;
     // real WMS only shows the reprint button once a waybill has actually been
     // generated for that tote; TOTE_REPRINT is preset to simulate a tote that
     // already has one from an earlier session.
     var generatedTotes = { TOTE_REPRINT: true };
     function doSearch(){
-      searchCount++;
       var tote = document.querySelector('input[name="toteBarcode"]').value || 'TOTE001';
       var table = document.querySelector('#vendorReturnTotePage tbody');
+      // TOTE_NONE simulates a tote with no matching results: like most
+      // real table UIs, an explicit "no data" row is rendered rather than
+      // leaving the table completely untouched (a literal no-op re-render
+      // produces no DOM mutation at all, which nothing can observe).
+      // Searching the same real tote twice in a row must still render
+      // byte-identical markup both times (no artificial per-search
+      // uniqueness), since that's the scenario that used to hang.
+      if (tote === 'TOTE_NONE') { table.innerHTML = '<tr><td colspan="11">조회된 내역이 없습니다</td></tr>'; return; }
       var actionBtn = generatedTotes[tote]
         ? '<button class="btn-waybill-print-single" onclick="openReprintModal()">재출력</button>'
         : '<button data-action="open-waybill-modal" onclick="openWaybillModal(\'' + tote + '\')">운송장생성</button>';
@@ -29,8 +35,7 @@
         '<td><a href="/detail/' + tote + '">상세1</a></td>' +
         '<td><a href="/type/' + tote + '">타입1</a></td>' +
         '<td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td>' +
-        '<td>' + actionBtn +
-        '<span data-search-count="' + searchCount + '">(' + searchCount + ')</span></td>' +
+        '<td>' + actionBtn + '</td>' +
         '</tr>';
     }
     function openWaybillModal(tote){
