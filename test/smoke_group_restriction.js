@@ -30,12 +30,20 @@ function sendScan(page, text){
   await page.locator('.tv-group-input').fill('99, GRP1 ,88');
   await page.locator('.tv-activate-btn').click();
 
-  var restrictBadgeText = await page.locator('.tv-status-badge-restrict').textContent();
-  if (!(await page.locator('.tv-status-badge-restrict').isVisible()) || restrictBadgeText.indexOf('99') === -1 || restrictBadgeText.indexOf('GRP1') === -1 || restrictBadgeText.indexOf('88') === -1) {
-    console.error('FAIL: restriction line should show inside the status badge, listing the configured groups, got', restrictBadgeText);
+  var restrictLabelText = (await page.locator('.tv-restrict-label').textContent()).trim();
+  if (!(await page.locator('.tv-status-badge-restrict').isVisible()) || restrictLabelText.indexOf('그룹번호 상차제한 활성화') === -1) {
+    console.error('FAIL: restriction label should read "그룹번호 상차제한 활성화", got', restrictLabelText);
     process.exitCode = 1;
   } else {
-    console.log('OK: restriction line visible inside the status badge:', restrictBadgeText.trim());
+    console.log('OK: restriction label reads correctly:', restrictLabelText);
+  }
+
+  var restrictGroupsText = (await page.locator('.tv-restrict-groups').textContent()).trim();
+  if (restrictGroupsText.indexOf('99') === -1 || restrictGroupsText.indexOf('GRP1') === -1 || restrictGroupsText.indexOf('88') === -1) {
+    console.error('FAIL: group numbers should be shown on their own line below the label, got', restrictGroupsText);
+    process.exitCode = 1;
+  } else {
+    console.log('OK: configured groups shown on their own line below the label:', restrictGroupsText);
   }
 
   var badgeIsOneBox = await page.locator('.tv-status-badge').evaluate(function(el){ return el.querySelector('.tv-status-badge-restrict') !== null; });
@@ -84,18 +92,32 @@ function sendScan(page, text){
   if (persistedValue !== '99, GRP1 ,88') { console.error('FAIL: restricted group setting should persist across reload, got', JSON.stringify(persistedValue)); process.exitCode = 1; }
   else console.log('OK: restricted group setting persists across a page reload');
 
-  var toggleChecked = await page.locator('.tv-toggle-row input[type=checkbox]').isChecked();
-  if (!toggleChecked) { console.error('FAIL: 상차제한 사용 toggle should default to on'); process.exitCode = 1; }
-  else console.log('OK: 상차제한 사용 toggle defaults to on');
+  var toggleLabel = (await page.locator('.tv-toggle-row span').first().textContent()).trim();
+  if (toggleLabel !== '그룹번호 상차제한') { console.error('FAIL: toggle label should read "그룹번호 상차제한", got', toggleLabel); process.exitCode = 1; }
+  else console.log('OK: toggle label reads "그룹번호 상차제한"');
 
-  // Turning the switch off must suppress restriction WITHOUT clearing the
-  // configured group numbers -- TOTE001's group (GRP1) is still in the list.
+  var toggleChecked = await page.locator('.tv-toggle-row input[type=checkbox]').isChecked();
+  if (!toggleChecked) { console.error('FAIL: 그룹번호 상차제한 toggle should default to on'); process.exitCode = 1; }
+  else console.log('OK: 그룹번호 상차제한 toggle defaults to on');
+
+  var fieldVisibleWhenOn = await page.locator('.tv-field-row').isVisible();
+  if (!fieldVisibleWhenOn) { console.error('FAIL: group-number input should be visible while the toggle is on'); process.exitCode = 1; }
+  else console.log('OK: group-number input field is shown while the toggle is on');
+
+  // Turning the switch off must hide the input field and suppress
+  // restriction WITHOUT clearing the configured group numbers underneath --
+  // TOTE001's group (GRP1) is still in the (now-hidden) saved list.
   await page.locator('.tv-toggle-row').click();
+
+  var fieldVisibleWhenOff = await page.locator('.tv-field-row').isVisible();
+  if (fieldVisibleWhenOff) { console.error('FAIL: group-number input should be hidden once the toggle is off'); process.exitCode = 1; }
+  else console.log('OK: group-number input field hides once the toggle is switched off');
+
   await page.locator('.tv-activate-btn').click();
 
   var restrictBadgeVisibleWhenOff = await page.locator('.tv-status-badge-restrict').isVisible();
   if (restrictBadgeVisibleWhenOff) { console.error('FAIL: restriction badge should be hidden once the toggle is switched off'); process.exitCode = 1; }
-  else console.log('OK: restriction badge hides once 상차제한 사용 is switched off');
+  else console.log('OK: restriction badge hides once 그룹번호 상차제한 is switched off');
 
   await sendScan(page, 'TOTE001');
   await page.locator('.tv-verify').filter({ hasText: '업체A' }).waitFor({ timeout: 5000 });

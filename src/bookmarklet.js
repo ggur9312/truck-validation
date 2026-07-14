@@ -18,7 +18,7 @@ var SEL = {
 var CTRL = { SKIP: 'TVCS', WAYBILL: 'TVCW', REPRINT: 'TVCR' };
 
 var SETTING_DEFS = [
-  { key: 'restrictionEnabled', label: '상차제한 사용' }
+  { key: 'restrictionEnabled', label: '그룹번호 상차제한' }
 ];
 
 var state = {
@@ -171,6 +171,7 @@ var CSS =
   '.tv-toggle-row input:checked + .tv-switch{background:var(--tv-success)}' +
   '.tv-toggle-row input:checked + .tv-switch:before{transform:translateX(18px)}' +
   '.tv-field-row{padding-bottom:14px;margin-bottom:2px;border-bottom:1px solid var(--tv-border)}' +
+  '.tv-field-row.tv-hidden{display:none}' +
   '.tv-field-label{display:block;font-size:14px;font-weight:700;margin-bottom:8px}' +
   '.tv-group-input{width:100%;box-sizing:border-box;padding:10px 12px;border-radius:10px;border:1px solid var(--tv-border);background:var(--tv-surface-2);color:var(--tv-text);font-size:14px;font-family:inherit}' +
   '.tv-group-input:focus{outline:none;border-color:var(--tv-accent)}' +
@@ -187,8 +188,10 @@ var CSS =
   '.tv-status-badge{position:fixed;top:20px;right:24px;z-index:2147483600;width:max-content;max-width:300px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 20px;border-radius:16px;background:var(--tv-surface);color:var(--tv-text);border:1px solid var(--tv-border);box-shadow:var(--tv-elev-2)}' +
   '.tv-status-badge.tv-hidden{display:none}' +
   '.tv-status-badge-main{display:flex;align-items:center;justify-content:center;gap:10px;font-size:18px;font-weight:800;letter-spacing:.1px;text-align:center}' +
-  '.tv-status-badge-restrict{display:flex;align-items:center;justify-content:center;gap:6px;font-size:14.5px;font-weight:800;color:var(--tv-restricted-fg);text-align:center}' +
+  '.tv-status-badge-restrict{display:flex;flex-direction:column;align-items:center;gap:2px;font-weight:800;color:var(--tv-restricted-fg);text-align:center}' +
   '.tv-status-badge-restrict.tv-hidden{display:none}' +
+  '.tv-restrict-label{font-size:14.5px}' +
+  '.tv-restrict-groups{font-size:13px;opacity:.85}' +
   '.tv-status-dot{width:11px;height:11px;border-radius:50%;background:var(--tv-success);box-shadow:0 0 0 0 rgba(52,211,153,.6);animation:tvStatusPulse 2s ease-in-out infinite}' +
   '@keyframes tvStatusPulse{0%{box-shadow:0 0 0 0 rgba(52,211,153,.5)}70%{box-shadow:0 0 0 8px rgba(52,211,153,0)}100%{box-shadow:0 0 0 0 rgba(52,211,153,0)}}' +
 
@@ -340,10 +343,11 @@ function renderSettingsHTML(){
       '<input type="checkbox" data-key="' + d.key + '" ' + (state.settings[d.key] ? 'checked' : '') + '/>' +
       '<span class="tv-switch"></span></label>';
   }).join('');
+  var fieldHidden = state.settings.restrictionEnabled ? '' : ' tv-hidden';
   return '<div class="tv-card tv-settings-card">' +
     '<div class="tv-settings-title">트럭검증 설정</div>' +
     toggles +
-    '<div class="tv-field-row">' +
+    '<div class="tv-field-row' + fieldHidden + '">' +
     '<label class="tv-field-label">상차제한 그룹번호</label>' +
     '<input type="text" class="tv-group-input" placeholder="예: 12,34,56" value="' + escapeHtml(state.settings.restrictedGroups || '') + '"/>' +
     '<div class="tv-field-hint">쉼표(,)로 여러 그룹번호 입력 가능</div>' +
@@ -359,6 +363,10 @@ function bindSettingsEvents(){
       state.settings[cb.dataset.key] = cb.checked;
       saveSettings();
       updateRestrictBadge();
+      if (cb.dataset.key === 'restrictionEnabled') {
+        var fieldRow = overlay.querySelector('.tv-field-row');
+        if (fieldRow) fieldRow.classList.toggle('tv-hidden', !cb.checked);
+      }
     });
   });
   var groupInput = overlay.querySelector('.tv-group-input');
@@ -392,7 +400,7 @@ function updateRestrictBadge(){
     ui.restrictBadge.classList.add('tv-hidden');
     return;
   }
-  ui.restrictBadge.textContent = '🚫 상차제한 · ' + groups.join(', ');
+  ui.restrictBadge.innerHTML = '<div class="tv-restrict-label">🚫 그룹번호 상차제한 활성화</div><div class="tv-restrict-groups">' + escapeHtml(groups.join(', ')) + '</div>';
   ui.restrictBadge.classList.remove('tv-hidden');
 }
 
