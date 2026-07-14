@@ -17,6 +17,24 @@ var SEL = {
 
 var CTRL = { SKIP: 'TVCS', WAYBILL: 'TVCW', REPRINT: 'TVCR' };
 
+/* Hand-drawn flat icons (no icon library -- see CODE128 note above for why):
+   24x24 viewBox, 2.5px stroke, round caps/joins for soft corners, no fills
+   beyond solid wheel/dot accents, color inherited via currentColor so CSS
+   (.tv-simplified-icon{color:rgb(var(--tv-aura))}) drives the tint. */
+var SIMPLIFIED_ICONS = {
+  truck: '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+    '<rect x="2" y="6" width="12" height="9" rx="1.3" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>' +
+    '<path d="M14 15V10H17L20 13.3V15" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>' +
+    '<circle cx="6.5" cy="17" r="2" fill="currentColor"/>' +
+    '<circle cx="17" cy="17" r="2" fill="currentColor"/>' +
+    '</svg>',
+  restricted: '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+    '<path d="M10.4 4.6C11.1 3.4 12.9 3.4 13.6 4.6L21.3 17.9C22 19.2 21.1 20.8 19.6 20.8H4.4C2.9 20.8 2 19.2 2.7 17.9L10.4 4.6Z" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>' +
+    '<path d="M12 9.5V13.5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>' +
+    '<circle cx="12" cy="16.8" r="1.3" fill="currentColor"/>' +
+    '</svg>'
+};
+
 var SETTING_DEFS = [
   { key: 'simplifiedMode', label: '트럭검증 간소화' },
   { key: 'restrictionEnabled', label: '그룹번호 상차제한' },
@@ -301,7 +319,8 @@ var CSS =
   '.tv-simplified-close{position:absolute;right:16px;top:50%;transform:translateY(-50%);width:30px;height:30px;border-radius:50%;border:none;background:rgba(255,255,255,.22);color:#fff;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}' +
   '.tv-simplified-close:hover{background:rgba(255,255,255,.35)}' +
   '.tv-simplified-body{background:#fff;color:#161a26;padding:36px 30px 28px;text-align:center}' +
-  '.tv-simplified-icon{width:100px;height:100px;margin:0 auto 18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:48px;background:rgba(var(--tv-aura),.14);color:rgb(var(--tv-aura))}' +
+  '.tv-simplified-icon{width:100px;height:100px;margin:0 auto 18px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(var(--tv-aura),.14);color:rgb(var(--tv-aura))}' +
+  '.tv-simplified-icon svg{width:46px;height:46px}' +
   '.tv-simplified-title{font-size:34px;font-weight:600;color:rgb(var(--tv-aura));padding-bottom:12px;border-bottom:3px solid rgb(var(--tv-aura));display:inline-block;margin:0 auto 18px}' +
   '.tv-simplified-line{font-size:16px;font-weight:600;color:#161a26;margin-top:6px}' +
   '.tv-simplified-line.sub{color:rgb(var(--tv-aura))}' +
@@ -959,7 +978,7 @@ function openSimplifiedBlockModal(){
   var info = state.toteInfo;
   state.mode = 'SIMPLIFIED_BLOCK';
   var typeClass = info.isRestricted ? 'restricted' : 'truck';
-  var icon = info.isRestricted ? '⚠️' : '🚚';
+  var icon = info.isRestricted ? SIMPLIFIED_ICONS.restricted : SIMPLIFIED_ICONS.truck;
   var title = info.isRestricted ? '상차제한' : '트럭';
   var lines;
   if (info.isRestricted) {
