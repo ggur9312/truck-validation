@@ -30,10 +30,14 @@ function loadSettings(){
   try {
     var saved = JSON.parse(localStorage.getItem('tv_settings') || '{}');
     saved.enabled = false;
-    return Object.assign({ enabled: false }, saved);
-  } catch (e) { return { enabled: false }; }
+    return Object.assign({ enabled: false, restrictedGroups: '' }, saved);
+  } catch (e) { return { enabled: false, restrictedGroups: '' }; }
 }
 function saveSettings(){ localStorage.setItem('tv_settings', JSON.stringify(state.settings)); }
+
+function getRestrictedGroupList(){
+  return (state.settings.restrictedGroups || '').split(',').map(function(s){ return s.trim(); }).filter(function(s){ return s; });
+}
 
 var C128_TABLE = ["212222","222122","222221","121223","121322","131222","122213","122312","132212","221213","221312","231212","112232","122132","122231","113222","123122","123221","223211","221132","221231","213212","223112","312131","311222","321122","321221","312212","322112","322211","212123","212321","232121","111323","131123","131321","112313","132113","132311","211313","231113","231311","112133","112331","132131","113123","113321","133121","313121","211331","231131","213113","213311","213131","311123","311321","331121","312113","312311","332111","314111","221411","431111","111224","111422","121124","121421","141122","141221","112214","112412","122114","122411","142112","142211","241211","221114","413111","241112","134111","111242","121142","121241","114212","124112","124211","411212","421112","421211","212141","214121","412121","111143","111341","131141","114113","114311","411113","411311","113141","114131","311141","411131","211412","211214","211232"];
 var C128_STOP = '2331112';
@@ -89,7 +93,7 @@ var CSS =
   ':host{all:initial;font-family:"Pretendard","Noto Sans KR","Segoe UI Variable Text","Segoe UI",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;' +
   '--tv-surface:#1b2132;--tv-surface-2:#242b40;--tv-surface-3:#2d3552;--tv-text:#f2f4fa;--tv-text-soft:#aab3c6;' +
   '--tv-accent:#4f7cff;--tv-accent-dark:#3a63e0;--tv-border:rgba(255,255,255,.09);--tv-success:#34d399;--tv-success-tint:rgba(52,211,153,.16);--tv-error:#f87171;' +
-  '--tv-truck-bg:rgba(248,113,113,.16);--tv-truck-fg:#f87171;--tv-courier-bg:rgba(52,211,153,.16);--tv-courier-fg:#34d399;' +
+  '--tv-truck-bg:rgba(248,113,113,.16);--tv-truck-fg:#f87171;--tv-courier-bg:rgba(52,211,153,.16);--tv-courier-fg:#34d399;--tv-restricted-bg:rgba(251,146,60,.18);--tv-restricted-fg:#fb923c;' +
   '--tv-elev-1:0 1px 2px rgba(0,0,0,.35);--tv-elev-2:0 10px 28px rgba(0,0,0,.45),0 2px 8px rgba(0,0,0,.3);--tv-elev-3:0 24px 60px rgba(0,0,0,.55),0 6px 18px rgba(0,0,0,.35);' +
   '--tv-ease:cubic-bezier(.17,.67,.35,1)}' +
 
@@ -118,12 +122,14 @@ var CSS =
   '--tv-surface:#ffffff;--tv-surface-2:#eef1f7;--tv-surface-3:#e2e6f0;--tv-text:#161a26;--tv-text-soft:#5b6274;--tv-border:rgba(20,25,45,.1);--tv-success-tint:rgba(52,211,153,.22)}' +
   '.tv-verify.truck{box-shadow:0 0 0 3px rgba(248,113,113,.28),var(--tv-elev-2)}' +
   '.tv-verify.courier{box-shadow:0 0 0 3px rgba(52,211,153,.28),var(--tv-elev-2)}' +
+  '.tv-verify.restricted{box-shadow:0 0 0 3px rgba(251,146,60,.32),var(--tv-elev-2)}' +
 
   '.tv-verify-header{position:relative;display:flex;align-items:center;gap:12px;padding:18px 52px 18px 22px;border-bottom:1px solid var(--tv-border);flex-shrink:0;animation:tvSlideDown .3s var(--tv-ease)}' +
   '@keyframes tvSlideDown{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:translateY(0)}}' +
   '.tv-verify-header-icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}' +
   '.tv-verify-header-icon.truck{background:var(--tv-truck-bg);color:var(--tv-truck-fg)}' +
   '.tv-verify-header-icon.courier{background:var(--tv-courier-bg);color:var(--tv-courier-fg)}' +
+  '.tv-verify-header-icon.restricted{background:var(--tv-restricted-bg);color:var(--tv-restricted-fg)}' +
   '.tv-verify-header-title{font-size:18px;font-weight:800;flex:1;min-width:0}' +
   '.tv-scan-status-pill{flex-shrink:0;padding:5px 12px;border-radius:999px;font-size:13px;font-weight:800;background:var(--tv-surface-3);color:var(--tv-text-soft);transition:background .2s,color .2s}' +
   '.tv-scan-status-pill.ok{background:var(--tv-success);color:#0c2c20}' +
@@ -134,6 +140,7 @@ var CSS =
   '.tv-type-banner{flex-shrink:0;display:flex;align-items:center;justify-content:center;gap:10px;margin:8px 0 18px;padding:14px 22px;border-radius:18px;font-size:21px;font-weight:800;color:#fff;box-shadow:0 10px 24px rgba(0,0,0,.18);animation:tvTypeGlow 2.4s ease-in-out infinite}' +
   '.tv-type-banner.truck{background:linear-gradient(135deg,#f87171,#c93f3f)}' +
   '.tv-type-banner.courier{background:linear-gradient(135deg,#34d399,#1f9d6c)}' +
+  '.tv-type-banner.restricted{background:linear-gradient(135deg,#fb923c,#c2680f)}' +
   '.tv-type-banner-icon{font-size:25px}' +
   '@keyframes tvTypeGlow{0%,100%{box-shadow:inset 0 0 0 0 rgba(255,255,255,0);filter:brightness(1)}50%{box-shadow:inset 0 0 50px 8px rgba(255,255,255,.45);filter:brightness(1.14)}}' +
 
@@ -161,7 +168,11 @@ var CSS =
   '.tv-switch:before{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 2px 5px rgba(0,0,0,.35)}' +
   '.tv-toggle-row input:checked + .tv-switch{background:var(--tv-success)}' +
   '.tv-toggle-row input:checked + .tv-switch:before{transform:translateX(18px)}' +
-  '.tv-empty-hint{font-size:14px;color:var(--tv-text-soft);padding:8px 0}' +
+  '.tv-field-row{padding-bottom:14px;margin-bottom:2px;border-bottom:1px solid var(--tv-border)}' +
+  '.tv-field-label{display:block;font-size:14px;font-weight:700;margin-bottom:8px}' +
+  '.tv-group-input{width:100%;box-sizing:border-box;padding:10px 12px;border-radius:10px;border:1px solid var(--tv-border);background:var(--tv-surface-2);color:var(--tv-text);font-size:14px;font-family:inherit}' +
+  '.tv-group-input:focus{outline:none;border-color:var(--tv-accent)}' +
+  '.tv-field-hint{font-size:12px;color:var(--tv-text-soft);margin-top:6px}' +
 
   '.tv-activate-btn{position:relative;overflow:hidden;margin-top:16px;width:100%;padding:14px;border:none;border-radius:12px;background:var(--tv-accent);color:#fff;font-size:16px;font-weight:800;letter-spacing:.1px;cursor:pointer;box-shadow:0 12px 24px rgba(79,124,255,.3);transition:transform .15s,box-shadow .15s}' +
   '.tv-activate-btn:hover{transform:translateY(-2px);box-shadow:0 16px 30px rgba(79,124,255,.4)}' +
@@ -322,7 +333,12 @@ function renderSettingsHTML(){
   }).join('');
   return '<div class="tv-card tv-settings-card">' +
     '<div class="tv-settings-title">트럭검증 설정</div>' +
-    (toggles || '<div class="tv-empty-hint">추가 설정 예정</div>') +
+    '<div class="tv-field-row">' +
+    '<label class="tv-field-label">상차제한 그룹번호</label>' +
+    '<input type="text" class="tv-group-input" placeholder="예: 12,34,56" value="' + escapeHtml(state.settings.restrictedGroups || '') + '"/>' +
+    '<div class="tv-field-hint">쉼표(,)로 여러 그룹번호 입력 가능</div>' +
+    '</div>' +
+    toggles +
     '<button class="tv-activate-btn">' + (state.settings.enabled ? '실행 중 ✓' : '활성화') + '</button>' +
     '</div>';
 }
@@ -335,6 +351,13 @@ function bindSettingsEvents(){
       saveSettings();
     });
   });
+  var groupInput = overlay.querySelector('.tv-group-input');
+  if (groupInput) {
+    groupInput.addEventListener('input', function(){
+      state.settings.restrictedGroups = groupInput.value;
+      saveSettings();
+    });
+  }
   var btn = overlay.querySelector('.tv-activate-btn');
   attachRipple(btn);
   btn.addEventListener('click', function(){
@@ -607,6 +630,14 @@ function parseDeliveryType(doc){
   return false;
 }
 
+function parseGroupRestriction(doc){
+  var t1 = getTable(doc, 0);
+  var t2 = getTable(doc, 1);
+  var r1 = t1 && getRows(t1)[0];
+  var r2 = t2 && getRows(t2)[0];
+  return { groupNo: r1 ? td(r1, 0) : '', vendorName: r2 ? td(r2, 0) : '' };
+}
+
 function parseToteAndProducts(doc){
   var t1 = getTable(doc, 0);
   var t2 = getTable(doc, 1);
@@ -646,9 +677,11 @@ function processRow(row){
   showStatus('상세정보 조회 중...', 'loading');
   Promise.all([fetchDoc(linkProduct.href), fetchDoc(linkType.href)]).then(function(docs){
     var isTruck = parseDeliveryType(docs[1]);
+    var restriction = parseGroupRestriction(docs[1]);
+    var isRestricted = getRestrictedGroupList().indexOf(restriction.groupNo) !== -1;
     var info = parseToteAndProducts(docs[0]);
     if (!info) { showStatus('상품 정보를 해석하지 못했습니다', 'error'); state.mode = 'IDLE'; return; }
-    state.toteInfo = Object.assign({ isTruck: isTruck }, info);
+    state.toteInfo = Object.assign({ isTruck: isTruck, isRestricted: isRestricted, restrictedVendor: restriction.vendorName }, info);
     state.expected = buildExpectedMap(info.products);
     state.mode = 'VERIFYING';
     hideStatus();
@@ -661,9 +694,9 @@ function processRow(row){
 
 function openVerifyModal(){
   var info = state.toteInfo;
-  var typeIcon = info.isTruck ? '🚚' : '📦';
-  var typeText = info.isTruck ? '트럭' : '택배';
-  var typeClass = info.isTruck ? 'truck' : 'courier';
+  var typeIcon = info.isRestricted ? '🚫' : (info.isTruck ? '🚚' : '📦');
+  var typeText = info.isRestricted ? ('상차제한 · ' + escapeHtml(info.restrictedVendor)) : (info.isTruck ? '트럭' : '택배');
+  var typeClass = info.isRestricted ? 'restricted' : (info.isTruck ? 'truck' : 'courier');
   ui.verifyOverlay.innerHTML =
     '<div class="tv-card tv-verify ' + typeClass + '">' +
     '<div class="tv-verify-header">' +
@@ -831,6 +864,11 @@ function completeVerification(){
 }
 
 function afterVerification(){
+  if (state.toteInfo.isRestricted) {
+    state.mode = 'IDLE';
+    showStatus('상차제한 - 검증 완료');
+    return;
+  }
   if (state.toteInfo.isTruck) {
     state.mode = 'IDLE';
     showStatus('트럭 - 검증 완료');

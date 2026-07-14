@@ -11,8 +11,8 @@ var DETAIL_HTML = '<html><body>' +
   '</body></html>';
 
 var TYPE_HTML = '<html><body>' +
-  '<table><tr><td>x</td><td>x</td><td>x</td><td>x</td></tr></table>' +
-  '<table><tr><td>x</td><td>x</td><td>x</td><td>택배</td></tr></table>' +
+  '<table><tr><td>GRP1</td><td>x</td><td>x</td><td>x</td></tr></table>' +
+  '<table><tr><td>제한업체A</td><td>x</td><td>x</td><td>택배</td></tr></table>' +
   '</body></html>';
 
 var DETAIL_HTML_2 = '<html><body>' +
@@ -21,8 +21,8 @@ var DETAIL_HTML_2 = '<html><body>' +
   '</body></html>';
 
 var TYPE_HTML_2 = '<html><body>' +
-  '<table><tr><td>x</td><td>x</td><td>x</td><td>x</td></tr></table>' +
-  '<table><tr><td>x</td><td>x</td><td>x</td><td>트럭</td></tr></table>' +
+  '<table><tr><td>GRP2</td><td>x</td><td>x</td><td>x</td></tr></table>' +
+  '<table><tr><td>제한업체B</td><td>x</td><td>x</td><td>트럭</td></tr></table>' +
   '</body></html>';
 
 var manyProductRows = '';
@@ -35,8 +35,8 @@ var DETAIL_HTML_MANY = '<html><body>' +
   '</body></html>';
 
 var TYPE_HTML_MANY = '<html><body>' +
-  '<table><tr><td>x</td><td>x</td><td>x</td><td>x</td></tr></table>' +
-  '<table><tr><td>x</td><td>x</td><td>x</td><td>택배</td></tr></table>' +
+  '<table><tr><td>GRP3</td><td>x</td><td>x</td><td>x</td></tr></table>' +
+  '<table><tr><td>제한업체C</td><td>x</td><td>x</td><td>택배</td></tr></table>' +
   '</body></html>';
 
 var routes = {
