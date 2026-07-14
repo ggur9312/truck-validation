@@ -44,6 +44,21 @@ require('./server.js');
   if (!settingsVisibleAgain) { console.error('FAIL: clicking the gear button after closing should reopen settings'); process.exitCode = 1; }
   else console.log('OK: clicking the gear button again reopens the settings window');
 
+  // Typing into a settings field must NOT live-update the top-right status
+  // badge -- only clicking 저장 should apply and reflect the change.
+  var groupToggleRow = page.locator('.tv-toggle-row').filter({ has: page.locator('[data-key="restrictionEnabled"]') });
+  await groupToggleRow.click();
+  await page.locator('.tv-group-input').fill('GRP9');
+  var restrictHeaderVisibleBeforeSave = await page.locator('.tv-status-badge-restrict-header').isVisible().catch(function(){ return false; });
+  if (restrictHeaderVisibleBeforeSave) { console.error('FAIL: status badge should not reflect unsaved settings changes'); process.exitCode = 1; }
+  else console.log('OK: typing into a settings field does not live-update the status badge');
+
+  await page.locator('.tv-activate-btn').click();
+  await page.locator('.tv-status-badge-restrict-header').waitFor({ state: 'visible', timeout: 3000 });
+  var restrictGroupLineText = (await page.locator('.tv-restrict-group-line').textContent()).trim();
+  if (restrictGroupLineText.indexOf('GRP9') === -1) { console.error('FAIL: status badge should reflect the saved group number after clicking 저장, got', restrictGroupLineText); process.exitCode = 1; }
+  else console.log('OK: clicking 저장 applies and displays the changed settings:', restrictGroupLineText);
+
   console.log(process.exitCode ? 'SETTINGS TOGGLE SMOKE TEST: SOME FAILURES' : 'SETTINGS TOGGLE SMOKE TEST: ALL PASSED');
   await browser.close();
   process.exit(process.exitCode || 0);

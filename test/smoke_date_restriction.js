@@ -82,6 +82,10 @@ function sendScan(page, text){
   if (bannerClass.indexOf('restricted') === -1) { console.error('FAIL: tote created 2026-01-15 should be restricted by the 2026-01-01~2026-01-31 range, got', bannerClass); process.exitCode = 1; }
   else console.log('OK: tote whose creation date falls inside the configured range is restricted');
 
+  var dateRestrictTypeText = await page.locator('.tv-type-value').textContent();
+  if (dateRestrictTypeText.indexOf('생성일시 상차제한') === -1) { console.error('FAIL: delivery-type value should disclose the date restriction type, got', dateRestrictTypeText); process.exitCode = 1; }
+  else console.log('OK: delivery-type value discloses the date restriction type:', dateRestrictTypeText.trim());
+
   await sendScan(page, 'BAR001');
   await sendScan(page, 'BAR001');
   await sendScan(page, 'BAR002');

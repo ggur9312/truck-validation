@@ -105,9 +105,13 @@ function sendScan(page, text){
     console.log('OK: banner shows restriction phrase + correct vendor name:', bannerText.trim());
   }
 
-  var iconBg = await page.locator('.tv-type-icon').evaluate(function(el){ return getComputedStyle(el).backgroundColor; });
-  if (iconBg.indexOf('251, 146, 60') === -1) { console.error('FAIL: delivery-type icon should use the restricted orange color, got', iconBg); process.exitCode = 1; }
-  else console.log('OK: delivery-type icon uses the orange restricted color:', iconBg);
+  var tileBg = await page.locator('.tv-type-banner').evaluate(function(el){ return getComputedStyle(el).backgroundImage; });
+  if (tileBg.indexOf('251, 146, 60') === -1) { console.error('FAIL: delivery-type tile should use the restricted orange gradient, got', tileBg); process.exitCode = 1; }
+  else console.log('OK: delivery-type tile uses the orange restricted gradient');
+
+  var restrictTypeText = await page.locator('.tv-type-value').textContent();
+  if (restrictTypeText.indexOf('그룹번호 상차제한') === -1) { console.error('FAIL: delivery-type value should disclose the group-number restriction type, got', restrictTypeText); process.exitCode = 1; }
+  else console.log('OK: delivery-type value discloses the restriction type:', restrictTypeText.trim());
 
   var cardBorder = await page.locator('.tv-verify').evaluate(function(el){ return getComputedStyle(el).boxShadow; });
   if (cardBorder.indexOf('251, 146, 60') === -1) { console.error('FAIL: verify card border should use the restricted orange color, got', cardBorder); process.exitCode = 1; }

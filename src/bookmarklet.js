@@ -178,7 +178,8 @@ var CSS =
   '.tv-stepper-track{display:flex;align-items:center}' +
   '.tv-stepper-dot{flex-shrink:0;width:12px;height:12px;border-radius:50%;background:var(--tv-surface-3);border:2px solid var(--tv-surface-3);transition:all .25s ease}' +
   '.tv-stepper-dot.done{background:var(--tv-accent);border-color:var(--tv-accent)}' +
-  '.tv-stepper-dot.active{width:16px;height:16px;background:var(--tv-accent);border-color:var(--tv-accent);box-shadow:0 0 0 4px rgba(79,124,255,.18)}' +
+  '.tv-stepper-dot.active{width:16px;height:16px;background:var(--tv-accent);border-color:var(--tv-accent);animation:tvStepperDotPulse 1.4s ease-in-out infinite}' +
+  '@keyframes tvStepperDotPulse{0%,100%{box-shadow:0 0 0 0 rgba(79,124,255,.5)}50%{box-shadow:0 0 0 6px rgba(79,124,255,.18)}}' +
   '.tv-stepper-line{flex:1;height:3px;background:var(--tv-surface-3);transition:background .25s ease}' +
   '.tv-stepper-line.done{background:var(--tv-accent)}' +
 
@@ -190,18 +191,16 @@ var CSS =
   '.tv-stat-value{font-size:18.5px;font-weight:600;color:var(--tv-text);word-break:break-all}' +
   '.tv-stat-caption{font-size:12.5px;color:var(--tv-text-soft);font-weight:500;margin-top:3px}' +
 
-  '.tv-type-banner{background:var(--tv-surface-2);border:1px solid var(--tv-border);border-radius:14px;padding:14px 10px;text-align:center;box-shadow:var(--tv-elev-1)}' +
-  '.tv-type-icon{width:40px;height:40px;margin:0 auto 8px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff}' +
-  '.tv-type-icon.truck{background:var(--tv-truck-fg);animation:tvTypeGlowTruck 2.4s ease-in-out infinite}' +
-  '.tv-type-icon.courier{background:var(--tv-courier-fg);animation:tvTypeGlowCourier 2.4s ease-in-out infinite}' +
-  '.tv-type-icon.restricted{background:var(--tv-restricted-fg);animation:tvTypeGlowRestricted 2.4s ease-in-out infinite}' +
-  '.tv-type-value{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:5px;font-size:16.5px;font-weight:600;word-break:keep-all}' +
-  '.tv-type-value.truck{color:var(--tv-truck-fg)}' +
-  '.tv-type-value.courier{color:var(--tv-courier-fg)}' +
-  '.tv-type-value.restricted{color:var(--tv-restricted-fg)}' +
-  '@keyframes tvTypeGlowTruck{0%,100%{box-shadow:0 0 0 0 rgba(248,113,113,0)}50%{box-shadow:0 0 0 6px rgba(248,113,113,.35)}}' +
-  '@keyframes tvTypeGlowCourier{0%,100%{box-shadow:0 0 0 0 rgba(52,211,153,0)}50%{box-shadow:0 0 0 6px rgba(52,211,153,.35)}}' +
-  '@keyframes tvTypeGlowRestricted{0%,100%{box-shadow:0 0 0 0 rgba(251,146,60,0)}50%{box-shadow:0 0 0 6px rgba(251,146,60,.35)}}' +
+  '.tv-type-banner{border-radius:14px;padding:14px 10px;text-align:center;box-shadow:0 8px 20px rgba(0,0,0,.2)}' +
+  '.tv-type-banner.truck{background:linear-gradient(135deg,#f87171,#c93f3f);animation:tvTypeGlowTruck 1.8s ease-in-out infinite}' +
+  '.tv-type-banner.courier{background:linear-gradient(135deg,#34d399,#1f9d6c);animation:tvTypeGlowCourier 1.8s ease-in-out infinite}' +
+  '.tv-type-banner.restricted{background:linear-gradient(135deg,#fb923c,#c2680f);animation:tvTypeGlowRestricted 1.8s ease-in-out infinite}' +
+  '.tv-type-icon{width:40px;height:40px;margin:0 auto 8px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;background:rgba(255,255,255,.25);color:#fff}' +
+  '.tv-type-label{font-size:13.5px;font-weight:600;color:rgba(255,255,255,.85);margin-bottom:4px}' +
+  '.tv-type-value{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:5px;font-size:19px;font-weight:700;color:#fff;word-break:keep-all}' +
+  '@keyframes tvTypeGlowTruck{0%,100%{box-shadow:0 8px 20px rgba(0,0,0,.2),inset 0 0 0 0 rgba(255,255,255,0);filter:brightness(1)}50%{box-shadow:0 8px 20px rgba(0,0,0,.2),inset 0 0 26px 6px rgba(255,255,255,.5);filter:brightness(1.15)}}' +
+  '@keyframes tvTypeGlowCourier{0%,100%{box-shadow:0 8px 20px rgba(0,0,0,.2),inset 0 0 0 0 rgba(255,255,255,0);filter:brightness(1)}50%{box-shadow:0 8px 20px rgba(0,0,0,.2),inset 0 0 26px 6px rgba(255,255,255,.5);filter:brightness(1.15)}}' +
+  '@keyframes tvTypeGlowRestricted{0%,100%{box-shadow:0 8px 20px rgba(0,0,0,.2),inset 0 0 0 0 rgba(255,255,255,0);filter:brightness(1)}50%{box-shadow:0 8px 20px rgba(0,0,0,.2),inset 0 0 26px 6px rgba(255,255,255,.5);filter:brightness(1.15)}}' +
 
   '.tv-tip-bar{flex-shrink:0;display:flex;align-items:center;gap:8px;background:var(--tv-surface-2);border:1px solid var(--tv-border);border-radius:12px;padding:10px 14px;font-size:15px;color:var(--tv-text-soft);margin-bottom:16px}' +
   '.tv-tip-icon{flex-shrink:0;color:var(--tv-accent);font-weight:600}' +
@@ -456,7 +455,6 @@ function bindSettingsEvents(){
     cb.addEventListener('change', function(){
       state.settings[cb.dataset.key] = cb.checked;
       saveSettings();
-      updateRestrictBadge();
       if (cb.dataset.key === 'restrictionEnabled') {
         var fieldRow = overlay.querySelector('.tv-group-field-row');
         if (fieldRow) fieldRow.classList.toggle('tv-hidden', !cb.checked);
@@ -472,7 +470,6 @@ function bindSettingsEvents(){
     groupInput.addEventListener('input', function(){
       state.settings.restrictedGroups = groupInput.value;
       saveSettings();
-      updateRestrictBadge();
     });
   }
   var dateStartInput = overlay.querySelector('.tv-date-start-input');
@@ -481,14 +478,12 @@ function bindSettingsEvents(){
     dateStartInput.addEventListener('input', function(){
       state.settings.dateRestrictionStart = dateStartInput.value;
       saveSettings();
-      updateRestrictBadge();
     });
   }
   if (dateEndInput) {
     dateEndInput.addEventListener('input', function(){
       state.settings.dateRestrictionEnd = dateEndInput.value;
       saveSettings();
-      updateRestrictBadge();
     });
   }
   var btn = overlay.querySelector('.tv-activate-btn');
@@ -850,7 +845,7 @@ function processRow(row){
     var isRestricted = groupRestricted || dateRestricted;
     var info = parseToteAndProducts(docs[0]);
     if (!info) { showStatus('상품 정보를 해석하지 못했습니다', 'error'); state.mode = 'IDLE'; return; }
-    state.toteInfo = Object.assign({ isTruck: isTruck, isRestricted: isRestricted, restrictedVendor: restriction.vendorName }, info);
+    state.toteInfo = Object.assign({ isTruck: isTruck, isRestricted: isRestricted, restrictedByGroup: groupRestricted, restrictedByDate: dateRestricted, restrictedVendor: restriction.vendorName }, info);
     state.expected = buildExpectedMap(info.products);
     state.mode = 'VERIFYING';
     hideStatus();
@@ -864,7 +859,8 @@ function processRow(row){
 function openVerifyModal(){
   var info = state.toteInfo;
   var typeIcon = info.isRestricted ? '🚫' : (info.isTruck ? '🚚' : '📦');
-  var typeText = info.isRestricted ? ('상차제한 · ' + escapeHtml(info.restrictedVendor)) : (info.isTruck ? '트럭' : '택배');
+  var restrictLabel = info.restrictedByGroup && info.restrictedByDate ? '그룹번호+생성일시 상차제한' : (info.restrictedByGroup ? '그룹번호 상차제한' : '생성일시 상차제한');
+  var typeText = info.isRestricted ? (restrictLabel + ' · ' + escapeHtml(info.restrictedVendor)) : (info.isTruck ? '트럭' : '택배');
   var typeClass = info.isRestricted ? 'restricted' : (info.isTruck ? 'truck' : 'courier');
   ui.verifyOverlay.innerHTML =
     '<div class="tv-card tv-verify ' + typeClass + '">' +
@@ -878,13 +874,13 @@ function openVerifyModal(){
     '</div>' +
     '<div class="tv-verify-body">' +
     '<div class="tv-verify-hero">' +
-    '<div class="tv-stepper-labels"><span class="tv-stepper-label done">준비</span><span class="tv-stepper-label active">검증 중</span><span class="tv-stepper-label">검증완료</span></div>' +
-    '<div class="tv-stepper-track"><span class="tv-stepper-dot done"></span><span class="tv-stepper-line done"></span><span class="tv-stepper-dot active"></span><span class="tv-stepper-line"></span><span class="tv-stepper-dot"></span></div>' +
+    '<div class="tv-stepper-labels"><span class="tv-stepper-label active">준비</span><span class="tv-stepper-label">검증 중</span><span class="tv-stepper-label">검증완료</span></div>' +
+    '<div class="tv-stepper-track"><span class="tv-stepper-dot active"></span><span class="tv-stepper-line"></span><span class="tv-stepper-dot"></span><span class="tv-stepper-line"></span><span class="tv-stepper-dot"></span></div>' +
     '</div>' +
     '<div class="tv-stat-grid">' +
     '<div class="tv-stat-tile"><span class="tv-stat-icon vendor">🏢</span><div class="tv-stat-label">업체명</div><div class="tv-stat-value">' + escapeHtml(info.vendor) + '</div></div>' +
     '<div class="tv-stat-tile"><span class="tv-stat-icon tote">📦</span><div class="tv-stat-label">토트바코드</div><div class="tv-stat-value">' + escapeHtml(info.toteBarcode) + '</div><div class="tv-stat-caption">전체 ' + info.totalQty + '개</div></div>' +
-    '<div class="tv-type-banner ' + typeClass + '"><span class="tv-type-icon ' + typeClass + '">' + typeIcon + '</span><div class="tv-stat-label">배송 방식</div><div class="tv-type-value ' + typeClass + '">' + typeText + '</div></div>' +
+    '<div class="tv-type-banner ' + typeClass + '"><span class="tv-type-icon">' + typeIcon + '</span><div class="tv-type-label">배송 방식</div><div class="tv-type-value">' + typeText + '</div></div>' +
     '</div>' +
     '<div class="tv-tip-bar"><span class="tv-tip-icon">ℹ</span><span>모든 상품을 스캔하면 자동으로 다음 단계로 진행됩니다.</span></div>' +
     '<div class="tv-product-list"></div>' +
@@ -987,14 +983,21 @@ function updateHero(){
   state.expected.forEach(function(p){ totalQty += p.required; scannedQty += p.scanned; });
   var allDone = totalQty > 0 && scannedQty === totalQty;
   title.textContent = allDone ? '검증 완료' : '검증 중 (' + scannedQty + '/' + totalQty + ')';
+  var labels = card.querySelectorAll('.tv-stepper-label');
+  var dots = card.querySelectorAll('.tv-stepper-dot');
+  var lines = card.querySelectorAll('.tv-stepper-line');
+  if (scannedQty > 0 && !labels[0].classList.contains('done')) {
+    labels[0].classList.remove('active'); labels[0].classList.add('done');
+    labels[1].classList.add('active');
+    dots[0].classList.remove('active'); dots[0].classList.add('done');
+    dots[1].classList.add('active');
+    lines[0].classList.add('done');
+  }
   if (allDone) {
-    var labels = card.querySelectorAll('.tv-stepper-label');
     labels[1].classList.remove('active'); labels[1].classList.add('done');
     labels[2].classList.add('active');
-    var dots = card.querySelectorAll('.tv-stepper-dot');
     dots[1].classList.remove('active'); dots[1].classList.add('done');
     dots[2].classList.add('active');
-    var lines = card.querySelectorAll('.tv-stepper-line');
     lines[1].classList.add('done');
     completeVerification();
   }

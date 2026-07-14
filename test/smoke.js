@@ -90,6 +90,17 @@ function sendScan(page, text){
   if (!badgeVisible) { console.error('FAIL: active status badge should be visible after activation'); process.exitCode = 1; }
   else console.log('OK: top-right active status badge visible');
 
+  // Before any product barcode is scanned, the stepper's 1st step (준비)
+  // should be the active one -- not already "done" -- since nothing has
+  // actually been verified yet.
+  var stepClassesBefore = await page.locator('.tv-stepper-dot').evaluateAll(function(els){ return els.map(function(e){ return e.className; }); });
+  if (stepClassesBefore[0].indexOf('active') === -1 || stepClassesBefore[0].indexOf('done') !== -1) {
+    console.error('FAIL: stepper step 1 (준비) should be "active" (not "done") before any scan, got', stepClassesBefore);
+    process.exitCode = 1;
+  } else {
+    console.log('OK: stepper starts with step 1 (준비) active, not done:', stepClassesBefore);
+  }
+
   await sendScan(page, 'BAR001');
 
   // Hero counter tracks scanned *units* against total required units (BAR001
@@ -98,6 +109,16 @@ function sendScan(page, text){
   var heroAfterOne = (await page.locator('.tv-hero-title').textContent()).trim();
   if (heroAfterOne !== '검증 중 (1/3)') { console.error('FAIL: hero counter should read "검증 중 (1/3)" after scanning 1 of 3 total required units, got', heroAfterOne); process.exitCode = 1; }
   else console.log('OK: hero counter tracks scanned units against total required units:', heroAfterOne);
+
+  // Scanning even one product barcode should move the stepper to step 2
+  // (검증 중): step 1 becomes done, step 2 becomes active.
+  var stepClassesAfter = await page.locator('.tv-stepper-dot').evaluateAll(function(els){ return els.map(function(e){ return e.className; }); });
+  if (stepClassesAfter[0].indexOf('done') === -1 || stepClassesAfter[1].indexOf('active') === -1) {
+    console.error('FAIL: stepper should advance to step 2 (검증 중) after the first scan, got', stepClassesAfter);
+    process.exitCode = 1;
+  } else {
+    console.log('OK: stepper advances to step 2 (검증 중) after the first scan:', stepClassesAfter);
+  }
 
   await sendScan(page, 'BAR001');
   var afterFirstTwo = await page.locator('.tv-product-row').first().textContent();
