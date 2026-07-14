@@ -30,6 +30,14 @@ function sendScan(page, text){
   await page.locator('.tv-group-input').fill('99, GRP1 ,88');
   await page.locator('.tv-activate-btn').click();
 
+  var restrictBadgeText = await page.locator('.tv-restrict-badge').textContent();
+  if (!(await page.locator('.tv-restrict-badge').isVisible()) || restrictBadgeText.indexOf('99') === -1 || restrictBadgeText.indexOf('GRP1') === -1 || restrictBadgeText.indexOf('88') === -1) {
+    console.error('FAIL: top-right restriction badge should show below the status badge, listing the configured groups, got', restrictBadgeText);
+    process.exitCode = 1;
+  } else {
+    console.log('OK: restriction badge visible below the status badge:', restrictBadgeText.trim());
+  }
+
   await sendScan(page, 'TOTE001');
   await page.locator('.tv-verify').filter({ hasText: '업체A' }).waitFor({ timeout: 5000 });
 

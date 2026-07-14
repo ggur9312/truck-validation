@@ -20,14 +20,6 @@ require('./server.js');
   await page.reload();
   await page.evaluate(src);
 
-  var btnText = await page.locator('.tv-activate-btn').textContent();
-  if (btnText.indexOf('활성화') === -1 || btnText.indexOf('실행 중') !== -1) {
-    console.error('FAIL: after reload, activate button should show "활성화" (deactivated state), got', btnText);
-    process.exitCode = 1;
-  } else {
-    console.log('OK: after page reload, settings modal shows deactivated "활성화" button (not auto-running)');
-  }
-
   var badgeVisibleAfterReload = await page.locator('.tv-status-badge').isVisible();
   if (badgeVisibleAfterReload) {
     console.error('FAIL: status badge should NOT be visible immediately after reload without pressing activate again');

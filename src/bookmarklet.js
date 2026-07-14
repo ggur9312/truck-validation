@@ -184,6 +184,8 @@ var CSS =
 
   '.tv-status-badge{position:fixed;top:20px;right:24px;z-index:2147483600;width:220px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;gap:10px;padding:12px 16px;border-radius:999px;background:var(--tv-surface);color:var(--tv-text);border:1px solid var(--tv-border);font-size:15px;font-weight:800;box-shadow:var(--tv-elev-2);letter-spacing:.1px}' +
   '.tv-status-badge.tv-hidden{display:none}' +
+  '.tv-restrict-badge{position:fixed;top:70px;right:24px;z-index:2147483600;max-width:220px;box-sizing:border-box;text-align:center;padding:9px 14px;border-radius:999px;background:var(--tv-restricted-bg);color:var(--tv-restricted-fg);border:1px solid rgba(251,146,60,.35);font-size:12.5px;font-weight:800;box-shadow:var(--tv-elev-1);letter-spacing:.1px}' +
+  '.tv-restrict-badge.tv-hidden{display:none}' +
   '.tv-status-dot{width:11px;height:11px;border-radius:50%;background:var(--tv-success);box-shadow:0 0 0 0 rgba(52,211,153,.6);animation:tvStatusPulse 2s ease-in-out infinite}' +
   '@keyframes tvStatusPulse{0%{box-shadow:0 0 0 0 rgba(52,211,153,.5)}70%{box-shadow:0 0 0 8px rgba(52,211,153,0)}100%{box-shadow:0 0 0 0 rgba(52,211,153,0)}}' +
 
@@ -245,6 +247,7 @@ function initUI(){
     '<div class="tv-float-area tv-waybill-area tv-top-right" popover="manual"></div>' +
     '<div class="tv-float-area tv-reprint-area tv-top-left" popover="manual"></div>' +
     '<div class="tv-status-badge tv-hidden"><span class="tv-status-dot"></span>트럭검증 활성화</div>' +
+    '<div class="tv-restrict-badge tv-hidden"></div>' +
     '<button class="tv-gear-btn tv-hidden" title="프로그램 설정">⚙</button>';
   ui.shadow = shadow;
   ui.statusOverlay = shadow.querySelector('.tv-status-overlay');
@@ -254,8 +257,9 @@ function initUI(){
   ui.waybillOverlay = shadow.querySelector('.tv-waybill-area');
   ui.reprintOverlay = shadow.querySelector('.tv-reprint-area');
   ui.statusBadge = shadow.querySelector('.tv-status-badge');
+  ui.restrictBadge = shadow.querySelector('.tv-restrict-badge');
   ui.gearBtn = shadow.querySelector('.tv-gear-btn');
-  ui.gearBtn.addEventListener('click', function(){ openSettingsModal(false); });
+  ui.gearBtn.addEventListener('click', toggleSettings);
   attachRipple(ui.gearBtn);
 }
 
@@ -339,7 +343,7 @@ function renderSettingsHTML(){
     '<div class="tv-field-hint">쉼표(,)로 여러 그룹번호 입력 가능</div>' +
     '</div>' +
     toggles +
-    '<button class="tv-activate-btn">' + (state.settings.enabled ? '실행 중 ✓' : '활성화') + '</button>' +
+    '<button class="tv-activate-btn">저장</button>' +
     '</div>';
 }
 
@@ -356,6 +360,7 @@ function bindSettingsEvents(){
     groupInput.addEventListener('input', function(){
       state.settings.restrictedGroups = groupInput.value;
       saveSettings();
+      updateRestrictBadge();
     });
   }
   var btn = overlay.querySelector('.tv-activate-btn');
@@ -365,13 +370,24 @@ function bindSettingsEvents(){
     saveSettings();
     closeSettingsModal();
     showActiveIndicators();
-    showStatus('트럭검증 활성화됨');
+    showStatus('설정 저장됨');
   });
 }
 
 function showActiveIndicators(){
   ui.gearBtn.classList.remove('tv-hidden');
   ui.statusBadge.classList.remove('tv-hidden');
+  updateRestrictBadge();
+}
+
+function updateRestrictBadge(){
+  var groups = getRestrictedGroupList();
+  if (!state.settings.enabled || groups.length === 0) {
+    ui.restrictBadge.classList.add('tv-hidden');
+    return;
+  }
+  ui.restrictBadge.textContent = '🚫 상차제한 활성화 · ' + groups.join(', ');
+  ui.restrictBadge.classList.remove('tv-hidden');
 }
 
 function setNativeValue(el, value){
