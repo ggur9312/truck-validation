@@ -247,9 +247,9 @@ var CSS =
   '.tv-product-row.tv-row-pop{animation:tvRowPop .5s var(--tv-ease)}' +
   '@keyframes tvRowPop{0%{transform:scale(1)}40%{transform:scale(1.03)}100%{transform:scale(1)}}' +
   '.tv-product-row.tv-row-focus{animation:tvRowFocus .9s var(--tv-ease)}' +
-  '@keyframes tvRowFocus{0%{box-shadow:0 0 0 0 rgba(79,124,255,.5)}30%{box-shadow:0 0 0 6px rgba(79,124,255,.35)}100%{box-shadow:0 0 0 0 rgba(79,124,255,0)}}' +
+  '@keyframes tvRowFocus{0%{box-shadow:inset 0 0 0 0 rgba(79,124,255,.5)}30%{box-shadow:inset 0 0 0 5px rgba(79,124,255,.45)}100%{box-shadow:inset 0 0 0 0 rgba(79,124,255,0)}}' +
   '.tv-product-row.tv-row-focus-err{animation:tvRowFocusErr .5s var(--tv-ease)}' +
-  '@keyframes tvRowFocusErr{0%,100%{transform:translateX(0);box-shadow:0 0 0 0 rgba(248,113,113,.55)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px);box-shadow:0 0 0 6px rgba(248,113,113,.3)}80%{transform:translateX(4px)}}' +
+  '@keyframes tvRowFocusErr{0%,100%{transform:translateX(0);box-shadow:inset 0 0 0 0 rgba(248,113,113,.55)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px);box-shadow:inset 0 0 0 5px rgba(248,113,113,.4)}80%{transform:translateX(4px)}}' +
 
   '.tv-barcode-wrap{display:inline-block;background:#fff;padding:14px 16px;border-radius:12px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}' +
   '.tv-skip-area{flex-shrink:0;margin-top:4px;text-align:center;border-top:1px solid var(--tv-border);padding-top:16px}' +
