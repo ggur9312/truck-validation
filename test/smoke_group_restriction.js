@@ -98,32 +98,28 @@ function sendScan(page, text){
   else console.log('OK: type banner switches to the restricted (orange) variant');
 
   var bannerText = await page.locator('.tv-type-banner').textContent();
-  if (bannerText.indexOf('상차제한') === -1 || bannerText.indexOf('제한업체A') === -1) {
-    console.error('FAIL: banner should show the restriction phrase and the restricted vendor name, got', bannerText);
+  if (bannerText.indexOf('상차제한') === -1) {
+    console.error('FAIL: banner should show the restriction phrase, got', bannerText);
     process.exitCode = 1;
   } else {
-    console.log('OK: banner shows restriction phrase + correct vendor name:', bannerText.trim());
+    console.log('OK: banner shows restriction phrase:', bannerText.trim());
   }
 
   var tileBg = await page.locator('.tv-type-banner').evaluate(function(el){ return getComputedStyle(el).backgroundImage; });
   if (tileBg.indexOf('251, 146, 60') === -1) { console.error('FAIL: delivery-type tile should use the restricted orange gradient, got', tileBg); process.exitCode = 1; }
   else console.log('OK: delivery-type tile uses the orange restricted gradient');
 
-  var restrictTypeText = await page.locator('.tv-type-label').textContent();
-  if (restrictTypeText.indexOf('그룹번호 상차제한') === -1) { console.error('FAIL: delivery-type label should disclose the group-number restriction type, got', restrictTypeText); process.exitCode = 1; }
-  else console.log('OK: delivery-type label discloses the restriction type:', restrictTypeText.trim());
+  // The tile is a generic "상차제한" indicator now -- it must not disclose
+  // whether it's a group-number or date restriction (that detail lives
+  // only in the top-right status badge), and must not repeat the vendor
+  // name (already shown on the separate 업체명 stat tile).
+  var typeValueText = (await page.locator('.tv-type-value').textContent()).trim();
+  if (typeValueText !== '상차제한') { console.error('FAIL: delivery-type value should read exactly "상차제한" with no group/date/vendor specifics, got', typeValueText); process.exitCode = 1; }
+  else console.log('OK: delivery-type value is the generic "상차제한" label:', typeValueText);
 
-  var restrictGroupDetail = await page.locator('.tv-type-detail').textContent();
-  if (restrictGroupDetail.indexOf('그룹번호 : ') === -1 || restrictGroupDetail.indexOf('GRP1') === -1) {
-    console.error('FAIL: delivery-type tile should show the configured group numbers, got', restrictGroupDetail);
-    process.exitCode = 1;
-  } else {
-    console.log('OK: delivery-type tile shows the configured group numbers:', restrictGroupDetail.trim());
-  }
-
-  var restrictVendorValue = (await page.locator('.tv-type-value').textContent()).trim();
-  if (restrictVendorValue !== '제한업체A') { console.error('FAIL: delivery-type value should show only the vendor name, got', restrictVendorValue); process.exitCode = 1; }
-  else console.log('OK: delivery-type value shows only the vendor name:', restrictVendorValue);
+  var typeValueFontSize = await page.locator('.tv-type-value').evaluate(function(el){ return getComputedStyle(el).fontSize; });
+  if (typeValueFontSize !== '20px') { console.error('FAIL: restricted delivery-type value font-size should be 20px, got', typeValueFontSize); process.exitCode = 1; }
+  else console.log('OK: restricted delivery-type value font-size is 20px');
 
   var cardBorder = await page.locator('.tv-verify').evaluate(function(el){ return getComputedStyle(el).boxShadow; });
   if (cardBorder.indexOf('251, 146, 60') === -1) { console.error('FAIL: verify card border should use the restricted orange color, got', cardBorder); process.exitCode = 1; }
