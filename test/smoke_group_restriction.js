@@ -23,6 +23,33 @@ function sendScan(page, text){
   await page.evaluate(src);
   await page.locator('.tv-card').waitFor({ timeout: 3000 });
 
+  var groupToggleRow = page.locator('.tv-toggle-row').filter({ has: page.locator('[data-key="restrictionEnabled"]') });
+
+  var toggleCheckedByDefault = await groupToggleRow.locator('input[type=checkbox]').isChecked();
+  if (toggleCheckedByDefault) { console.error('FAIL: 그룹번호 상차제한 toggle should default to OFF'); process.exitCode = 1; }
+  else console.log('OK: 그룹번호 상차제한 toggle defaults to off');
+
+  var fieldHiddenByDefault = await page.locator('.tv-group-field-row').isVisible();
+  if (fieldHiddenByDefault) { console.error('FAIL: group-number input should be hidden by default'); process.exitCode = 1; }
+  else console.log('OK: group-number input hidden by default');
+
+  var firstRunBtnText = (await page.locator('.tv-activate-btn').textContent()).trim();
+  if (firstRunBtnText !== '활성화') { console.error('FAIL: settings button should read "활성화" before first activation, got', firstRunBtnText); process.exitCode = 1; }
+  else console.log('OK: settings button reads "활성화" before first activation');
+
+  var toggleLabel = (await groupToggleRow.locator('span').first().textContent()).trim();
+  if (toggleLabel !== '그룹번호 상차제한') { console.error('FAIL: toggle label should read "그룹번호 상차제한", got', toggleLabel); process.exitCode = 1; }
+  else console.log('OK: toggle label reads "그룹번호 상차제한"');
+
+  await groupToggleRow.click();
+  var fieldVisibleWhenOn = await page.locator('.tv-group-field-row').isVisible();
+  if (!fieldVisibleWhenOn) { console.error('FAIL: group-number input should appear right below its own switch when turned on'); process.exitCode = 1; }
+  else console.log('OK: group-number input appears directly below its switch when turned on');
+
+  var fieldLabelText = (await page.locator('.tv-group-field-row .tv-field-label').textContent()).trim();
+  if (fieldLabelText !== '그룹번호') { console.error('FAIL: field label under the switch should read "그룹번호", got', fieldLabelText); process.exitCode = 1; }
+  else console.log('OK: field label under the switch reads "그룹번호"');
+
   // TOTE001's detail page (fetched via the first row's 3rd-td link) carries
   // group number "GRP1" (1st table, 1st td) and restriction vendor name
   // "제한업체A" (2nd table, 1st td) -- distinct from info.vendor ("업체A")
@@ -96,32 +123,40 @@ function sendScan(page, text){
   if (waybillOpened) { console.error('FAIL: waybill modal should NOT open for a restricted courier tote'); process.exitCode = 1; }
   else console.log('OK: waybill modal correctly skipped for a restricted tote (verify-only, like the truck flow)');
 
-  // Unlike "enabled" (which intentionally resets on reload), the configured
-  // group numbers are plain settings and should survive a fresh page load.
+  // Every option -- including group-number restriction now -- resets to its
+  // default (off/empty) on reload, matching "enabled".
   await page.reload();
   await page.evaluate(src);
   await page.locator('.tv-card').waitFor({ timeout: 3000 });
-  var persistedValue = await page.locator('.tv-group-input').inputValue();
-  if (persistedValue !== '99, GRP1 ,88') { console.error('FAIL: restricted group setting should persist across reload, got', JSON.stringify(persistedValue)); process.exitCode = 1; }
-  else console.log('OK: restricted group setting persists across a page reload');
 
-  var groupToggleRow = page.locator('.tv-toggle-row').filter({ has: page.locator('[data-key="restrictionEnabled"]') });
-  var toggleLabel = (await groupToggleRow.locator('span').first().textContent()).trim();
-  if (toggleLabel !== '그룹번호 상차제한') { console.error('FAIL: toggle label should read "그룹번호 상차제한", got', toggleLabel); process.exitCode = 1; }
-  else console.log('OK: toggle label reads "그룹번호 상차제한"');
+  var groupToggleRow2 = page.locator('.tv-toggle-row').filter({ has: page.locator('[data-key="restrictionEnabled"]') });
+  var toggleCheckedAfterReload = await groupToggleRow2.locator('input[type=checkbox]').isChecked();
+  if (toggleCheckedAfterReload) { console.error('FAIL: 그룹번호 상차제한 toggle should reset to off after reload'); process.exitCode = 1; }
+  else console.log('OK: 그룹번호 상차제한 toggle resets to off after reload');
 
-  var toggleChecked = await groupToggleRow.locator('input[type=checkbox]').isChecked();
-  if (!toggleChecked) { console.error('FAIL: 그룹번호 상차제한 toggle should default to on'); process.exitCode = 1; }
-  else console.log('OK: 그룹번호 상차제한 toggle defaults to on');
+  var btnTextAfterReload = (await page.locator('.tv-activate-btn').textContent()).trim();
+  if (btnTextAfterReload !== '활성화') { console.error('FAIL: settings button should read "활성화" again after reload, got', btnTextAfterReload); process.exitCode = 1; }
+  else console.log('OK: settings button reads "활성화" again after reload');
 
-  var fieldVisibleWhenOn = await page.locator('.tv-group-field-row').isVisible();
-  if (!fieldVisibleWhenOn) { console.error('FAIL: group-number input should be visible while the toggle is on'); process.exitCode = 1; }
-  else console.log('OK: group-number input field is shown while the toggle is on');
+  await groupToggleRow2.click();
+  var groupInputAfterReload = await page.locator('.tv-group-input').inputValue();
+  if (groupInputAfterReload !== '') { console.error('FAIL: group-number input should reset to empty after reload, got', JSON.stringify(groupInputAfterReload)); process.exitCode = 1; }
+  else console.log('OK: group-number input resets to empty after reload');
+
+  // Re-configure and activate, then reopen settings via the gear button --
+  // the button must now read "저장" since we're already active.
+  await page.locator('.tv-group-input').fill('99, GRP1 ,88');
+  await page.locator('.tv-activate-btn').click();
+  await page.locator('.tv-gear-btn').click();
+  var reopenedBtnText = (await page.locator('.tv-activate-btn').textContent()).trim();
+  if (reopenedBtnText !== '저장') { console.error('FAIL: settings button should read "저장" once already active, got', reopenedBtnText); process.exitCode = 1; }
+  else console.log('OK: settings button reads "저장" once already active');
 
   // Turning the switch off must hide the input field and suppress
   // restriction WITHOUT clearing the configured group numbers underneath --
   // TOTE001's group (GRP1) is still in the (now-hidden) saved list.
-  await groupToggleRow.click();
+  var groupToggleRow3 = page.locator('.tv-toggle-row').filter({ has: page.locator('[data-key="restrictionEnabled"]') });
+  await groupToggleRow3.click();
 
   var fieldVisibleWhenOff = await page.locator('.tv-group-field-row').isVisible();
   if (fieldVisibleWhenOff) { console.error('FAIL: group-number input should be hidden once the toggle is off'); process.exitCode = 1; }

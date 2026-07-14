@@ -14,15 +14,15 @@ require('./server.js');
   await page.locator('.tv-card').waitFor({ timeout: 3000 });
 
   var initialBtnText = (await page.locator('.tv-activate-btn').textContent()).trim();
-  if (initialBtnText !== '저장') { console.error('FAIL: settings button should always say "저장", got', initialBtnText); process.exitCode = 1; }
-  else console.log('OK: settings button says "저장" before activation');
+  if (initialBtnText !== '활성화') { console.error('FAIL: settings button should say "활성화" before first activation, got', initialBtnText); process.exitCode = 1; }
+  else console.log('OK: settings button says "활성화" before first activation');
 
   await page.locator('.tv-activate-btn').click();
   await page.locator('.tv-status-badge').waitFor({ state: 'visible', timeout: 3000 });
   console.log('OK: activated');
 
   // Reopening settings later (e.g. via the gear button) while already
-  // running must still say "저장", not "실행 중" -- this is a settings
+  // running must say "저장", not "활성화" or "실행 중" -- this is a settings
   // window, not a running-status display.
   await page.locator('.tv-gear-btn').click();
   await page.locator('.tv-settings-card').waitFor({ state: 'visible', timeout: 3000 });

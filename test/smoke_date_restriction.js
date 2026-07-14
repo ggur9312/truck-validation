@@ -25,8 +25,7 @@ function sendScan(page, text){
 
   var dateToggleRow = page.locator('.tv-toggle-row').filter({ has: page.locator('[data-key="dateRestrictionEnabled"]') });
 
-  // All new options must default off, unlike the pre-existing group-number
-  // restriction (which defaults on).
+  // Every option (including group-number restriction) defaults off.
   var dateToggleChecked = await dateToggleRow.locator('input[type=checkbox]').isChecked();
   if (dateToggleChecked) { console.error('FAIL: 생성일시 상차제한 toggle should default to OFF'); process.exitCode = 1; }
   else console.log('OK: 생성일시 상차제한 toggle defaults to off');
@@ -103,9 +102,79 @@ function sendScan(page, text){
   await page.locator('.tv-verify-close').click();
   await page.locator('.tv-verify-overlay').waitFor({ state: 'hidden', timeout: 3000 });
 
+  // Open-ended ranges: a start date alone restricts that date and
+  // everything after it; an end date alone restricts that date and
+  // everything before it. Badge shows a trailing/leading "~" with no
+  // spaces in these cases (unlike the spaced "start ~ end" closed form).
+  await page.locator('.tv-gear-btn').click();
+  await page.locator('.tv-date-end-input').fill('');
+  await page.locator('.tv-date-start-input').fill('2026-02-01');
+  await page.locator('.tv-activate-btn').click();
+
+  var startOnlyBadgeText = (await page.locator('.tv-restrict-date-line').textContent()).trim();
+  if (startOnlyBadgeText !== '생성일시 : 2026-02-01~') {
+    console.error('FAIL: start-only badge should read "생성일시 : 2026-02-01~", got', startOnlyBadgeText);
+    process.exitCode = 1;
+  } else {
+    console.log('OK: start-only badge shows open-ended trailing-tilde format:', startOnlyBadgeText);
+  }
+
+  await sendScan(page, 'TOTE001');
+  await page.locator('.tv-verify').filter({ hasText: '업체A' }).waitFor({ timeout: 5000 });
+  var bannerTote001StartOnly = await page.locator('.tv-type-banner').getAttribute('class');
+  if (bannerTote001StartOnly.indexOf('restricted') !== -1) { console.error('FAIL: TOTE001 (2026-01-15) should NOT be restricted by a start-only range beginning 2026-02-01, got', bannerTote001StartOnly); process.exitCode = 1; }
+  else console.log('OK: tote before a start-only date is not restricted');
+  await page.locator('.tv-verify-close').click();
+  await page.locator('.tv-verify-overlay').waitFor({ state: 'hidden', timeout: 3000 });
+
+  await sendScan(page, 'TOTE002');
+  await page.locator('.tv-verify').filter({ hasText: '업체B' }).waitFor({ timeout: 5000 });
+  var bannerTote002StartOnly = await page.locator('.tv-type-banner').getAttribute('class');
+  if (bannerTote002StartOnly.indexOf('restricted') === -1) { console.error('FAIL: TOTE002 (2026-02-20) should be restricted by a start-only range beginning 2026-02-01, got', bannerTote002StartOnly); process.exitCode = 1; }
+  else console.log('OK: tote on/after a start-only date is restricted (open-ended forward)');
+  await page.locator('.tv-verify-close').click();
+  await page.locator('.tv-verify-overlay').waitFor({ state: 'hidden', timeout: 3000 });
+
+  await page.locator('.tv-gear-btn').click();
+  await page.locator('.tv-date-start-input').fill('');
+  await page.locator('.tv-date-end-input').fill('2026-02-01');
+  await page.locator('.tv-activate-btn').click();
+
+  var endOnlyBadgeText = (await page.locator('.tv-restrict-date-line').textContent()).trim();
+  if (endOnlyBadgeText !== '생성일시 : ~2026-02-01') {
+    console.error('FAIL: end-only badge should read "생성일시 : ~2026-02-01", got', endOnlyBadgeText);
+    process.exitCode = 1;
+  } else {
+    console.log('OK: end-only badge shows open-ended leading-tilde format:', endOnlyBadgeText);
+  }
+
+  await sendScan(page, 'TOTE001');
+  await page.locator('.tv-verify').filter({ hasText: '업체A' }).waitFor({ timeout: 5000 });
+  var bannerTote001EndOnly = await page.locator('.tv-type-banner').getAttribute('class');
+  if (bannerTote001EndOnly.indexOf('restricted') === -1) { console.error('FAIL: TOTE001 (2026-01-15) should be restricted by an end-only range ending 2026-02-01, got', bannerTote001EndOnly); process.exitCode = 1; }
+  else console.log('OK: tote on/before an end-only date is restricted (open-ended backward)');
+  await page.locator('.tv-verify-close').click();
+  await page.locator('.tv-verify-overlay').waitFor({ state: 'hidden', timeout: 3000 });
+
+  await sendScan(page, 'TOTE002');
+  await page.locator('.tv-verify').filter({ hasText: '업체B' }).waitFor({ timeout: 5000 });
+  var bannerTote002EndOnly = await page.locator('.tv-type-banner').getAttribute('class');
+  if (bannerTote002EndOnly.indexOf('restricted') !== -1) { console.error('FAIL: TOTE002 (2026-02-20) should NOT be restricted by an end-only range ending 2026-02-01, got', bannerTote002EndOnly); process.exitCode = 1; }
+  else console.log('OK: tote after an end-only date is not restricted');
+  await page.locator('.tv-verify-close').click();
+  await page.locator('.tv-verify-overlay').waitFor({ state: 'hidden', timeout: 3000 });
+
+  // Restore a closed range before continuing.
+  await page.locator('.tv-gear-btn').click();
+  await page.locator('.tv-date-start-input').fill('2026-01-01');
+  await page.locator('.tv-date-end-input').fill('2026-01-31');
+  await page.locator('.tv-activate-btn').click();
+
   // With BOTH restrictions configured, both detail lines must show at once
   // under the same shared header.
   await page.locator('.tv-gear-btn').click();
+  var groupToggleRowBoth = page.locator('.tv-toggle-row').filter({ has: page.locator('[data-key="restrictionEnabled"]') });
+  await groupToggleRowBoth.click();
   await page.locator('.tv-group-input').fill('GRP1');
   await page.locator('.tv-activate-btn').click();
 
@@ -143,10 +212,11 @@ function sendScan(page, text){
     console.log('OK: date-range input values reset to empty after reload');
   }
 
-  // The previously-persisted group-number restriction (from an earlier
-  // round's feature) must be unaffected by this reset behavior.
+  // Group-number restriction now resets on reload too, same as date
+  // restriction -- no setting persists across a reload anymore.
   var groupInputAfterReload = await page.locator('.tv-group-input').inputValue();
-  console.log('OK: group-number restriction setting still independent (value: ' + JSON.stringify(groupInputAfterReload) + ')');
+  if (groupInputAfterReload !== '') { console.error('FAIL: group-number input should also reset to empty after reload, got', JSON.stringify(groupInputAfterReload)); process.exitCode = 1; }
+  else console.log('OK: group-number input also resets to empty after reload');
 
   console.log(process.exitCode ? 'DATE RESTRICTION SMOKE TEST: SOME FAILURES' : 'DATE RESTRICTION SMOKE TEST: ALL PASSED');
   await browser.close();
