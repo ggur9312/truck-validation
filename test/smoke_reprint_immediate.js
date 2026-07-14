@@ -40,6 +40,21 @@ function sendScan(page, text){
   await page.waitForFunction(function(){ return !document.querySelector('#modalWaybillPrintList'); }, null, { timeout: 5000 });
   console.log('OK: scanning the reprint barcode completes reprint end to end');
 
+  // Some totes genuinely need reprinting more than once (lost/damaged label
+  // etc.) -- the barcode must stay available instead of vanishing after one use.
+  var stillVisible = await page.locator('.tv-reprint-area canvas').isVisible();
+  if (!stillVisible) { console.error('FAIL: reprint barcode should stay visible for repeated reprints'); process.exitCode = 1; }
+  else console.log('OK: reprint barcode is still visible after one reprint (does not disappear)');
+
+  await sendScan(page, 'TVCR');
+  await page.waitForSelector('#modalWaybillPrintList', { timeout: 5000, state: 'attached' }).catch(function(){});
+  await page.waitForFunction(function(){ return !document.querySelector('#modalWaybillPrintList'); }, null, { timeout: 5000 });
+  console.log('OK: scanning the reprint barcode a second time reprints again successfully');
+
+  var stillVisible2 = await page.locator('.tv-reprint-area canvas').isVisible();
+  if (!stillVisible2) { console.error('FAIL: reprint barcode should still be visible after a second reprint'); process.exitCode = 1; }
+  else console.log('OK: reprint barcode remains available for further reprints');
+
   console.log(process.exitCode ? 'REPRINT IMMEDIATE SMOKE TEST: SOME FAILURES' : 'REPRINT IMMEDIATE SMOKE TEST: ALL PASSED');
   await browser.close();
   process.exit(process.exitCode || 0);

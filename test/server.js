@@ -25,11 +25,27 @@ var TYPE_HTML_2 = '<html><body>' +
   '<table><tr><td>x</td><td>x</td><td>x</td><td>트럭</td></tr></table>' +
   '</body></html>';
 
+var manyProductRows = '';
+for (var i = 1; i <= 15; i++) {
+  manyProductRows += '<tr><td>x</td><td>x</td><td>x</td><td>상품' + i + '</td><td>BARMANY' + i + '</td><td>1</td></tr>';
+}
+var DETAIL_HTML_MANY = '<html><body>' +
+  '<table><tr><td>TOTE_MANY</td><td>x</td><td>x</td><td>x</td><td>업체C</td><td>x</td><td>x</td><td>15</td></tr></table>' +
+  '<table>' + manyProductRows + '</table>' +
+  '</body></html>';
+
+var TYPE_HTML_MANY = '<html><body>' +
+  '<table><tr><td>x</td><td>x</td><td>x</td><td>x</td></tr></table>' +
+  '<table><tr><td>x</td><td>x</td><td>x</td><td>택배</td></tr></table>' +
+  '</body></html>';
+
 var routes = {
   '/detail/TOTE001': DETAIL_HTML,
   '/type/TOTE001': TYPE_HTML,
   '/detail/TOTE002': DETAIL_HTML_2,
-  '/type/TOTE002': TYPE_HTML_2
+  '/type/TOTE002': TYPE_HTML_2,
+  '/detail/TOTE_MANY': DETAIL_HTML_MANY,
+  '/type/TOTE_MANY': TYPE_HTML_MANY
 };
 
 var server = http.createServer(function(req, res){
