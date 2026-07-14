@@ -157,34 +157,37 @@ var CSS =
   '.tv-verify-header-icon.truck{background:var(--tv-truck-bg);color:var(--tv-truck-fg)}' +
   '.tv-verify-header-icon.courier{background:var(--tv-courier-bg);color:var(--tv-courier-fg)}' +
   '.tv-verify-header-icon.restricted{background:var(--tv-restricted-bg);color:var(--tv-restricted-fg)}' +
-  '.tv-verify-header-title{font-size:18px;font-weight:800;flex:1;min-width:0}' +
-  '.tv-scan-status-pill{flex-shrink:0;padding:5px 12px;border-radius:999px;font-size:13px;font-weight:800;background:var(--tv-surface-3);color:var(--tv-text-soft);transition:background .2s,color .2s}' +
+  '.tv-verify-header-title{font-size:18px;font-weight:700;flex:1;min-width:0}' +
+  '.tv-scan-status-pill{flex-shrink:0;padding:5px 12px;border-radius:999px;font-size:13px;font-weight:700;background:var(--tv-surface-3);color:var(--tv-text-soft);transition:background .2s,color .2s}' +
   '.tv-scan-status-pill.ok{background:var(--tv-success);color:#0c2c20}' +
   '.tv-scan-status-pill.err{background:var(--tv-error);color:#3a0d0d}' +
   '.tv-verify-close{position:absolute;right:16px;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:50%;border:none;background:var(--tv-surface-3);color:var(--tv-text-soft);font-size:14px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s,color .15s;overflow:hidden}' +
   '.tv-verify-close:hover{background:var(--tv-surface-2);color:var(--tv-text)}' +
   '.tv-verify-body{padding:22px 24px 24px;display:flex;flex-direction:column;flex:1;min-height:0;overflow-y:auto;overflow-x:hidden}' +
-  '.tv-type-banner{flex-shrink:0;display:flex;align-items:center;justify-content:center;gap:10px;margin:8px 0 18px;padding:14px 22px;border-radius:18px;font-size:21px;font-weight:800;color:#fff;box-shadow:0 10px 24px rgba(0,0,0,.18);animation:tvTypeGlow 2.4s ease-in-out infinite}' +
-  '.tv-type-banner.truck{background:linear-gradient(135deg,#f87171,#c93f3f)}' +
-  '.tv-type-banner.courier{background:linear-gradient(135deg,#34d399,#1f9d6c)}' +
-  '.tv-type-banner.restricted{background:linear-gradient(135deg,#fb923c,#c2680f)}' +
-  '.tv-type-banner-icon{font-size:25px}' +
-  '@keyframes tvTypeGlow{0%,100%{box-shadow:inset 0 0 0 0 rgba(255,255,255,0);filter:brightness(1)}50%{box-shadow:inset 0 0 50px 8px rgba(255,255,255,.45);filter:brightness(1.14)}}' +
 
-  '.tv-verify-hero{flex-shrink:0;display:flex;flex-direction:row;align-items:center;justify-content:center;text-align:center;gap:12px;padding:2px 0 8px}' +
+  '.tv-verify-hero{flex-shrink:0;display:flex;flex-direction:row;align-items:center;justify-content:center;text-align:center;gap:12px;padding:2px 0 14px}' +
   '.tv-hero-icon{flex-shrink:0;width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:19px;background:linear-gradient(135deg,var(--tv-accent),var(--tv-accent-dark));color:#fff;box-shadow:0 0 0 6px rgba(79,124,255,.14);animation:tvHeroPop .35s var(--tv-ease)}' +
   '.tv-hero-icon.done{background:linear-gradient(135deg,var(--tv-success),#1f9d6c);box-shadow:0 0 0 6px rgba(52,211,153,.16)}' +
   '@keyframes tvHeroPop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:scale(1)}}' +
   '.tv-hero-text{display:flex;flex-direction:column;gap:2px;min-width:0}' +
-  '.tv-hero-title{font-size:19px;font-weight:800;letter-spacing:-.2px}' +
+  '.tv-hero-title{font-size:19px;font-weight:700;letter-spacing:-.2px}' +
   '.tv-hero-sub{font-size:13.5px;color:var(--tv-text-soft);font-weight:500}' +
 
   '.tv-stat-grid{flex-shrink:0;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}' +
   '.tv-stat-tile{background:var(--tv-surface-2);border:1px solid var(--tv-border);border-radius:14px;padding:14px 10px;text-align:center;box-shadow:var(--tv-elev-1)}' +
   '.tv-stat-icon{width:32px;height:32px;margin:0 auto 8px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff}' +
-  '.tv-stat-icon.vendor{background:#4f7cff}.tv-stat-icon.tote{background:#8b5cf6}.tv-stat-icon.qty{background:#f59e0b}' +
+  '.tv-stat-icon.vendor{background:#4f7cff}.tv-stat-icon.tote{background:#8b5cf6}' +
   '.tv-stat-label{font-size:12px;color:var(--tv-text-soft);font-weight:700;margin-bottom:4px}' +
-  '.tv-stat-value{font-size:17px;font-weight:800;color:var(--tv-text);word-break:break-all}' +
+  '.tv-stat-value{font-size:17px;font-weight:700;color:var(--tv-text);word-break:break-all}' +
+
+  '.tv-type-banner{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;border-radius:14px;padding:14px 10px;text-align:center;box-shadow:0 8px 18px rgba(0,0,0,.16);animation:tvTypeGlow 2.4s ease-in-out infinite}' +
+  '.tv-type-banner.truck{background:linear-gradient(135deg,#f87171,#c93f3f)}' +
+  '.tv-type-banner.courier{background:linear-gradient(135deg,#34d399,#1f9d6c)}' +
+  '.tv-type-banner.restricted{background:linear-gradient(135deg,#fb923c,#c2680f)}' +
+  '.tv-type-banner-label{font-size:11.5px;font-weight:600;letter-spacing:.2px;color:rgba(255,255,255,.85)}' +
+  '.tv-type-banner-value{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:5px;font-size:14px;font-weight:700;color:#fff;word-break:keep-all}' +
+  '.tv-type-banner-icon{font-size:16px}' +
+  '@keyframes tvTypeGlow{0%,100%{box-shadow:inset 0 0 0 0 rgba(255,255,255,0);filter:brightness(1)}50%{box-shadow:inset 0 0 22px 5px rgba(255,255,255,.45);filter:brightness(1.12)}}' +
 
   '.tv-tip-bar{flex-shrink:0;display:flex;align-items:center;gap:8px;background:var(--tv-surface-2);border:1px solid var(--tv-border);border-radius:12px;padding:10px 14px;font-size:13.5px;color:var(--tv-text-soft);margin-bottom:16px}' +
   '.tv-tip-icon{flex-shrink:0;color:var(--tv-accent);font-weight:800}' +
@@ -231,7 +234,7 @@ var CSS =
   '.tv-product-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;background:var(--tv-surface-2);border:1px solid var(--tv-border);transition:background .2s,border-color .2s}' +
   '.tv-product-row.tv-row-enter{animation:tvRowIn .3s var(--tv-ease)}' +
   '@keyframes tvRowIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}' +
-  '.tv-product-status{flex-shrink:0;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;background:var(--tv-surface-3);color:var(--tv-text-soft);border:2px solid var(--tv-border)}' +
+  '.tv-product-status{flex-shrink:0;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:var(--tv-surface-3);color:var(--tv-text-soft);border:2px solid var(--tv-border)}' +
   '.tv-product-body{flex:1;min-width:0}' +
   '.tv-product-top{display:flex;justify-content:space-between;align-items:center;font-size:16px;font-weight:700;margin-bottom:6px;gap:10px}' +
   '.tv-product-name{display:flex;flex-direction:column;gap:2px;min-width:0}' +
@@ -859,11 +862,10 @@ function openVerifyModal(){
     '</div>' +
     '<div class="tv-verify-body">' +
     '<div class="tv-verify-hero"><span class="tv-hero-icon">📦</span><div class="tv-hero-text"><div class="tv-hero-title"></div><div class="tv-hero-sub"></div></div></div>' +
-    '<div class="tv-type-banner ' + typeClass + '"><span class="tv-type-banner-icon">' + typeIcon + '</span><span>' + typeText + '</span></div>' +
     '<div class="tv-stat-grid">' +
     '<div class="tv-stat-tile"><span class="tv-stat-icon vendor">🏢</span><div class="tv-stat-label">업체명</div><div class="tv-stat-value">' + escapeHtml(info.vendor) + '</div></div>' +
     '<div class="tv-stat-tile"><span class="tv-stat-icon tote">📦</span><div class="tv-stat-label">토트바코드</div><div class="tv-stat-value">' + escapeHtml(info.toteBarcode) + '</div></div>' +
-    '<div class="tv-stat-tile"><span class="tv-stat-icon qty">📊</span><div class="tv-stat-label">전체 집품수량</div><div class="tv-stat-value">' + info.totalQty + '</div></div>' +
+    '<div class="tv-type-banner ' + typeClass + '"><div class="tv-type-banner-label">배송 방식</div><div class="tv-type-banner-value"><span class="tv-type-banner-icon">' + typeIcon + '</span><span>' + typeText + '</span></div></div>' +
     '</div>' +
     '<div class="tv-tip-bar"><span class="tv-tip-icon">ℹ</span><span>모든 상품을 스캔하면 자동으로 다음 단계로 진행됩니다.</span></div>' +
     '<div class="tv-product-list"></div>' +
@@ -968,7 +970,7 @@ function updateHero(){
   icon.classList.toggle('done', allDone);
   icon.textContent = allDone ? '✓' : '📦';
   card.querySelector('.tv-hero-title').textContent = allDone ? '검증 완료' : '검증 중 (' + scannedQty + '/' + totalQty + ')';
-  card.querySelector('.tv-hero-sub').textContent = allDone ? '상품 정보가 일치합니다' : '상품 바코드를 스캔하세요';
+  card.querySelector('.tv-hero-sub').textContent = allDone ? '상품 정보가 일치합니다' : ('전체 집품수량 ' + state.toteInfo.totalQty + '개 · 상품 바코드를 스캔하세요');
   if (allDone) completeVerification();
 }
 
