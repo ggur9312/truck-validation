@@ -61,6 +61,21 @@ function sendScan(page, text){
     console.log('OK: blocking modal shown for an already-completed product:', modalText.trim());
   }
 
+  var scannedText = (await page.locator('.tv-mismatch-scanned').textContent()).trim();
+  if (scannedText.indexOf('BAR001') === -1) { console.error('FAIL: modal should show the barcode that was actually scanned, got', scannedText); process.exitCode = 1; }
+  else console.log('OK: modal shows the scanned barcode:', scannedText);
+
+  var backdropAlpha = await page.locator('.tv-mismatch-overlay').evaluate(function(el){
+    var m = getComputedStyle(el).backgroundColor.match(/[\d.]+/g);
+    return m ? parseFloat(m[3] === undefined ? '1' : m[3]) : null;
+  });
+  if (backdropAlpha === null || backdropAlpha < 0.9) {
+    console.error('FAIL: mismatch modal backdrop should be opaque (not see-through), got alpha', backdropAlpha);
+    process.exitCode = 1;
+  } else {
+    console.log('OK: mismatch modal backdrop is opaque (alpha=' + backdropAlpha + ')');
+  }
+
   // Unlike the old toast (which auto-hid after 2s), this modal must stay up
   // until explicitly dismissed.
   await page.waitForTimeout(2200);
@@ -79,6 +94,9 @@ function sendScan(page, text){
   var scanPromise2 = sendScan(page, 'BAR_TOTALLY_UNKNOWN');
   await page.locator('.tv-mismatch-overlay.tv-show .tv-mismatch-message').filter({ hasText: '등록되지 않은' }).waitFor({ timeout: 2000 });
   console.log('OK: blocking modal shown for a barcode not in the expected list at all');
+  var scannedText2 = (await page.locator('.tv-mismatch-scanned').textContent()).trim();
+  if (scannedText2.indexOf('BAR_TOTALLY_UNKNOWN') === -1) { console.error('FAIL: modal should show the unrecognized scanned barcode, got', scannedText2); process.exitCode = 1; }
+  else console.log('OK: modal shows the unrecognized scanned barcode:', scannedText2);
   await scanPromise2;
 
   // Enter must also dismiss it (scanners emit Enter after every scan).

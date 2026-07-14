@@ -128,12 +128,14 @@ var CSS =
   '.tv-overlay{position:fixed;inset:0;z-index:2147483000;display:none;align-items:center;justify-content:center;background:rgba(8,10,18,.6);backdrop-filter:blur(10px) saturate(150%);-webkit-backdrop-filter:blur(10px) saturate(150%)}' +
   '.tv-overlay.tv-show{display:flex}' +
   '.tv-overlay.tv-corner{align-items:flex-end;justify-content:flex-start;background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;padding:0 0 92px 22px}' +
-  '.tv-mismatch-overlay{z-index:2147483550}' +
+  '.tv-mismatch-overlay{z-index:2147483550;background:rgba(4,5,9,.97);backdrop-filter:none;-webkit-backdrop-filter:none}' +
   '.tv-mismatch-card{background:var(--tv-surface);color:var(--tv-text);border-radius:20px;box-shadow:var(--tv-elev-2);border:1px solid var(--tv-border);box-sizing:border-box;animation:tvPop .22s var(--tv-ease);position:relative;width:340px;max-width:88vw;padding:34px 28px 26px;text-align:center}' +
   '.tv-mismatch-close{position:absolute;right:14px;top:14px;width:32px;height:32px;border-radius:50%;border:none;background:var(--tv-surface-3);color:var(--tv-text-soft);font-size:14px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s,color .15s}' +
   '.tv-mismatch-close:hover{background:var(--tv-surface-2);color:var(--tv-text)}' +
   '.tv-mismatch-icon{font-size:40px;margin-bottom:14px}' +
   '.tv-mismatch-message{font-size:17px;font-weight:800;line-height:1.4;color:var(--tv-error)}' +
+  '.tv-mismatch-scanned{margin-top:10px;font-size:14px;font-weight:700;color:var(--tv-text-soft)}' +
+  '.tv-mismatch-scanned span{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:var(--tv-text);font-weight:800}' +
   '.tv-mismatch-hint{margin-top:16px;font-size:12.5px;color:var(--tv-text-soft)}' +
 
   '.tv-card{background:var(--tv-surface);color:var(--tv-text);border-radius:20px;box-shadow:var(--tv-elev-2);border:1px solid var(--tv-border);box-sizing:border-box;animation:tvPop .22s var(--tv-ease)}' +
@@ -282,6 +284,7 @@ function initUI(){
     '<button class="tv-mismatch-close" title="닫기">✕</button>' +
     '<div class="tv-mismatch-icon">❌</div>' +
     '<div class="tv-mismatch-message"></div>' +
+    '<div class="tv-mismatch-scanned"></div>' +
     '<div class="tv-mismatch-hint">Enter 또는 닫기 버튼으로 닫으세요</div>' +
     '</div>' +
     '</div>' +
@@ -301,6 +304,7 @@ function initUI(){
   ui.verifyOverlay = shadow.querySelector('.tv-verify-overlay');
   ui.mismatchOverlay = shadow.querySelector('.tv-mismatch-overlay');
   ui.mismatchMessage = shadow.querySelector('.tv-mismatch-message');
+  ui.mismatchScanned = shadow.querySelector('.tv-mismatch-scanned');
   shadow.querySelector('.tv-mismatch-close').addEventListener('click', hideMismatchModal);
   attachRipple(shadow.querySelector('.tv-mismatch-close'));
   ui.waybillOverlay = shadow.querySelector('.tv-waybill-area');
@@ -350,8 +354,9 @@ function hideStatus(){
   ui.statusOverlay.classList.remove('tv-show');
 }
 
-function showMismatchModal(message){
+function showMismatchModal(message, scannedBarcode){
   ui.mismatchMessage.textContent = message;
+  ui.mismatchScanned.innerHTML = '스캔한 바코드 : <span>' + escapeHtml(scannedBarcode) + '</span>';
   ui.mismatchOverlay.classList.add('tv-show');
 }
 
@@ -966,12 +971,12 @@ function updateHero(){
   var card = ui.verifyOverlay.querySelector('.tv-card');
   var icon = card && card.querySelector('.tv-hero-icon');
   if (!icon) return;
-  var total = 0, doneCount = 0;
-  state.expected.forEach(function(p){ total++; if (p.scanned >= p.required) doneCount++; });
-  var allDone = total > 0 && doneCount === total;
+  var totalQty = 0, scannedQty = 0;
+  state.expected.forEach(function(p){ totalQty += p.required; scannedQty += p.scanned; });
+  var allDone = totalQty > 0 && scannedQty === totalQty;
   icon.classList.toggle('done', allDone);
   icon.textContent = allDone ? '✓' : '📦';
-  card.querySelector('.tv-hero-title').textContent = allDone ? '검증 완료' : '검증 중 (' + doneCount + '/' + total + ')';
+  card.querySelector('.tv-hero-title').textContent = allDone ? '검증 완료' : '검증 중 (' + scannedQty + '/' + totalQty + ')';
   card.querySelector('.tv-hero-sub').textContent = allDone ? '상품 정보가 일치합니다' : '상품 바코드를 스캔하세요';
   if (allDone) completeVerification();
 }
@@ -990,14 +995,14 @@ function markProductScan(barcode){
   if (!p) {
     updateScanStatusPill(false);
     flashCardError();
-    showMismatchModal('❌ 등록되지 않은 상품 바코드입니다');
+    showMismatchModal('❌ 등록되지 않은 상품 바코드입니다', barcode);
     return;
   }
   if (p.scanned >= p.required) {
     updateScanStatusPill(false);
     flashCardError();
     focusProductRow(barcode, false);
-    showMismatchModal('❌ 이미 스캔 완료된 상품입니다');
+    showMismatchModal('❌ 이미 스캔 완료된 상품입니다', barcode);
     return;
   }
   p.scanned += 1;

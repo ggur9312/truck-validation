@@ -91,6 +91,14 @@ function sendScan(page, text){
   else console.log('OK: top-right active status badge visible');
 
   await sendScan(page, 'BAR001');
+
+  // Hero counter tracks scanned *units* against total required units (BAR001
+  // needs 2 + BAR002 needs 1 = 3 total), not "product types done" -- after
+  // one of BAR001's two units, it should read 1/3, not 0/2.
+  var heroAfterOne = (await page.locator('.tv-hero-title').textContent()).trim();
+  if (heroAfterOne !== '검증 중 (1/3)') { console.error('FAIL: hero counter should read "검증 중 (1/3)" after scanning 1 of 3 total required units, got', heroAfterOne); process.exitCode = 1; }
+  else console.log('OK: hero counter tracks scanned units against total required units:', heroAfterOne);
+
   await sendScan(page, 'BAR001');
   var afterFirstTwo = await page.locator('.tv-product-row').first().textContent();
   console.log('DEBUG product row after 2x BAR001 scan:', afterFirstTwo.trim());
