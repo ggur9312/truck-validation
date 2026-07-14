@@ -105,9 +105,13 @@ function sendScan(page, text){
     console.log('OK: banner shows restriction phrase + correct vendor name:', bannerText.trim());
   }
 
-  var bannerBg = await page.locator('.tv-type-banner').evaluate(function(el){ return getComputedStyle(el).backgroundImage; });
-  if (bannerBg.indexOf('251, 146, 60') === -1) { console.error('FAIL: banner should use the orange gradient, got', bannerBg); process.exitCode = 1; }
-  else console.log('OK: banner uses the orange restricted gradient');
+  var iconBg = await page.locator('.tv-type-icon').evaluate(function(el){ return getComputedStyle(el).backgroundColor; });
+  if (iconBg.indexOf('251, 146, 60') === -1) { console.error('FAIL: delivery-type icon should use the restricted orange color, got', iconBg); process.exitCode = 1; }
+  else console.log('OK: delivery-type icon uses the orange restricted color:', iconBg);
+
+  var cardBorder = await page.locator('.tv-verify').evaluate(function(el){ return getComputedStyle(el).boxShadow; });
+  if (cardBorder.indexOf('251, 146, 60') === -1) { console.error('FAIL: verify card border should use the restricted orange color, got', cardBorder); process.exitCode = 1; }
+  else console.log('OK: verify card border uses the orange restricted color');
 
   // Fully scan both products -- verification should still run normally.
   await sendScan(page, 'BAR001');
