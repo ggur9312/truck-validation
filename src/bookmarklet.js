@@ -133,8 +133,8 @@ function drawCode128(canvas, text, opts){
 
 var CSS =
   ':host{all:initial;font-family:"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;' +
-  '--tv-surface:#1b2132;--tv-surface-2:#242b40;--tv-surface-3:#2d3552;--tv-text:#f2f4fa;--tv-text-soft:#aab3c6;' +
-  '--tv-accent:#4f7cff;--tv-accent-dark:#3a63e0;--tv-border:rgba(255,255,255,.09);--tv-success:#34d399;--tv-success-tint:rgba(52,211,153,.16);--tv-error:#f87171;' +
+  '--tv-surface:#ffffff;--tv-surface-2:#eef1f7;--tv-surface-3:#e2e6f0;--tv-text:#161a26;--tv-text-soft:#5b6274;' +
+  '--tv-accent:#4f7cff;--tv-accent-dark:#3a63e0;--tv-border:rgba(20,25,45,.1);--tv-success:#34d399;--tv-success-tint:rgba(52,211,153,.22);--tv-error:#f87171;' +
   '--tv-truck-bg:rgba(248,113,113,.16);--tv-truck-fg:#f87171;--tv-courier-bg:rgba(52,211,153,.16);--tv-courier-fg:#34d399;--tv-restricted-bg:rgba(251,146,60,.18);--tv-restricted-fg:#fb923c;' +
   '--tv-elev-1:0 1px 2px rgba(0,0,0,.35);--tv-elev-2:0 10px 28px rgba(0,0,0,.45),0 2px 8px rgba(0,0,0,.3);--tv-elev-3:0 24px 60px rgba(0,0,0,.55),0 6px 18px rgba(0,0,0,.35);' +
   '--tv-ease:cubic-bezier(.17,.67,.35,1)}' +
@@ -169,8 +169,7 @@ var CSS =
 
   '.tv-settings-card{width:340px;max-width:88vw;padding:24px}' +
   '.tv-settings-title{font-size:20.5px;font-weight:600;margin-bottom:14px;letter-spacing:-.2px}' +
-  '.tv-verify{width:680px;max-width:95vw;max-height:88vh;padding:0;overflow:hidden;display:flex;flex-direction:column;' +
-  '--tv-surface:#ffffff;--tv-surface-2:#eef1f7;--tv-surface-3:#e2e6f0;--tv-text:#161a26;--tv-text-soft:#5b6274;--tv-border:rgba(20,25,45,.1);--tv-success-tint:rgba(52,211,153,.22)}' +
+  '.tv-verify{width:680px;max-width:95vw;max-height:88vh;padding:0;overflow:hidden;display:flex;flex-direction:column}' +
   '.tv-verify.truck{box-shadow:0 0 0 5px rgba(248,113,113,.6),var(--tv-elev-2)}' +
   '.tv-verify.courier{box-shadow:0 0 0 5px rgba(52,211,153,.6),var(--tv-elev-2)}' +
   '.tv-verify.restricted{box-shadow:0 0 0 5px rgba(251,146,60,.65),var(--tv-elev-2)}' +
