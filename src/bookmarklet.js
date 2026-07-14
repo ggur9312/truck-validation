@@ -478,7 +478,11 @@ function onGlobalKeydown(e){
 }
 
 function handleScan(code, isCtrl){
-  if (state.mode === 'IDLE' && !isCtrl) { startSearch(code); return; }
+  if (!isCtrl && (state.mode === 'IDLE' || state.mode === 'REPRINT_READY')) {
+    if (state.mode === 'REPRINT_READY') hideReprintOverlay();
+    startSearch(code);
+    return;
+  }
   if (state.mode === 'VERIFYING') {
     if (isCtrl && code === CTRL.SKIP) completeVerification();
     else if (!isCtrl) markProductScan(code);
