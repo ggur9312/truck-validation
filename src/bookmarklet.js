@@ -135,9 +135,9 @@ var CSS =
   '.tv-type-banner.truck{background:linear-gradient(135deg,#f87171,#c93f3f)}' +
   '.tv-type-banner.courier{background:linear-gradient(135deg,#34d399,#1f9d6c)}' +
   '.tv-type-banner-icon{font-size:25px}' +
-  '@keyframes tvTypeGlow{0%,100%{box-shadow:inset 0 0 0 0 rgba(255,255,255,0),0 0 0 0 rgba(255,255,255,0)}50%{box-shadow:inset 0 0 40px 0 rgba(255,255,255,.14),0 0 0 4px rgba(255,255,255,.24)}}' +
+  '@keyframes tvTypeGlow{0%,100%{box-shadow:inset 0 0 0 0 rgba(255,255,255,0);filter:brightness(1)}50%{box-shadow:inset 0 0 50px 8px rgba(255,255,255,.45);filter:brightness(1.14)}}' +
 
-  '.tv-verify-hero{display:flex;flex-direction:row;align-items:center;text-align:left;gap:14px;padding:12px 0 14px}' +
+  '.tv-verify-hero{display:flex;flex-direction:row;align-items:center;justify-content:center;text-align:center;gap:12px;padding:2px 0 8px}' +
   '.tv-hero-icon{flex-shrink:0;width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:19px;background:var(--tv-accent);color:#fff;box-shadow:0 0 0 6px rgba(79,124,255,.14);animation:tvHeroPop .35s var(--tv-ease)}' +
   '.tv-hero-icon.done{background:var(--tv-success);box-shadow:0 0 0 6px rgba(52,211,153,.16)}' +
   '@keyframes tvHeroPop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:scale(1)}}' +
