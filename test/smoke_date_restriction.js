@@ -82,9 +82,17 @@ function sendScan(page, text){
   if (bannerClass.indexOf('restricted') === -1) { console.error('FAIL: tote created 2026-01-15 should be restricted by the 2026-01-01~2026-01-31 range, got', bannerClass); process.exitCode = 1; }
   else console.log('OK: tote whose creation date falls inside the configured range is restricted');
 
-  var dateRestrictTypeText = await page.locator('.tv-type-value').textContent();
-  if (dateRestrictTypeText.indexOf('생성일시 상차제한') === -1) { console.error('FAIL: delivery-type value should disclose the date restriction type, got', dateRestrictTypeText); process.exitCode = 1; }
-  else console.log('OK: delivery-type value discloses the date restriction type:', dateRestrictTypeText.trim());
+  var dateRestrictTypeText = await page.locator('.tv-type-label').textContent();
+  if (dateRestrictTypeText.indexOf('생성일시 상차제한') === -1) { console.error('FAIL: delivery-type label should disclose the date restriction type, got', dateRestrictTypeText); process.exitCode = 1; }
+  else console.log('OK: delivery-type label discloses the date restriction type:', dateRestrictTypeText.trim());
+
+  var dateRestrictDetail = await page.locator('.tv-type-detail').textContent();
+  if (dateRestrictDetail.indexOf('생성일시 : 2026-01-01 ~ 2026-01-31') === -1) {
+    console.error('FAIL: delivery-type tile should show the configured date range, got', dateRestrictDetail);
+    process.exitCode = 1;
+  } else {
+    console.log('OK: delivery-type tile shows the configured date range:', dateRestrictDetail.trim());
+  }
 
   await sendScan(page, 'BAR001');
   await sendScan(page, 'BAR001');

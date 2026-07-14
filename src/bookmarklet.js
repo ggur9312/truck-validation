@@ -196,8 +196,9 @@ var CSS =
   '.tv-type-banner.courier{background:linear-gradient(135deg,#34d399,#1f9d6c);animation:tvTypeGlowCourier 1.8s ease-in-out infinite}' +
   '.tv-type-banner.restricted{background:linear-gradient(135deg,#fb923c,#c2680f);animation:tvTypeGlowRestricted 1.8s ease-in-out infinite}' +
   '.tv-type-icon{width:40px;height:40px;margin:0 auto 8px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;background:rgba(255,255,255,.25);color:#fff}' +
-  '.tv-type-label{font-size:13.5px;font-weight:600;color:rgba(255,255,255,.85);margin-bottom:4px}' +
-  '.tv-type-value{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:5px;font-size:19px;font-weight:700;color:#fff;word-break:keep-all}' +
+  '.tv-type-label{font-size:13.5px;font-weight:600;color:rgba(255,255,255,.85);margin-bottom:4px;word-break:keep-all}' +
+  '.tv-type-detail{font-size:12.5px;font-weight:500;color:rgba(255,255,255,.85);margin-top:2px;word-break:keep-all}' +
+  '.tv-type-value{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:5px;font-size:30px;font-weight:600;color:#fff;word-break:keep-all;margin-top:2px}' +
   '@keyframes tvTypeGlowTruck{0%,100%{box-shadow:0 8px 20px rgba(0,0,0,.2),inset 0 0 0 0 rgba(255,255,255,0);filter:brightness(1)}50%{box-shadow:0 8px 20px rgba(0,0,0,.2),inset 0 0 26px 6px rgba(255,255,255,.5);filter:brightness(1.15)}}' +
   '@keyframes tvTypeGlowCourier{0%,100%{box-shadow:0 8px 20px rgba(0,0,0,.2),inset 0 0 0 0 rgba(255,255,255,0);filter:brightness(1)}50%{box-shadow:0 8px 20px rgba(0,0,0,.2),inset 0 0 26px 6px rgba(255,255,255,.5);filter:brightness(1.15)}}' +
   '@keyframes tvTypeGlowRestricted{0%,100%{box-shadow:0 8px 20px rgba(0,0,0,.2),inset 0 0 0 0 rgba(255,255,255,0);filter:brightness(1)}50%{box-shadow:0 8px 20px rgba(0,0,0,.2),inset 0 0 26px 6px rgba(255,255,255,.5);filter:brightness(1.15)}}' +
@@ -853,12 +854,30 @@ function processRow(row){
   });
 }
 
+function typeBannerDetailLines(info){
+  var lines = '';
+  if (info.restrictedByGroup) {
+    lines += '<div class="tv-type-detail">그룹번호 : ' + escapeHtml(getRestrictedGroupList().join(', ')) + '</div>';
+  }
+  if (info.restrictedByDate) {
+    var start = state.settings.dateRestrictionStart;
+    var end = state.settings.dateRestrictionEnd;
+    var rangeText = start && end ? (start + ' ~ ' + end) : start ? (start + '~') : ('~' + end);
+    lines += '<div class="tv-type-detail">생성일시 : ' + escapeHtml(rangeText) + '</div>';
+  }
+  return lines;
+}
+
 function openVerifyModal(){
   var info = state.toteInfo;
   var typeIcon = info.isRestricted ? '🚫' : (info.isTruck ? '🚚' : '📦');
   var restrictLabel = info.restrictedByGroup && info.restrictedByDate ? '그룹번호+생성일시 상차제한' : (info.restrictedByGroup ? '그룹번호 상차제한' : '생성일시 상차제한');
-  var typeText = info.isRestricted ? (restrictLabel + ' · ' + escapeHtml(info.restrictedVendor)) : (info.isTruck ? '트럭' : '택배');
   var typeClass = info.isRestricted ? 'restricted' : (info.isTruck ? 'truck' : 'courier');
+  var typeLabel = info.isRestricted ? restrictLabel : '배송 방식';
+  var typeValue = info.isRestricted ? escapeHtml(info.restrictedVendor) : (info.isTruck ? '트럭' : '택배');
+  var typeBannerHtml = '<div class="tv-type-banner ' + typeClass + '"><span class="tv-type-icon">' + typeIcon + '</span><div class="tv-type-label">' + typeLabel + '</div>' +
+    (info.isRestricted ? typeBannerDetailLines(info) : '') +
+    '<div class="tv-type-value">' + typeValue + '</div></div>';
   ui.verifyOverlay.innerHTML =
     '<div class="tv-card tv-verify ' + typeClass + '">' +
     '<div class="tv-verify-header">' +
@@ -877,7 +896,7 @@ function openVerifyModal(){
     '<div class="tv-stat-grid">' +
     '<div class="tv-stat-tile"><span class="tv-stat-icon vendor">🏢</span><div class="tv-stat-label">업체명</div><div class="tv-stat-value">' + escapeHtml(info.vendor) + '</div></div>' +
     '<div class="tv-stat-tile"><span class="tv-stat-icon tote">📦</span><div class="tv-stat-label">토트바코드</div><div class="tv-stat-value">' + escapeHtml(info.toteBarcode) + '</div><div class="tv-stat-caption">집품 수량 ' + info.totalQty + '개</div></div>' +
-    '<div class="tv-type-banner ' + typeClass + '"><span class="tv-type-icon">' + typeIcon + '</span><div class="tv-type-label">배송 방식</div><div class="tv-type-value">' + typeText + '</div></div>' +
+    typeBannerHtml +
     '</div>' +
     '<div class="tv-product-list"></div>' +
     '<div class="tv-skip-area"><div class="tv-skip-label">검증 건너뛰기 (스캔)</div><div class="tv-barcode-wrap"><canvas class="tv-skip-barcode"></canvas></div></div>' +

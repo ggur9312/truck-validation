@@ -109,9 +109,21 @@ function sendScan(page, text){
   if (tileBg.indexOf('251, 146, 60') === -1) { console.error('FAIL: delivery-type tile should use the restricted orange gradient, got', tileBg); process.exitCode = 1; }
   else console.log('OK: delivery-type tile uses the orange restricted gradient');
 
-  var restrictTypeText = await page.locator('.tv-type-value').textContent();
-  if (restrictTypeText.indexOf('그룹번호 상차제한') === -1) { console.error('FAIL: delivery-type value should disclose the group-number restriction type, got', restrictTypeText); process.exitCode = 1; }
-  else console.log('OK: delivery-type value discloses the restriction type:', restrictTypeText.trim());
+  var restrictTypeText = await page.locator('.tv-type-label').textContent();
+  if (restrictTypeText.indexOf('그룹번호 상차제한') === -1) { console.error('FAIL: delivery-type label should disclose the group-number restriction type, got', restrictTypeText); process.exitCode = 1; }
+  else console.log('OK: delivery-type label discloses the restriction type:', restrictTypeText.trim());
+
+  var restrictGroupDetail = await page.locator('.tv-type-detail').textContent();
+  if (restrictGroupDetail.indexOf('그룹번호 : ') === -1 || restrictGroupDetail.indexOf('GRP1') === -1) {
+    console.error('FAIL: delivery-type tile should show the configured group numbers, got', restrictGroupDetail);
+    process.exitCode = 1;
+  } else {
+    console.log('OK: delivery-type tile shows the configured group numbers:', restrictGroupDetail.trim());
+  }
+
+  var restrictVendorValue = (await page.locator('.tv-type-value').textContent()).trim();
+  if (restrictVendorValue !== '제한업체A') { console.error('FAIL: delivery-type value should show only the vendor name, got', restrictVendorValue); process.exitCode = 1; }
+  else console.log('OK: delivery-type value shows only the vendor name:', restrictVendorValue);
 
   var cardBorder = await page.locator('.tv-verify').evaluate(function(el){ return getComputedStyle(el).boxShadow; });
   if (cardBorder.indexOf('251, 146, 60') === -1) { console.error('FAIL: verify card border should use the restricted orange color, got', cardBorder); process.exitCode = 1; }
