@@ -79,11 +79,11 @@ function sendScan(page, text){
   }
 
   var verifyBg = await page.locator('.tv-verify-overlay').evaluate(function(el){ return getComputedStyle(el).backgroundColor; });
-  if (verifyBg !== 'rgba(0, 0, 0, 0)' && verifyBg !== 'transparent') {
-    console.error('FAIL: verify overlay should have no background tint, got', verifyBg);
+  if (verifyBg === 'rgba(0, 0, 0, 0)' || verifyBg === 'transparent') {
+    console.error('FAIL: verify overlay should now have a dim backdrop tint, got', verifyBg);
     process.exitCode = 1;
   } else {
-    console.log('OK: verify overlay background is transparent (no dim tint)');
+    console.log('OK: verify overlay has a dim backdrop tint to focus attention on the modal');
   }
 
   var badgeVisible = await page.locator('.tv-status-badge').isVisible();
