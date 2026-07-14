@@ -69,12 +69,16 @@ function sendEnter(page){
   else console.log('OK: verify modal skipped entirely for courier tote in simplified mode');
 
   var noticeText = await page.locator('.tv-simplified-notice').textContent();
-  if (noticeText.indexOf('TOTE001') === -1 || noticeText.indexOf('업체A') === -1 || noticeText.indexOf('집품 수량 7개') === -1) {
+  if (noticeText.indexOf('TOTE001') === -1 || noticeText.indexOf('업체A') === -1 || noticeText.indexOf('7') === -1 || noticeText.indexOf('EA') === -1) {
     console.error('FAIL: simplified notice should show tote/vendor/qty, got', noticeText);
     process.exitCode = 1;
   } else {
     console.log('OK: simplified notice shows tote barcode, vendor, and pick quantity');
   }
+
+  var noticeClass = await page.locator('.tv-simplified-notice').getAttribute('class');
+  if (noticeClass.indexOf('courier') === -1) { console.error('FAIL: notice should show the courier (green) variant, got', noticeClass); process.exitCode = 1; }
+  else console.log('OK: notice shows the courier (green) variant for a courier tote');
 
   // Close the WMS waybill modal manually so we can reset for the next scenario.
   await page.evaluate(function(){ document.querySelector('#modalOutboundWaybill').classList.remove('is-open'); });
@@ -87,6 +91,10 @@ function sendEnter(page){
   if (blockClass.indexOf('truck') === -1) { console.error('FAIL: blocking modal should have the truck variant class, got', blockClass); process.exitCode = 1; }
   else console.log('OK: blocking modal shows the truck (red) variant');
 
+  var truckNoticeClass = await page.locator('.tv-simplified-notice').getAttribute('class');
+  if (truckNoticeClass.indexOf('truck') === -1) { console.error('FAIL: notice should show the truck (red) variant, got', truckNoticeClass); process.exitCode = 1; }
+  else console.log('OK: notice shows the truck (red) variant for a truck tote');
+
   var blockText = await page.locator('.tv-simplified-block').textContent();
   if (blockText.indexOf('해당 상품은 트럭 운송 상품입니다.') === -1 || blockText.indexOf('택배 스캔 시 오류가 발생할 수 있습니다.') === -1) {
     console.error('FAIL: truck modal should show the exact reference copy, got', blockText);
@@ -98,6 +106,10 @@ function sendEnter(page){
   var auraColor = await page.locator('.tv-simplified-block').evaluate(function(el){ return getComputedStyle(el).boxShadow; });
   if (auraColor.indexOf('248, 113, 113') === -1) { console.error('FAIL: truck modal aura should use the truck red color, got', auraColor); process.exitCode = 1; }
   else console.log('OK: truck modal aura uses the truck red color');
+
+  var confirmBtnCount = await page.locator('.tv-simplified-confirm').count();
+  if (confirmBtnCount !== 0) { console.error('FAIL: blocking modal should have no confirm button'); process.exitCode = 1; }
+  else console.log('OK: blocking modal has no confirm button (dismissed only via X/Enter/scan)');
 
   await sendEnter(page);
   await page.locator('.tv-simplified-overlay.tv-show').waitFor({ state: 'detached', timeout: 3000 }).catch(function(){});
@@ -126,13 +138,13 @@ function sendEnter(page){
   if (mismatchShown) { console.error('FAIL: the discarded scan should not trigger a mismatch modal'); process.exitCode = 1; }
   else console.log('OK: the discarded scan content has no side effect');
 
-  // Scenario 7: auto-close timer -- reproduce the truck modal, don't interact, wait ~3.5s.
+  // Scenario 7: dismiss via the X close button.
   await sendScan(page, 'TOTE002');
   await page.locator('.tv-simplified-overlay.tv-show').waitFor({ timeout: 5000 });
-  await page.waitForTimeout(3500);
-  var overlayHiddenAfterTimeout = await page.locator('.tv-simplified-overlay').evaluate(function(el){ return !el.classList.contains('tv-show'); });
-  if (!overlayHiddenAfterTimeout) { console.error('FAIL: blocking modal should auto-close after ~3s'); process.exitCode = 1; }
-  else console.log('OK: blocking modal auto-closes after ~3s');
+  await page.locator('.tv-simplified-close').click();
+  var overlayHiddenAfterClose = await page.locator('.tv-simplified-overlay').evaluate(function(el){ return !el.classList.contains('tv-show'); });
+  if (!overlayHiddenAfterClose) { console.error('FAIL: X button should dismiss the blocking modal'); process.exitCode = 1; }
+  else console.log('OK: X button dismisses the blocking modal');
 
   // Scenario 4: restricted by group only -- vendor shown, no date line.
   await page.locator('.tv-gear-btn').click();
@@ -146,6 +158,10 @@ function sendEnter(page){
   var groupRestrictClass = await page.locator('.tv-simplified-block').getAttribute('class');
   if (groupRestrictClass.indexOf('restricted') === -1) { console.error('FAIL: modal should show the restricted variant, got', groupRestrictClass); process.exitCode = 1; }
   else console.log('OK: group-restricted tote shows the restricted (orange) variant');
+
+  var restrictedNoticeClass = await page.locator('.tv-simplified-notice').getAttribute('class');
+  if (restrictedNoticeClass.indexOf('restricted') === -1) { console.error('FAIL: notice should show the restricted (orange) variant, got', restrictedNoticeClass); process.exitCode = 1; }
+  else console.log('OK: notice shows the restricted (orange) variant for a restricted tote');
 
   var groupRestrictText = await page.locator('.tv-simplified-block').textContent();
   if (groupRestrictText.indexOf('제한업체A') === -1) { console.error('FAIL: restricted modal should show the restricted vendor name, got', groupRestrictText); process.exitCode = 1; }

@@ -32,6 +32,11 @@ var SIMPLIFIED_ICONS = {
     '<path d="M10.4 4.6C11.1 3.4 12.9 3.4 13.6 4.6L21.3 17.9C22 19.2 21.1 20.8 19.6 20.8H4.4C2.9 20.8 2 19.2 2.7 17.9L10.4 4.6Z" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>' +
     '<path d="M12 9.5V13.5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>' +
     '<circle cx="12" cy="16.8" r="1.3" fill="currentColor"/>' +
+    '</svg>',
+  courier: '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+    '<path d="M3 7.5L12 3L21 7.5V16.5L12 21L3 16.5V7.5Z" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>' +
+    '<path d="M3 7.5L12 12L21 7.5" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>' +
+    '<path d="M12 12V21" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>' +
     '</svg>'
 };
 
@@ -305,11 +310,22 @@ var CSS =
   '.tv-status-badge-waybill-label{font-size:14.5px;font-weight:600;letter-spacing:.1px;color:var(--tv-text-soft);margin-bottom:8px}' +
   '.tv-status-badge-waybill .tv-barcode-wrap{padding:10px 12px;border-radius:12px}' +
 
-  '.tv-simplified-notice{width:250px;text-align:left;position:relative;overflow:hidden;border:1px solid rgba(255,214,102,.55);animation:tvNoticeGlow 2.2s ease-in-out infinite}' +
-  '@keyframes tvNoticeGlow{0%,100%{box-shadow:0 0 0 0 rgba(255,214,102,.35),var(--tv-elev-3)}50%{box-shadow:0 0 22px 4px rgba(255,214,102,.55),var(--tv-elev-3)}}' +
-  '.tv-simplified-notice:before{content:"";position:absolute;top:0;left:-60%;width:45%;height:100%;background:linear-gradient(115deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.55) 50%,rgba(255,255,255,0) 100%);transform:skewX(-20deg);animation:tvNoticeSweep 2.6s ease-in-out infinite;pointer-events:none}' +
-  '@keyframes tvNoticeSweep{0%{left:-60%}55%{left:130%}100%{left:130%}}' +
-  '.tv-simplified-notice-line{font-size:15px;font-weight:600;color:var(--tv-text);margin-top:4px}' +
+  '.tv-simplified-notice{width:300px;text-align:left;position:relative;background:#fff;border:1px solid #e2e6f0;border-left:5px solid rgb(var(--tv-notice-fg,52,211,153));padding:14px 34px 14px 14px}' +
+  '.tv-simplified-notice.tv-show,.tv-simplified-notice:popover-open{display:flex;align-items:center;gap:12px}' +
+  '.tv-simplified-notice.truck{--tv-notice-fg:248,113,113}' +
+  '.tv-simplified-notice.courier{--tv-notice-fg:52,211,153}' +
+  '.tv-simplified-notice.restricted{--tv-notice-fg:251,146,60}' +
+  '.tv-simplified-notice-close{position:absolute;right:8px;top:8px;width:22px;height:22px;border-radius:50%;border:none;background:#eef1f7;color:#5b6274;font-size:10.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}' +
+  '.tv-simplified-notice-close:hover{background:#e2e6f0}' +
+  '.tv-simplified-notice-icon{flex-shrink:0;width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(var(--tv-notice-fg),.14);color:rgb(var(--tv-notice-fg))}' +
+  '.tv-simplified-notice-icon svg{width:22px;height:22px}' +
+  '.tv-simplified-notice-info{flex:1;min-width:0}' +
+  '.tv-simplified-notice-vendor{font-size:16px;font-weight:600;color:#161a26;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
+  '.tv-simplified-notice-tote{margin-top:3px;font-size:13px;font-weight:500;color:#5b6274;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
+  '.tv-simplified-notice-qty{flex-shrink:0;text-align:right}' +
+  '.tv-simplified-notice-qty-label{font-size:12px;font-weight:600;color:#5b6274}' +
+  '.tv-simplified-notice-qty-value{font-size:22px;font-weight:700;color:rgb(var(--tv-notice-fg))}' +
+  '.tv-simplified-notice-qty-value span{font-size:12.5px;font-weight:600;margin-left:2px}' +
 
   '.tv-simplified-block{width:460px;max-width:92vw;padding:0;overflow:hidden;position:relative;animation:tvPop .22s var(--tv-ease),tvAuraPulse 1.6s ease-in-out infinite}' +
   '.tv-simplified-block.truck{--tv-aura:248,113,113}' +
@@ -323,9 +339,7 @@ var CSS =
   '.tv-simplified-icon svg{width:46px;height:46px}' +
   '.tv-simplified-title{font-size:34px;font-weight:600;color:rgb(var(--tv-aura));padding-bottom:12px;border-bottom:3px solid rgb(var(--tv-aura));display:inline-block;margin:0 auto 18px}' +
   '.tv-simplified-line{font-size:16px;font-weight:600;color:#161a26;margin-top:6px}' +
-  '.tv-simplified-line.sub{color:rgb(var(--tv-aura))}' +
-  '.tv-simplified-confirm{margin-top:26px;width:100%;padding:13px;border:none;border-radius:12px;background:#eef1f7;color:#5b6274;font-size:15.5px;font-weight:600;cursor:pointer;transition:background .15s}' +
-  '.tv-simplified-confirm:hover{background:#e2e6f0}';
+  '.tv-simplified-line.sub{color:rgb(var(--tv-aura))}';
 
 var ui = {};
 
@@ -972,8 +986,6 @@ function closeVerifyModal(){
   ui.verifyOverlay.innerHTML = '';
 }
 
-var simplifiedAutoCloseTimer = null;
-
 function openSimplifiedBlockModal(){
   var info = state.toteInfo;
   state.mode = 'SIMPLIFIED_BLOCK';
@@ -995,18 +1007,13 @@ function openSimplifiedBlockModal(){
     '<div class="tv-simplified-icon">' + icon + '</div>' +
     '<div class="tv-simplified-title">' + title + '</div>' +
     lines +
-    '<button class="tv-simplified-confirm">↻ 확인 (3초 후 자동 닫힘)</button>' +
     '</div></div>';
   ui.simplifiedOverlay.classList.add('tv-show');
   ui.simplifiedOverlay.querySelector('.tv-simplified-close').addEventListener('click', closeSimplifiedBlockModal);
-  ui.simplifiedOverlay.querySelector('.tv-simplified-confirm').addEventListener('click', closeSimplifiedBlockModal);
-  clearTimeout(simplifiedAutoCloseTimer);
-  simplifiedAutoCloseTimer = setTimeout(closeSimplifiedBlockModal, 3000);
 }
 
 function closeSimplifiedBlockModal(){
   if (state.mode !== 'SIMPLIFIED_BLOCK') return;
-  clearTimeout(simplifiedAutoCloseTimer);
   state.mode = 'IDLE';
   ui.simplifiedOverlay.classList.remove('tv-show');
   ui.simplifiedOverlay.innerHTML = '';
@@ -1014,12 +1021,27 @@ function closeSimplifiedBlockModal(){
 
 function showSimplifiedNotice(){
   var info = state.toteInfo;
+  var typeClass = info.isRestricted ? 'restricted' : (info.isTruck ? 'truck' : 'courier');
+  var icon = info.isRestricted ? SIMPLIFIED_ICONS.restricted : (info.isTruck ? SIMPLIFIED_ICONS.truck : SIMPLIFIED_ICONS.courier);
+  ui.simplifiedNotice.className = 'tv-float-area tv-simplified-notice tv-bottom-right ' + typeClass;
   ui.simplifiedNotice.innerHTML =
-    '<div class="tv-float-label">✨ 간소화 처리</div>' +
-    '<div class="tv-simplified-notice-line">' + escapeHtml(info.toteBarcode) + '</div>' +
-    '<div class="tv-simplified-notice-line">' + escapeHtml(info.vendor) + '</div>' +
-    '<div class="tv-simplified-notice-line">집품 수량 ' + info.totalQty + '개</div>';
+    '<button class="tv-simplified-notice-close" title="닫기">✕</button>' +
+    '<div class="tv-simplified-notice-icon">' + icon + '</div>' +
+    '<div class="tv-simplified-notice-info">' +
+    '<div class="tv-simplified-notice-vendor">' + escapeHtml(info.vendor) + '</div>' +
+    '<div class="tv-simplified-notice-tote">토트번호 ' + escapeHtml(info.toteBarcode) + '</div>' +
+    '</div>' +
+    '<div class="tv-simplified-notice-qty">' +
+    '<div class="tv-simplified-notice-qty-label">집품수량</div>' +
+    '<div class="tv-simplified-notice-qty-value">' + info.totalQty + '<span>EA</span></div>' +
+    '</div>';
+  ui.simplifiedNotice.querySelector('.tv-simplified-notice-close').addEventListener('click', hideSimplifiedNotice);
   setPopoverVisible(ui.simplifiedNotice, true);
+}
+
+function hideSimplifiedNotice(){
+  setPopoverVisible(ui.simplifiedNotice, false);
+  ui.simplifiedNotice.innerHTML = '';
 }
 
 function renderProductRowHtml(barcode, p, idx){
