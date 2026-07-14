@@ -56,20 +56,25 @@ function sendScan(page, text){
   await page.locator('.tv-date-end-input').fill('2026-01-31');
   await page.locator('.tv-activate-btn').click();
 
-  var dateRestrictLabelText = (await page.locator('.tv-restrict-date .tv-restrict-label').textContent()).trim();
-  if (!(await page.locator('.tv-restrict-date').isVisible()) || dateRestrictLabelText.indexOf('생성일시 상차제한 활성화') === -1) {
-    console.error('FAIL: date restriction badge should show "생성일시 상차제한 활성화", got', dateRestrictLabelText);
+  var restrictHeaderVisible = await page.locator('.tv-status-badge-restrict-header').isVisible();
+  var restrictHeaderText = (await page.locator('.tv-status-badge-restrict-header').textContent()).trim();
+  if (!restrictHeaderVisible || restrictHeaderText.indexOf('상차제한 활성화 중') === -1) {
+    console.error('FAIL: shared restriction header should show "상차제한 활성화 중" once date restriction is active, got', restrictHeaderText);
     process.exitCode = 1;
   } else {
-    console.log('OK: date restriction badge visible with correct label:', dateRestrictLabelText);
+    console.log('OK: shared restriction header visible once date restriction is active:', restrictHeaderText);
   }
 
-  var dateRangeText = (await page.locator('.tv-restrict-date .tv-restrict-groups').textContent()).trim();
-  if (dateRangeText.indexOf('2026-01-01') === -1 || dateRangeText.indexOf('2026-01-31') === -1) {
-    console.error('FAIL: date restriction badge should show the configured range, got', dateRangeText);
+  var groupLineVisible = await page.locator('.tv-restrict-group-line').isVisible();
+  if (groupLineVisible) { console.error('FAIL: group-restriction detail line should stay hidden when only date restriction is configured'); process.exitCode = 1; }
+  else console.log('OK: group-restriction detail line stays hidden when only date restriction is configured');
+
+  var dateRangeText = (await page.locator('.tv-restrict-date-line').textContent()).trim();
+  if (dateRangeText.indexOf('생성일시 : ') === -1 || dateRangeText.indexOf('2026-01-01') === -1 || dateRangeText.indexOf('2026-01-31') === -1) {
+    console.error('FAIL: date detail line should read "생성일시 : ..." with the configured range, got', dateRangeText);
     process.exitCode = 1;
   } else {
-    console.log('OK: date restriction badge shows the configured range:', dateRangeText);
+    console.log('OK: date detail line reads correctly:', dateRangeText);
   }
 
   await sendScan(page, 'TOTE001');
@@ -97,6 +102,25 @@ function sendScan(page, text){
 
   await page.locator('.tv-verify-close').click();
   await page.locator('.tv-verify-overlay').waitFor({ state: 'hidden', timeout: 3000 });
+
+  // With BOTH restrictions configured, both detail lines must show at once
+  // under the same shared header.
+  await page.locator('.tv-gear-btn').click();
+  await page.locator('.tv-group-input').fill('GRP1');
+  await page.locator('.tv-activate-btn').click();
+
+  var bothGroupLineVisible = await page.locator('.tv-restrict-group-line').isVisible();
+  var bothDateLineVisible = await page.locator('.tv-restrict-date-line').isVisible();
+  if (!bothGroupLineVisible || !bothDateLineVisible) {
+    console.error('FAIL: with both restrictions configured, both detail lines should be visible', bothGroupLineVisible, bothDateLineVisible);
+    process.exitCode = 1;
+  } else {
+    console.log('OK: both detail lines shown at once when group and date restriction are both configured');
+  }
+
+  var headerCountWhenBoth = await page.locator('.tv-status-badge-restrict-header').count();
+  if (headerCountWhenBoth !== 1) { console.error('FAIL: there should still be exactly one shared header, got count', headerCountWhenBoth); process.exitCode = 1; }
+  else console.log('OK: exactly one shared "상차제한 활성화 중" header, not duplicated per restriction type');
 
   // Reload -- unlike restrictedGroups, the date-restriction switch and its
   // input values must NOT survive a reload (always reset to off/empty).

@@ -30,25 +30,38 @@ function sendScan(page, text){
   await page.locator('.tv-group-input').fill('99, GRP1 ,88');
   await page.locator('.tv-activate-btn').click();
 
-  var restrictLabelText = (await page.locator('.tv-restrict-label').textContent()).trim();
-  if (!(await page.locator('.tv-restrict-group').isVisible()) || restrictLabelText.indexOf('그룹번호 상차제한 활성화') === -1) {
-    console.error('FAIL: restriction label should read "그룹번호 상차제한 활성화", got', restrictLabelText);
+  var restrictHeaderText = (await page.locator('.tv-status-badge-restrict-header').textContent()).trim();
+  if (!(await page.locator('.tv-status-badge-restrict-header').isVisible()) || restrictHeaderText.indexOf('상차제한 활성화 중') === -1) {
+    console.error('FAIL: restriction header should read "상차제한 활성화 중", got', restrictHeaderText);
     process.exitCode = 1;
   } else {
-    console.log('OK: restriction label reads correctly:', restrictLabelText);
+    console.log('OK: shared restriction header reads correctly:', restrictHeaderText);
   }
 
-  var restrictGroupsText = (await page.locator('.tv-restrict-groups').textContent()).trim();
-  if (restrictGroupsText.indexOf('99') === -1 || restrictGroupsText.indexOf('GRP1') === -1 || restrictGroupsText.indexOf('88') === -1) {
-    console.error('FAIL: group numbers should be shown on their own line below the label, got', restrictGroupsText);
+  var headerFontSize = await page.locator('.tv-status-badge-restrict-header').evaluate(function(el){ return getComputedStyle(el).fontSize; });
+  var mainFontSize = await page.locator('.tv-status-badge-main').evaluate(function(el){ return getComputedStyle(el).fontSize; });
+  if (headerFontSize !== mainFontSize) {
+    console.error('FAIL: restriction header should match the "트럭검증 활성화" font size, got', headerFontSize, 'vs', mainFontSize);
     process.exitCode = 1;
   } else {
-    console.log('OK: configured groups shown on their own line below the label:', restrictGroupsText);
+    console.log('OK: restriction header font size matches the main status line (' + headerFontSize + ')');
   }
 
-  var badgeIsOneBox = await page.locator('.tv-status-badge').evaluate(function(el){ return el.querySelector('.tv-restrict-group') !== null; });
-  if (!badgeIsOneBox) { console.error('FAIL: restriction line should live inside .tv-status-badge, not a separate floating box'); process.exitCode = 1; }
-  else console.log('OK: restriction line is nested inside the single status badge, not a separate box');
+  var restrictGroupsText = (await page.locator('.tv-restrict-group-line').textContent()).trim();
+  if (restrictGroupsText.indexOf('그룹번호 : ') === -1 || restrictGroupsText.indexOf('99') === -1 || restrictGroupsText.indexOf('GRP1') === -1 || restrictGroupsText.indexOf('88') === -1) {
+    console.error('FAIL: group numbers should be shown as "그룹번호 : ..." below the header, got', restrictGroupsText);
+    process.exitCode = 1;
+  } else {
+    console.log('OK: group-number detail line reads correctly:', restrictGroupsText);
+  }
+
+  var dateLineVisible = await page.locator('.tv-restrict-date-line').isVisible();
+  if (dateLineVisible) { console.error('FAIL: date-restriction detail line should stay hidden when date restriction is not configured'); process.exitCode = 1; }
+  else console.log('OK: date-restriction detail line stays hidden when only group restriction is configured');
+
+  var badgeIsOneBox = await page.locator('.tv-status-badge').evaluate(function(el){ return el.querySelector('.tv-status-badge-restrict-header') !== null; });
+  if (!badgeIsOneBox) { console.error('FAIL: restriction header should live inside .tv-status-badge, not a separate floating box'); process.exitCode = 1; }
+  else console.log('OK: restriction header is nested inside the single status badge, not a separate box');
 
   await sendScan(page, 'TOTE001');
   await page.locator('.tv-verify').filter({ hasText: '업체A' }).waitFor({ timeout: 5000 });
@@ -116,9 +129,9 @@ function sendScan(page, text){
 
   await page.locator('.tv-activate-btn').click();
 
-  var restrictBadgeVisibleWhenOff = await page.locator('.tv-restrict-group').isVisible();
-  if (restrictBadgeVisibleWhenOff) { console.error('FAIL: restriction badge should be hidden once the toggle is switched off'); process.exitCode = 1; }
-  else console.log('OK: restriction badge hides once 그룹번호 상차제한 is switched off');
+  var restrictHeaderVisibleWhenOff = await page.locator('.tv-status-badge-restrict-header').isVisible();
+  if (restrictHeaderVisibleWhenOff) { console.error('FAIL: restriction header should be hidden once the toggle is switched off'); process.exitCode = 1; }
+  else console.log('OK: restriction header hides once 그룹번호 상차제한 is switched off');
 
   await sendScan(page, 'TOTE001');
   await page.locator('.tv-verify').filter({ hasText: '업체A' }).waitFor({ timeout: 5000 });

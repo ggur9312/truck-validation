@@ -206,10 +206,10 @@ var CSS =
   '.tv-status-badge{position:fixed;top:20px;right:24px;z-index:2147483600;width:max-content;max-width:300px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 20px;border-radius:16px;background:var(--tv-surface);color:var(--tv-text);border:1px solid var(--tv-border);box-shadow:var(--tv-elev-2)}' +
   '.tv-status-badge.tv-hidden{display:none}' +
   '.tv-status-badge-main{display:flex;align-items:center;justify-content:center;gap:10px;font-size:18px;font-weight:800;letter-spacing:.1px;text-align:center}' +
-  '.tv-status-badge-restrict{display:flex;flex-direction:column;align-items:center;gap:2px;font-weight:800;color:var(--tv-restricted-fg);text-align:center}' +
-  '.tv-status-badge-restrict.tv-hidden{display:none}' +
-  '.tv-restrict-label{font-size:14.5px}' +
-  '.tv-restrict-groups{font-size:13px;opacity:.85}' +
+  '.tv-status-badge-restrict-header{display:flex;align-items:center;justify-content:center;gap:8px;font-size:18px;font-weight:800;letter-spacing:.1px;color:var(--tv-restricted-fg);text-align:center}' +
+  '.tv-status-badge-restrict-header.tv-hidden{display:none}' +
+  '.tv-restrict-detail-line{font-size:13.5px;font-weight:700;color:var(--tv-restricted-fg);opacity:.85;text-align:center}' +
+  '.tv-restrict-detail-line.tv-hidden{display:none}' +
   '.tv-status-dot{width:11px;height:11px;border-radius:50%;background:var(--tv-success);box-shadow:0 0 0 0 rgba(52,211,153,.6);animation:tvStatusPulse 2s ease-in-out infinite}' +
   '@keyframes tvStatusPulse{0%{box-shadow:0 0 0 0 rgba(52,211,153,.5)}70%{box-shadow:0 0 0 8px rgba(52,211,153,0)}100%{box-shadow:0 0 0 0 rgba(52,211,153,0)}}' +
 
@@ -272,8 +272,9 @@ function initUI(){
     '<div class="tv-float-area tv-reprint-area tv-top-left" popover="manual"></div>' +
     '<div class="tv-status-badge tv-hidden">' +
     '<div class="tv-status-badge-main"><span class="tv-status-dot"></span>트럭검증 활성화</div>' +
-    '<div class="tv-status-badge-restrict tv-restrict-group tv-hidden"></div>' +
-    '<div class="tv-status-badge-restrict tv-restrict-date tv-hidden"></div>' +
+    '<div class="tv-status-badge-restrict-header tv-hidden">🚫 상차제한 활성화 중</div>' +
+    '<div class="tv-restrict-detail-line tv-restrict-group-line tv-hidden"></div>' +
+    '<div class="tv-restrict-detail-line tv-restrict-date-line tv-hidden"></div>' +
     '</div>' +
     '<button class="tv-gear-btn tv-hidden" title="프로그램 설정">⚙</button>';
   ui.shadow = shadow;
@@ -284,8 +285,9 @@ function initUI(){
   ui.waybillOverlay = shadow.querySelector('.tv-waybill-area');
   ui.reprintOverlay = shadow.querySelector('.tv-reprint-area');
   ui.statusBadge = shadow.querySelector('.tv-status-badge');
-  ui.restrictBadge = shadow.querySelector('.tv-restrict-group');
-  ui.dateRestrictBadge = shadow.querySelector('.tv-restrict-date');
+  ui.restrictHeader = shadow.querySelector('.tv-status-badge-restrict-header');
+  ui.restrictGroupLine = shadow.querySelector('.tv-restrict-group-line');
+  ui.restrictDateLine = shadow.querySelector('.tv-restrict-date-line');
   ui.gearBtn = shadow.querySelector('.tv-gear-btn');
   ui.gearBtn.addEventListener('click', toggleSettings);
   attachRipple(ui.gearBtn);
@@ -393,7 +395,6 @@ function bindSettingsEvents(){
       state.settings[cb.dataset.key] = cb.checked;
       saveSettings();
       updateRestrictBadge();
-      updateDateRestrictBadge();
       if (cb.dataset.key === 'restrictionEnabled') {
         var fieldRow = overlay.querySelector('.tv-group-field-row');
         if (fieldRow) fieldRow.classList.toggle('tv-hidden', !cb.checked);
@@ -418,14 +419,14 @@ function bindSettingsEvents(){
     dateStartInput.addEventListener('input', function(){
       state.settings.dateRestrictionStart = dateStartInput.value;
       saveSettings();
-      updateDateRestrictBadge();
+      updateRestrictBadge();
     });
   }
   if (dateEndInput) {
     dateEndInput.addEventListener('input', function(){
       state.settings.dateRestrictionEnd = dateEndInput.value;
       saveSettings();
-      updateDateRestrictBadge();
+      updateRestrictBadge();
     });
   }
   var btn = overlay.querySelector('.tv-activate-btn');
@@ -443,28 +444,22 @@ function showActiveIndicators(){
   ui.gearBtn.classList.remove('tv-hidden');
   ui.statusBadge.classList.remove('tv-hidden');
   updateRestrictBadge();
-  updateDateRestrictBadge();
 }
 
 function updateRestrictBadge(){
   var groups = getRestrictedGroupList();
-  if (!state.settings.enabled || !state.settings.restrictionEnabled || groups.length === 0) {
-    ui.restrictBadge.classList.add('tv-hidden');
-    return;
-  }
-  ui.restrictBadge.innerHTML = '<div class="tv-restrict-label">🚫 그룹번호 상차제한 활성화</div><div class="tv-restrict-groups">' + escapeHtml(groups.join(', ')) + '</div>';
-  ui.restrictBadge.classList.remove('tv-hidden');
-}
-
-function updateDateRestrictBadge(){
   var start = state.settings.dateRestrictionStart;
   var end = state.settings.dateRestrictionEnd;
-  if (!state.settings.enabled || !state.settings.dateRestrictionEnabled || !start || !end) {
-    ui.dateRestrictBadge.classList.add('tv-hidden');
-    return;
-  }
-  ui.dateRestrictBadge.innerHTML = '<div class="tv-restrict-label">📅 생성일시 상차제한 활성화</div><div class="tv-restrict-groups">' + escapeHtml(start) + ' ~ ' + escapeHtml(end) + '</div>';
-  ui.dateRestrictBadge.classList.remove('tv-hidden');
+  var groupActive = state.settings.enabled && state.settings.restrictionEnabled && groups.length > 0;
+  var dateActive = state.settings.enabled && state.settings.dateRestrictionEnabled && !!start && !!end;
+
+  ui.restrictHeader.classList.toggle('tv-hidden', !(groupActive || dateActive));
+
+  ui.restrictGroupLine.classList.toggle('tv-hidden', !groupActive);
+  if (groupActive) ui.restrictGroupLine.textContent = '그룹번호 : ' + groups.join(', ');
+
+  ui.restrictDateLine.classList.toggle('tv-hidden', !dateActive);
+  if (dateActive) ui.restrictDateLine.textContent = '생성일시 : ' + start + ' ~ ' + end;
 }
 
 function setNativeValue(el, value){
