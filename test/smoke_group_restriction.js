@@ -30,13 +30,17 @@ function sendScan(page, text){
   await page.locator('.tv-group-input').fill('99, GRP1 ,88');
   await page.locator('.tv-activate-btn').click();
 
-  var restrictBadgeText = await page.locator('.tv-restrict-badge').textContent();
-  if (!(await page.locator('.tv-restrict-badge').isVisible()) || restrictBadgeText.indexOf('99') === -1 || restrictBadgeText.indexOf('GRP1') === -1 || restrictBadgeText.indexOf('88') === -1) {
-    console.error('FAIL: top-right restriction badge should show below the status badge, listing the configured groups, got', restrictBadgeText);
+  var restrictBadgeText = await page.locator('.tv-status-badge-restrict').textContent();
+  if (!(await page.locator('.tv-status-badge-restrict').isVisible()) || restrictBadgeText.indexOf('99') === -1 || restrictBadgeText.indexOf('GRP1') === -1 || restrictBadgeText.indexOf('88') === -1) {
+    console.error('FAIL: restriction line should show inside the status badge, listing the configured groups, got', restrictBadgeText);
     process.exitCode = 1;
   } else {
-    console.log('OK: restriction badge visible below the status badge:', restrictBadgeText.trim());
+    console.log('OK: restriction line visible inside the status badge:', restrictBadgeText.trim());
   }
+
+  var badgeIsOneBox = await page.locator('.tv-status-badge').evaluate(function(el){ return el.querySelector('.tv-status-badge-restrict') !== null; });
+  if (!badgeIsOneBox) { console.error('FAIL: restriction line should live inside .tv-status-badge, not a separate floating box'); process.exitCode = 1; }
+  else console.log('OK: restriction line is nested inside the single status badge, not a separate box');
 
   await sendScan(page, 'TOTE001');
   await page.locator('.tv-verify').filter({ hasText: '업체A' }).waitFor({ timeout: 5000 });
@@ -79,6 +83,32 @@ function sendScan(page, text){
   var persistedValue = await page.locator('.tv-group-input').inputValue();
   if (persistedValue !== '99, GRP1 ,88') { console.error('FAIL: restricted group setting should persist across reload, got', JSON.stringify(persistedValue)); process.exitCode = 1; }
   else console.log('OK: restricted group setting persists across a page reload');
+
+  var toggleChecked = await page.locator('.tv-toggle-row input[type=checkbox]').isChecked();
+  if (!toggleChecked) { console.error('FAIL: 상차제한 사용 toggle should default to on'); process.exitCode = 1; }
+  else console.log('OK: 상차제한 사용 toggle defaults to on');
+
+  // Turning the switch off must suppress restriction WITHOUT clearing the
+  // configured group numbers -- TOTE001's group (GRP1) is still in the list.
+  await page.locator('.tv-toggle-row').click();
+  await page.locator('.tv-activate-btn').click();
+
+  var restrictBadgeVisibleWhenOff = await page.locator('.tv-status-badge-restrict').isVisible();
+  if (restrictBadgeVisibleWhenOff) { console.error('FAIL: restriction badge should be hidden once the toggle is switched off'); process.exitCode = 1; }
+  else console.log('OK: restriction badge hides once 상차제한 사용 is switched off');
+
+  await sendScan(page, 'TOTE001');
+  await page.locator('.tv-verify').filter({ hasText: '업체A' }).waitFor({ timeout: 5000 });
+  var bannerClassOff = await page.locator('.tv-type-banner').getAttribute('class');
+  if (bannerClassOff.indexOf('restricted') !== -1) { console.error('FAIL: banner should NOT be restricted once the toggle is off, got', bannerClassOff); process.exitCode = 1; }
+  else console.log('OK: tote is treated as a normal (non-restricted) courier delivery once the toggle is off');
+
+  await sendScan(page, 'BAR001');
+  await sendScan(page, 'BAR001');
+  await sendScan(page, 'BAR002');
+  await page.locator('.tv-verify-overlay').waitFor({ state: 'hidden', timeout: 5000 });
+  await page.waitForSelector('#modalOutboundWaybill.is-open', { timeout: 5000 });
+  console.log('OK: waybill modal opens normally for the same tote once restriction is toggled off');
 
   console.log(process.exitCode ? 'GROUP RESTRICTION SMOKE TEST: SOME FAILURES' : 'GROUP RESTRICTION SMOKE TEST: ALL PASSED');
   await browser.close();

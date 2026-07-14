@@ -17,7 +17,9 @@ var SEL = {
 
 var CTRL = { SKIP: 'TVCS', WAYBILL: 'TVCW', REPRINT: 'TVCR' };
 
-var SETTING_DEFS = [];
+var SETTING_DEFS = [
+  { key: 'restrictionEnabled', label: '상차제한 사용' }
+];
 
 var state = {
   mode: 'IDLE',
@@ -30,8 +32,8 @@ function loadSettings(){
   try {
     var saved = JSON.parse(localStorage.getItem('tv_settings') || '{}');
     saved.enabled = false;
-    return Object.assign({ enabled: false, restrictedGroups: '' }, saved);
-  } catch (e) { return { enabled: false, restrictedGroups: '' }; }
+    return Object.assign({ enabled: false, restrictedGroups: '', restrictionEnabled: true }, saved);
+  } catch (e) { return { enabled: false, restrictedGroups: '', restrictionEnabled: true }; }
 }
 function saveSettings(){ localStorage.setItem('tv_settings', JSON.stringify(state.settings)); }
 
@@ -182,10 +184,11 @@ var CSS =
   '.tv-gear-btn:hover{transform:rotate(30deg) scale(1.05)}' +
   '.tv-gear-btn.tv-hidden{display:none}' +
 
-  '.tv-status-badge{position:fixed;top:20px;right:24px;z-index:2147483600;width:220px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;gap:10px;padding:12px 16px;border-radius:999px;background:var(--tv-surface);color:var(--tv-text);border:1px solid var(--tv-border);font-size:15px;font-weight:800;box-shadow:var(--tv-elev-2);letter-spacing:.1px}' +
+  '.tv-status-badge{position:fixed;top:20px;right:24px;z-index:2147483600;width:max-content;max-width:300px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 20px;border-radius:16px;background:var(--tv-surface);color:var(--tv-text);border:1px solid var(--tv-border);box-shadow:var(--tv-elev-2)}' +
   '.tv-status-badge.tv-hidden{display:none}' +
-  '.tv-restrict-badge{position:fixed;top:70px;right:24px;z-index:2147483600;max-width:220px;box-sizing:border-box;text-align:center;padding:9px 14px;border-radius:999px;background:var(--tv-restricted-bg);color:var(--tv-restricted-fg);border:1px solid rgba(251,146,60,.35);font-size:12.5px;font-weight:800;box-shadow:var(--tv-elev-1);letter-spacing:.1px}' +
-  '.tv-restrict-badge.tv-hidden{display:none}' +
+  '.tv-status-badge-main{display:flex;align-items:center;justify-content:center;gap:10px;font-size:18px;font-weight:800;letter-spacing:.1px;text-align:center}' +
+  '.tv-status-badge-restrict{display:flex;align-items:center;justify-content:center;gap:6px;font-size:14.5px;font-weight:800;color:var(--tv-restricted-fg);text-align:center}' +
+  '.tv-status-badge-restrict.tv-hidden{display:none}' +
   '.tv-status-dot{width:11px;height:11px;border-radius:50%;background:var(--tv-success);box-shadow:0 0 0 0 rgba(52,211,153,.6);animation:tvStatusPulse 2s ease-in-out infinite}' +
   '@keyframes tvStatusPulse{0%{box-shadow:0 0 0 0 rgba(52,211,153,.5)}70%{box-shadow:0 0 0 8px rgba(52,211,153,0)}100%{box-shadow:0 0 0 0 rgba(52,211,153,0)}}' +
 
@@ -246,8 +249,10 @@ function initUI(){
     '<div class="tv-overlay tv-verify-overlay"></div>' +
     '<div class="tv-float-area tv-waybill-area tv-top-right" popover="manual"></div>' +
     '<div class="tv-float-area tv-reprint-area tv-top-left" popover="manual"></div>' +
-    '<div class="tv-status-badge tv-hidden"><span class="tv-status-dot"></span>트럭검증 활성화</div>' +
-    '<div class="tv-restrict-badge tv-hidden"></div>' +
+    '<div class="tv-status-badge tv-hidden">' +
+    '<div class="tv-status-badge-main"><span class="tv-status-dot"></span>트럭검증 활성화</div>' +
+    '<div class="tv-status-badge-restrict tv-hidden"></div>' +
+    '</div>' +
     '<button class="tv-gear-btn tv-hidden" title="프로그램 설정">⚙</button>';
   ui.shadow = shadow;
   ui.statusOverlay = shadow.querySelector('.tv-status-overlay');
@@ -257,7 +262,7 @@ function initUI(){
   ui.waybillOverlay = shadow.querySelector('.tv-waybill-area');
   ui.reprintOverlay = shadow.querySelector('.tv-reprint-area');
   ui.statusBadge = shadow.querySelector('.tv-status-badge');
-  ui.restrictBadge = shadow.querySelector('.tv-restrict-badge');
+  ui.restrictBadge = shadow.querySelector('.tv-status-badge-restrict');
   ui.gearBtn = shadow.querySelector('.tv-gear-btn');
   ui.gearBtn.addEventListener('click', toggleSettings);
   attachRipple(ui.gearBtn);
@@ -337,12 +342,12 @@ function renderSettingsHTML(){
   }).join('');
   return '<div class="tv-card tv-settings-card">' +
     '<div class="tv-settings-title">트럭검증 설정</div>' +
+    toggles +
     '<div class="tv-field-row">' +
     '<label class="tv-field-label">상차제한 그룹번호</label>' +
     '<input type="text" class="tv-group-input" placeholder="예: 12,34,56" value="' + escapeHtml(state.settings.restrictedGroups || '') + '"/>' +
     '<div class="tv-field-hint">쉼표(,)로 여러 그룹번호 입력 가능</div>' +
     '</div>' +
-    toggles +
     '<button class="tv-activate-btn">저장</button>' +
     '</div>';
 }
@@ -353,6 +358,7 @@ function bindSettingsEvents(){
     cb.addEventListener('change', function(){
       state.settings[cb.dataset.key] = cb.checked;
       saveSettings();
+      updateRestrictBadge();
     });
   });
   var groupInput = overlay.querySelector('.tv-group-input');
@@ -382,11 +388,11 @@ function showActiveIndicators(){
 
 function updateRestrictBadge(){
   var groups = getRestrictedGroupList();
-  if (!state.settings.enabled || groups.length === 0) {
+  if (!state.settings.enabled || !state.settings.restrictionEnabled || groups.length === 0) {
     ui.restrictBadge.classList.add('tv-hidden');
     return;
   }
-  ui.restrictBadge.textContent = '🚫 상차제한 활성화 · ' + groups.join(', ');
+  ui.restrictBadge.textContent = '🚫 상차제한 · ' + groups.join(', ');
   ui.restrictBadge.classList.remove('tv-hidden');
 }
 
@@ -695,7 +701,7 @@ function processRow(row){
   Promise.all([fetchDoc(linkProduct.href), fetchDoc(linkType.href)]).then(function(docs){
     var isTruck = parseDeliveryType(docs[1]);
     var restriction = parseGroupRestriction(docs[1]);
-    var isRestricted = getRestrictedGroupList().indexOf(restriction.groupNo) !== -1;
+    var isRestricted = state.settings.restrictionEnabled && getRestrictedGroupList().indexOf(restriction.groupNo) !== -1;
     var info = parseToteAndProducts(docs[0]);
     if (!info) { showStatus('상품 정보를 해석하지 못했습니다', 'error'); state.mode = 'IDLE'; return; }
     state.toteInfo = Object.assign({ isTruck: isTruck, isRestricted: isRestricted, restrictedVendor: restriction.vendorName }, info);
