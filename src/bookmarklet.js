@@ -457,10 +457,11 @@ function resetScanBuf(){ scanBuf.chars = []; scanBuf.lastTs = 0; }
 
 function onGlobalKeydown(e){
   if (!state.settings.enabled) return;
-  if (e.key === 'Enter' && state.mode === 'IDLE') {
+  if (e.key === 'Enter' && (state.mode === 'IDLE' || state.mode === 'REPRINT_READY')) {
     var active = document.activeElement;
     if (active && active.matches && active.matches(SEL.toteInput) && active.value) {
       resetScanBuf();
+      if (state.mode === 'REPRINT_READY') hideReprintOverlay();
       startSearch(active.value);
       return;
     }

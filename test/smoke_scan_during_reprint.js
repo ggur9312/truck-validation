@@ -40,6 +40,23 @@ function sendScan(page, text){
   if (reprintStillVisible) { console.error('FAIL: stale reprint barcode should be hidden once a new search starts'); process.exitCode = 1; }
   else console.log('OK: stale reprint barcode hidden once the new search took over');
 
+  await page.locator('.tv-verify-close').click();
+  await page.locator('.tv-verify-overlay').waitFor({ state: 'hidden', timeout: 3000 });
+  await sendScan(page, 'TOTE_REPRINT');
+  await page.locator('.tv-reprint-area canvas').waitFor({ state: 'visible', timeout: 5000 });
+
+  // onGlobalKeydown() has a separate fast path (independent of the
+  // scan-speed heuristic in handleScan()) for Enter pressed while the tote
+  // input itself is focused -- this is what actually fires when the WMS
+  // leaves focus on the tote input between scans, which is the normal case.
+  // It only checked state.mode === 'IDLE', so it silently did nothing while
+  // REPRINT_READY even after the handleScan() fix above.
+  await page.focus('input[name="toteBarcode"]');
+  await page.fill('input[name="toteBarcode"]', 'TOTE002');
+  await page.keyboard.press('Enter');
+  await page.locator('.tv-verify').filter({ hasText: '업체B' }).waitFor({ timeout: 5000 });
+  console.log('OK: pressing Enter with the tote input focused while reprint barcode is showing also starts a fresh search');
+
   console.log(process.exitCode ? 'SCAN DURING REPRINT SMOKE TEST: SOME FAILURES' : 'SCAN DURING REPRINT SMOKE TEST: ALL PASSED');
   await browser.close();
   process.exit(process.exitCode || 0);
