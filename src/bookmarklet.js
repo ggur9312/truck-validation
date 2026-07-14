@@ -18,15 +18,16 @@ var SEL = {
 var CTRL = { SKIP: 'TVCS', WAYBILL: 'TVCW', REPRINT: 'TVCR' };
 
 var SETTING_DEFS = [
+  { key: 'simplifiedMode', label: '트럭검증 간소화' },
   { key: 'restrictionEnabled', label: '그룹번호 상차제한' },
   { key: 'dateRestrictionEnabled', label: '생성일시 상차제한' }
 ];
 
-var SETTINGS_DEFAULTS = { enabled: false, restrictedGroups: '', restrictionEnabled: false, dateRestrictionEnabled: false, dateRestrictionStart: '', dateRestrictionEnd: '' };
+var SETTINGS_DEFAULTS = { enabled: false, restrictedGroups: '', restrictionEnabled: false, dateRestrictionEnabled: false, dateRestrictionStart: '', dateRestrictionEnd: '', simplifiedMode: false };
 /* Every setting resets to its default on each load -- both restriction
    toggles and both sets of input values must start fresh every time,
    same as "enabled" always has. */
-var SETTINGS_RESET_ON_LOAD = ['enabled', 'restrictionEnabled', 'restrictedGroups', 'dateRestrictionEnabled', 'dateRestrictionStart', 'dateRestrictionEnd'];
+var SETTINGS_RESET_ON_LOAD = ['enabled', 'restrictionEnabled', 'restrictedGroups', 'dateRestrictionEnabled', 'dateRestrictionStart', 'dateRestrictionEnd', 'simplifiedMode'];
 
 var state = {
   mode: 'IDLE',
@@ -280,10 +281,32 @@ var CSS =
   '.tv-float-label{font-size:14.5px;font-weight:600;letter-spacing:.1px;color:var(--tv-text-soft);margin-bottom:7px}' +
   '.tv-float-area .tv-barcode-wrap{padding:12px 14px;border-radius:14px}' +
   '.tv-top-left{top:20px;left:24px}' +
+  '.tv-bottom-right{bottom:20px;right:24px}' +
   '.tv-status-badge-waybill{margin-top:6px;padding-top:10px;border-top:1px solid var(--tv-border)}' +
   '.tv-status-badge-waybill.tv-hidden{display:none}' +
   '.tv-status-badge-waybill-label{font-size:14.5px;font-weight:600;letter-spacing:.1px;color:var(--tv-text-soft);margin-bottom:8px}' +
-  '.tv-status-badge-waybill .tv-barcode-wrap{padding:10px 12px;border-radius:12px}';
+  '.tv-status-badge-waybill .tv-barcode-wrap{padding:10px 12px;border-radius:12px}' +
+
+  '.tv-simplified-notice{width:250px;text-align:left;position:relative;overflow:hidden;border:1px solid rgba(255,214,102,.55);animation:tvNoticeGlow 2.2s ease-in-out infinite}' +
+  '@keyframes tvNoticeGlow{0%,100%{box-shadow:0 0 0 0 rgba(255,214,102,.35),var(--tv-elev-3)}50%{box-shadow:0 0 22px 4px rgba(255,214,102,.55),var(--tv-elev-3)}}' +
+  '.tv-simplified-notice:before{content:"";position:absolute;top:0;left:-60%;width:45%;height:100%;background:linear-gradient(115deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.55) 50%,rgba(255,255,255,0) 100%);transform:skewX(-20deg);animation:tvNoticeSweep 2.6s ease-in-out infinite;pointer-events:none}' +
+  '@keyframes tvNoticeSweep{0%{left:-60%}55%{left:130%}100%{left:130%}}' +
+  '.tv-simplified-notice-line{font-size:15px;font-weight:600;color:var(--tv-text);margin-top:4px}' +
+
+  '.tv-simplified-block{width:460px;max-width:92vw;padding:0;overflow:hidden;position:relative;animation:tvPop .22s var(--tv-ease),tvAuraPulse 1.6s ease-in-out infinite}' +
+  '.tv-simplified-block.truck{--tv-aura:248,113,113}' +
+  '.tv-simplified-block.restricted{--tv-aura:251,146,60}' +
+  '@keyframes tvAuraPulse{0%,100%{box-shadow:0 0 0 6px rgba(var(--tv-aura),.45),0 0 40px 10px rgba(var(--tv-aura),.25),var(--tv-elev-3)}50%{box-shadow:0 0 0 10px rgba(var(--tv-aura),.75),0 0 70px 22px rgba(var(--tv-aura),.55),var(--tv-elev-3)}}' +
+  '.tv-simplified-header{display:flex;align-items:center;justify-content:center;position:relative;padding:18px 22px;background:rgb(var(--tv-aura));color:#fff;font-size:19.5px;font-weight:600;letter-spacing:.1px}' +
+  '.tv-simplified-close{position:absolute;right:16px;top:50%;transform:translateY(-50%);width:30px;height:30px;border-radius:50%;border:none;background:rgba(255,255,255,.22);color:#fff;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}' +
+  '.tv-simplified-close:hover{background:rgba(255,255,255,.35)}' +
+  '.tv-simplified-body{background:#fff;color:#161a26;padding:36px 30px 28px;text-align:center}' +
+  '.tv-simplified-icon{width:100px;height:100px;margin:0 auto 18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:48px;background:rgba(var(--tv-aura),.14);color:rgb(var(--tv-aura))}' +
+  '.tv-simplified-title{font-size:34px;font-weight:600;color:rgb(var(--tv-aura));padding-bottom:12px;border-bottom:3px solid rgb(var(--tv-aura));display:inline-block;margin:0 auto 18px}' +
+  '.tv-simplified-line{font-size:16px;font-weight:600;color:#161a26;margin-top:6px}' +
+  '.tv-simplified-line.sub{color:rgb(var(--tv-aura))}' +
+  '.tv-simplified-confirm{margin-top:26px;width:100%;padding:13px;border:none;border-radius:12px;background:#eef1f7;color:#5b6274;font-size:15.5px;font-weight:600;cursor:pointer;transition:background .15s}' +
+  '.tv-simplified-confirm:hover{background:#e2e6f0}';
 
 var ui = {};
 
@@ -297,6 +320,7 @@ function initUI(){
     '<div class="tv-status-overlay"><div class="tv-status-card"></div></div>' +
     '<div class="tv-overlay tv-settings-overlay"></div>' +
     '<div class="tv-overlay tv-verify-overlay"></div>' +
+    '<div class="tv-overlay tv-simplified-overlay"></div>' +
     '<div class="tv-overlay tv-mismatch-overlay">' +
     '<div class="tv-mismatch-card">' +
     '<button class="tv-mismatch-close" title="닫기">✕</button>' +
@@ -307,6 +331,7 @@ function initUI(){
     '</div>' +
     '</div>' +
     '<div class="tv-float-area tv-reprint-area tv-top-left" popover="manual"></div>' +
+    '<div class="tv-float-area tv-simplified-notice tv-bottom-right" popover="manual"></div>' +
     '<div class="tv-status-badge tv-hidden">' +
     '<div class="tv-status-badge-main"><span class="tv-status-dot"></span>트럭검증 활성화</div>' +
     '<div class="tv-status-badge-restrict-header tv-hidden">🚫 상차제한 활성화 중</div>' +
@@ -320,6 +345,8 @@ function initUI(){
   ui.statusCard = shadow.querySelector('.tv-status-card');
   ui.settingsOverlay = shadow.querySelector('.tv-settings-overlay');
   ui.verifyOverlay = shadow.querySelector('.tv-verify-overlay');
+  ui.simplifiedOverlay = shadow.querySelector('.tv-simplified-overlay');
+  ui.simplifiedNotice = shadow.querySelector('.tv-simplified-notice');
   ui.mismatchOverlay = shadow.querySelector('.tv-mismatch-overlay');
   ui.mismatchMessage = shadow.querySelector('.tv-mismatch-message');
   ui.mismatchScanned = shadow.querySelector('.tv-mismatch-scanned');
@@ -427,6 +454,7 @@ function renderSettingsHTML(){
   var dateFieldHidden = state.settings.dateRestrictionEnabled ? '' : ' tv-hidden';
   return '<div class="tv-card tv-settings-card">' +
     '<div class="tv-settings-title">INC14 Return</div>' +
+    renderToggleRow(findSettingDef('simplifiedMode')) +
     renderToggleRow(findSettingDef('restrictionEnabled')) +
     '<div class="tv-field-row tv-group-field-row' + groupFieldHidden + '">' +
     '<label class="tv-field-label">그룹번호</label>' +
@@ -602,6 +630,15 @@ function onGlobalKeydown(e){
       e.preventDefault();
       e.stopPropagation();
       hideMismatchModal();
+      resetScanBuf();
+    }
+    return;
+  }
+  if (ui.simplifiedOverlay.classList.contains('tv-show')) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      e.stopPropagation();
+      closeSimplifiedBlockModal();
       resetScanBuf();
     }
     return;
@@ -843,10 +880,25 @@ function processRow(row){
     var isRestricted = groupRestricted || dateRestricted;
     var info = parseToteAndProducts(docs[0]);
     if (!info) { showStatus('상품 정보를 해석하지 못했습니다', 'error'); state.mode = 'IDLE'; return; }
-    state.toteInfo = Object.assign({ isTruck: isTruck, isRestricted: isRestricted }, info);
+    state.toteInfo = Object.assign({
+      isTruck: isTruck,
+      isRestricted: isRestricted,
+      dateRestricted: dateRestricted,
+      restrictedVendor: restriction.vendorName,
+      restrictedDate: restriction.creationDate
+    }, info);
+    hideStatus();
+    if (state.settings.simplifiedMode) {
+      showSimplifiedNotice();
+      if (state.toteInfo.isRestricted || state.toteInfo.isTruck) {
+        openSimplifiedBlockModal();
+      } else {
+        proceedToWaybill();
+      }
+      return;
+    }
     state.expected = buildExpectedMap(info.products);
     state.mode = 'VERIFYING';
-    hideStatus();
     openVerifyModal();
   }).catch(function(){
     showStatus('상세페이지를 불러오지 못했습니다', 'error');
@@ -899,6 +951,56 @@ function closeVerifyModal(){
   state.expected = new Map();
   ui.verifyOverlay.classList.remove('tv-show');
   ui.verifyOverlay.innerHTML = '';
+}
+
+var simplifiedAutoCloseTimer = null;
+
+function openSimplifiedBlockModal(){
+  var info = state.toteInfo;
+  state.mode = 'SIMPLIFIED_BLOCK';
+  var typeClass = info.isRestricted ? 'restricted' : 'truck';
+  var icon = info.isRestricted ? '⚠️' : '🚚';
+  var title = info.isRestricted ? '상차제한' : '트럭';
+  var lines;
+  if (info.isRestricted) {
+    lines = '<div class="tv-simplified-line">' + escapeHtml(info.restrictedVendor) + '</div>' +
+      (info.dateRestricted ? '<div class="tv-simplified-line sub">생성일시 : ' + escapeHtml(info.restrictedDate) + '</div>' : '');
+  } else {
+    lines = '<div class="tv-simplified-line">해당 상품은 트럭 운송 상품입니다.</div>' +
+      '<div class="tv-simplified-line sub">택배 스캔 시 오류가 발생할 수 있습니다.</div>';
+  }
+  ui.simplifiedOverlay.innerHTML =
+    '<div class="tv-card tv-simplified-block ' + typeClass + '">' +
+    '<div class="tv-simplified-header"><span>운송유형 확인</span><button class="tv-simplified-close" title="닫기">✕</button></div>' +
+    '<div class="tv-simplified-body">' +
+    '<div class="tv-simplified-icon">' + icon + '</div>' +
+    '<div class="tv-simplified-title">' + title + '</div>' +
+    lines +
+    '<button class="tv-simplified-confirm">↻ 확인 (3초 후 자동 닫힘)</button>' +
+    '</div></div>';
+  ui.simplifiedOverlay.classList.add('tv-show');
+  ui.simplifiedOverlay.querySelector('.tv-simplified-close').addEventListener('click', closeSimplifiedBlockModal);
+  ui.simplifiedOverlay.querySelector('.tv-simplified-confirm').addEventListener('click', closeSimplifiedBlockModal);
+  clearTimeout(simplifiedAutoCloseTimer);
+  simplifiedAutoCloseTimer = setTimeout(closeSimplifiedBlockModal, 3000);
+}
+
+function closeSimplifiedBlockModal(){
+  if (state.mode !== 'SIMPLIFIED_BLOCK') return;
+  clearTimeout(simplifiedAutoCloseTimer);
+  state.mode = 'IDLE';
+  ui.simplifiedOverlay.classList.remove('tv-show');
+  ui.simplifiedOverlay.innerHTML = '';
+}
+
+function showSimplifiedNotice(){
+  var info = state.toteInfo;
+  ui.simplifiedNotice.innerHTML =
+    '<div class="tv-float-label">✨ 간소화 처리</div>' +
+    '<div class="tv-simplified-notice-line">' + escapeHtml(info.toteBarcode) + '</div>' +
+    '<div class="tv-simplified-notice-line">' + escapeHtml(info.vendor) + '</div>' +
+    '<div class="tv-simplified-notice-line">집품 수량 ' + info.totalQty + '개</div>';
+  setPopoverVisible(ui.simplifiedNotice, true);
 }
 
 function renderProductRowHtml(barcode, p, idx){
@@ -1043,6 +1145,17 @@ function completeVerification(){
   }, 650);
 }
 
+function proceedToWaybill(){
+  var row = getFirstRow();
+  var tds = row && row.querySelectorAll('td');
+  var last = tds && tds[tds.length - 1];
+  var openBtn = last && last.querySelector('[data-action="open-waybill-modal"]');
+  if (!openBtn) { showStatus('운송장 생성 버튼을 찾을 수 없습니다', 'error'); state.mode = 'IDLE'; return; }
+  openBtn.click();
+  state.mode = 'WAITING_WAYBILL_OPEN';
+  watchWaybillDialog();
+}
+
 function afterVerification(){
   if (state.toteInfo.isRestricted) {
     state.mode = 'IDLE';
@@ -1054,14 +1167,7 @@ function afterVerification(){
     showStatus('트럭 - 검증 완료');
     return;
   }
-  var row = getFirstRow();
-  var tds = row && row.querySelectorAll('td');
-  var last = tds && tds[tds.length - 1];
-  var openBtn = last && last.querySelector('[data-action="open-waybill-modal"]');
-  if (!openBtn) { showStatus('운송장 생성 버튼을 찾을 수 없습니다', 'error'); state.mode = 'IDLE'; return; }
-  openBtn.click();
-  state.mode = 'WAITING_WAYBILL_OPEN';
-  watchWaybillDialog();
+  proceedToWaybill();
 }
 
 function isElementVisible(el){
