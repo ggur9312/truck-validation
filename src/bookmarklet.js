@@ -151,7 +151,7 @@ var CSS =
   '.tv-verify.courier{box-shadow:0 0 0 5px rgba(52,211,153,.6),var(--tv-elev-2)}' +
   '.tv-verify.restricted{box-shadow:0 0 0 5px rgba(251,146,60,.65),var(--tv-elev-2)}' +
 
-  '.tv-verify-header{position:relative;display:flex;align-items:center;gap:14px;padding:18px 52px 18px 22px;border-bottom:1px solid var(--tv-border);flex-shrink:0;animation:tvSlideDown .3s var(--tv-ease)}' +
+  '.tv-verify-header{position:relative;display:flex;align-items:center;gap:14px;padding:12px 52px 12px 22px;border-bottom:1px solid var(--tv-border);flex-shrink:0;animation:tvSlideDown .3s var(--tv-ease)}' +
   '@keyframes tvSlideDown{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:translateY(0)}}' +
   '.tv-verify-header-icon{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}' +
   '.tv-verify-header-icon.truck{background:var(--tv-truck-bg);color:var(--tv-truck-fg)}' +
@@ -167,7 +167,7 @@ var CSS =
   '.tv-verify-close:hover{background:var(--tv-surface-2);color:var(--tv-text)}' +
   '.tv-verify-body{padding:22px 24px 24px;display:flex;flex-direction:column;flex:1;min-height:0;overflow-y:auto;overflow-x:hidden}' +
 
-  '.tv-verify-hero{flex-shrink:0;padding:2px 0 18px}' +
+  '.tv-verify-hero{flex-shrink:0;padding:2px 0 14px}' +
   '.tv-stepper-labels{display:flex;margin-bottom:9px}' +
   '.tv-stepper-label{flex:1;font-size:14px;font-weight:500;color:var(--tv-text-soft)}' +
   '.tv-stepper-label:first-child{text-align:left}' +
@@ -201,9 +201,6 @@ var CSS =
   '@keyframes tvTypeGlowTruck{0%,100%{box-shadow:0 8px 20px rgba(0,0,0,.2),inset 0 0 0 0 rgba(255,255,255,0);filter:brightness(1)}50%{box-shadow:0 8px 20px rgba(0,0,0,.2),inset 0 0 26px 6px rgba(255,255,255,.5);filter:brightness(1.15)}}' +
   '@keyframes tvTypeGlowCourier{0%,100%{box-shadow:0 8px 20px rgba(0,0,0,.2),inset 0 0 0 0 rgba(255,255,255,0);filter:brightness(1)}50%{box-shadow:0 8px 20px rgba(0,0,0,.2),inset 0 0 26px 6px rgba(255,255,255,.5);filter:brightness(1.15)}}' +
   '@keyframes tvTypeGlowRestricted{0%,100%{box-shadow:0 8px 20px rgba(0,0,0,.2),inset 0 0 0 0 rgba(255,255,255,0);filter:brightness(1)}50%{box-shadow:0 8px 20px rgba(0,0,0,.2),inset 0 0 26px 6px rgba(255,255,255,.5);filter:brightness(1.15)}}' +
-
-  '.tv-tip-bar{flex-shrink:0;display:flex;align-items:center;gap:8px;background:var(--tv-surface-2);border:1px solid var(--tv-border);border-radius:12px;padding:10px 14px;font-size:15px;color:var(--tv-text-soft);margin-bottom:16px}' +
-  '.tv-tip-icon{flex-shrink:0;color:var(--tv-accent);font-weight:600}' +
 
   '.tv-toggle-row{display:flex;align-items:center;justify-content:space-between;padding:13px 0;font-size:16.5px;font-weight:500;border-top:1px solid var(--tv-border)}' +
   '.tv-toggle-row input{display:none}' +
@@ -879,10 +876,9 @@ function openVerifyModal(){
     '</div>' +
     '<div class="tv-stat-grid">' +
     '<div class="tv-stat-tile"><span class="tv-stat-icon vendor">🏢</span><div class="tv-stat-label">업체명</div><div class="tv-stat-value">' + escapeHtml(info.vendor) + '</div></div>' +
-    '<div class="tv-stat-tile"><span class="tv-stat-icon tote">📦</span><div class="tv-stat-label">토트바코드</div><div class="tv-stat-value">' + escapeHtml(info.toteBarcode) + '</div><div class="tv-stat-caption">전체 ' + info.totalQty + '개</div></div>' +
+    '<div class="tv-stat-tile"><span class="tv-stat-icon tote">📦</span><div class="tv-stat-label">토트바코드</div><div class="tv-stat-value">' + escapeHtml(info.toteBarcode) + '</div><div class="tv-stat-caption">집품 수량 ' + info.totalQty + '개</div></div>' +
     '<div class="tv-type-banner ' + typeClass + '"><span class="tv-type-icon">' + typeIcon + '</span><div class="tv-type-label">배송 방식</div><div class="tv-type-value">' + typeText + '</div></div>' +
     '</div>' +
-    '<div class="tv-tip-bar"><span class="tv-tip-icon">ℹ</span><span>모든 상품을 스캔하면 자동으로 다음 단계로 진행됩니다.</span></div>' +
     '<div class="tv-product-list"></div>' +
     '<div class="tv-skip-area"><div class="tv-skip-label">검증 건너뛰기 (스캔)</div><div class="tv-barcode-wrap"><canvas class="tv-skip-barcode"></canvas></div></div>' +
     '</div>' +

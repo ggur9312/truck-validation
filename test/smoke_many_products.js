@@ -45,9 +45,9 @@ async function openManyProducts(browser, height){
     console.log('OK: verify card fits fully within a 700px-tall viewport despite 15 products (' + Math.round(cardBox.height) + 'px tall)');
   }
 
-  // The header, hero, banner, stat grid, tip bar and skip barcode must all
-  // stay fully visible without scrolling -- only the product list scrolls.
-  var chromeSelectors = ['.tv-verify-header', '.tv-verify-hero', '.tv-type-banner', '.tv-stat-grid', '.tv-tip-bar', '.tv-skip-area'];
+  // The header, hero, banner, stat grid and skip barcode must all stay
+  // fully visible without scrolling -- only the product list scrolls.
+  var chromeSelectors = ['.tv-verify-header', '.tv-verify-hero', '.tv-type-banner', '.tv-stat-grid', '.tv-skip-area'];
   var allChromeOk = true;
   for (var i = 0; i < chromeSelectors.length; i++) {
     var box = await page.locator(chromeSelectors[i]).boundingBox();
