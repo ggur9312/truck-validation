@@ -108,7 +108,7 @@ function drawCode128(canvas, text, opts){
 }
 
 var CSS =
-  ':host{all:initial;font-family:"Pretendard","Noto Sans KR","Segoe UI Variable Text","Segoe UI",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;' +
+  ':host{all:initial;font-family:"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;' +
   '--tv-surface:#1b2132;--tv-surface-2:#242b40;--tv-surface-3:#2d3552;--tv-text:#f2f4fa;--tv-text-soft:#aab3c6;' +
   '--tv-accent:#4f7cff;--tv-accent-dark:#3a63e0;--tv-border:rgba(255,255,255,.09);--tv-success:#34d399;--tv-success-tint:rgba(52,211,153,.16);--tv-error:#f87171;' +
   '--tv-truck-bg:rgba(248,113,113,.16);--tv-truck-fg:#f87171;--tv-courier-bg:rgba(52,211,153,.16);--tv-courier-fg:#34d399;--tv-restricted-bg:rgba(251,146,60,.18);--tv-restricted-fg:#fb923c;' +
@@ -375,7 +375,7 @@ function renderSettingsHTML(){
   var groupFieldHidden = state.settings.restrictionEnabled ? '' : ' tv-hidden';
   var dateFieldHidden = state.settings.dateRestrictionEnabled ? '' : ' tv-hidden';
   return '<div class="tv-card tv-settings-card">' +
-    '<div class="tv-settings-title">트럭검증 설정</div>' +
+    '<div class="tv-settings-title">INC14 Return</div>' +
     renderToggleRow(findSettingDef('restrictionEnabled')) +
     '<div class="tv-field-row tv-group-field-row' + groupFieldHidden + '">' +
     '<label class="tv-field-label">그룹번호</label>' +
