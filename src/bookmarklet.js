@@ -165,7 +165,7 @@ var CSS =
   '.tv-scan-status-pill.err{background:var(--tv-error);color:#3a0d0d}' +
   '.tv-verify-close{position:absolute;right:16px;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:50%;border:none;background:var(--tv-surface-3);color:var(--tv-text-soft);font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s,color .15s;overflow:hidden}' +
   '.tv-verify-close:hover{background:var(--tv-surface-2);color:var(--tv-text)}' +
-  '.tv-verify-body{padding:22px 24px 24px;display:flex;flex-direction:column;flex:1;min-height:0;overflow-y:auto;overflow-x:hidden}' +
+  '.tv-verify-body{padding:14px 22px 18px;display:flex;flex-direction:column;flex:1;min-height:0;overflow-y:auto;overflow-x:hidden}' +
 
   '.tv-verify-hero{flex-shrink:0;padding:2px 0 14px}' +
   '.tv-stepper-labels{display:flex;margin-bottom:9px}' +
@@ -248,7 +248,7 @@ var CSS =
   '.tv-product-status{flex-shrink:0;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13.5px;font-weight:600;background:var(--tv-surface-3);color:var(--tv-text-soft);border:2px solid var(--tv-border)}' +
   '.tv-product-body{flex:1;min-width:0}' +
   '.tv-product-top{display:flex;justify-content:space-between;align-items:center;font-size:17.5px;font-weight:600;margin-bottom:6px;gap:10px}' +
-  '.tv-product-name{display:flex;flex-direction:column;gap:2px;min-width:0}' +
+  '.tv-product-name{display:flex;flex-direction:column;gap:2px;min-width:0;font-size:15px}' +
   '.tv-product-barcode{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:17.5px;font-weight:600;color:var(--tv-text);letter-spacing:.4px}' +
   '.tv-product-count{flex-shrink:0;color:var(--tv-text-soft);font-weight:600;font-variant-numeric:tabular-nums;font-size:16.5px}' +
   '.tv-progress{height:5px;border-radius:3px;background:var(--tv-border);overflow:hidden}' +
