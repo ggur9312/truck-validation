@@ -637,7 +637,7 @@ function processRow(row){
     return;
   }
   var linkProduct = tds[0] && tds[0].querySelector('a[href]');
-  var linkType = tds[1] && tds[1].querySelector('a[href]');
+  var linkType = tds[2] && tds[2].querySelector('a[href]');
   if (!linkProduct || !linkType) { showStatus('링크를 찾을 수 없습니다', 'error'); state.mode = 'IDLE'; return; }
   showStatus('상세정보 조회 중...', 'loading');
   Promise.all([fetchDoc(linkProduct.href), fetchDoc(linkType.href)]).then(function(docs){
