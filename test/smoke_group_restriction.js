@@ -31,7 +31,7 @@ function sendScan(page, text){
   await page.locator('.tv-activate-btn').click();
 
   var restrictLabelText = (await page.locator('.tv-restrict-label').textContent()).trim();
-  if (!(await page.locator('.tv-status-badge-restrict').isVisible()) || restrictLabelText.indexOf('그룹번호 상차제한 활성화') === -1) {
+  if (!(await page.locator('.tv-restrict-group').isVisible()) || restrictLabelText.indexOf('그룹번호 상차제한 활성화') === -1) {
     console.error('FAIL: restriction label should read "그룹번호 상차제한 활성화", got', restrictLabelText);
     process.exitCode = 1;
   } else {
@@ -46,7 +46,7 @@ function sendScan(page, text){
     console.log('OK: configured groups shown on their own line below the label:', restrictGroupsText);
   }
 
-  var badgeIsOneBox = await page.locator('.tv-status-badge').evaluate(function(el){ return el.querySelector('.tv-status-badge-restrict') !== null; });
+  var badgeIsOneBox = await page.locator('.tv-status-badge').evaluate(function(el){ return el.querySelector('.tv-restrict-group') !== null; });
   if (!badgeIsOneBox) { console.error('FAIL: restriction line should live inside .tv-status-badge, not a separate floating box'); process.exitCode = 1; }
   else console.log('OK: restriction line is nested inside the single status badge, not a separate box');
 
@@ -92,30 +92,31 @@ function sendScan(page, text){
   if (persistedValue !== '99, GRP1 ,88') { console.error('FAIL: restricted group setting should persist across reload, got', JSON.stringify(persistedValue)); process.exitCode = 1; }
   else console.log('OK: restricted group setting persists across a page reload');
 
-  var toggleLabel = (await page.locator('.tv-toggle-row span').first().textContent()).trim();
+  var groupToggleRow = page.locator('.tv-toggle-row').filter({ has: page.locator('[data-key="restrictionEnabled"]') });
+  var toggleLabel = (await groupToggleRow.locator('span').first().textContent()).trim();
   if (toggleLabel !== '그룹번호 상차제한') { console.error('FAIL: toggle label should read "그룹번호 상차제한", got', toggleLabel); process.exitCode = 1; }
   else console.log('OK: toggle label reads "그룹번호 상차제한"');
 
-  var toggleChecked = await page.locator('.tv-toggle-row input[type=checkbox]').isChecked();
+  var toggleChecked = await groupToggleRow.locator('input[type=checkbox]').isChecked();
   if (!toggleChecked) { console.error('FAIL: 그룹번호 상차제한 toggle should default to on'); process.exitCode = 1; }
   else console.log('OK: 그룹번호 상차제한 toggle defaults to on');
 
-  var fieldVisibleWhenOn = await page.locator('.tv-field-row').isVisible();
+  var fieldVisibleWhenOn = await page.locator('.tv-group-field-row').isVisible();
   if (!fieldVisibleWhenOn) { console.error('FAIL: group-number input should be visible while the toggle is on'); process.exitCode = 1; }
   else console.log('OK: group-number input field is shown while the toggle is on');
 
   // Turning the switch off must hide the input field and suppress
   // restriction WITHOUT clearing the configured group numbers underneath --
   // TOTE001's group (GRP1) is still in the (now-hidden) saved list.
-  await page.locator('.tv-toggle-row').click();
+  await groupToggleRow.click();
 
-  var fieldVisibleWhenOff = await page.locator('.tv-field-row').isVisible();
+  var fieldVisibleWhenOff = await page.locator('.tv-group-field-row').isVisible();
   if (fieldVisibleWhenOff) { console.error('FAIL: group-number input should be hidden once the toggle is off'); process.exitCode = 1; }
   else console.log('OK: group-number input field hides once the toggle is switched off');
 
   await page.locator('.tv-activate-btn').click();
 
-  var restrictBadgeVisibleWhenOff = await page.locator('.tv-status-badge-restrict').isVisible();
+  var restrictBadgeVisibleWhenOff = await page.locator('.tv-restrict-group').isVisible();
   if (restrictBadgeVisibleWhenOff) { console.error('FAIL: restriction badge should be hidden once the toggle is switched off'); process.exitCode = 1; }
   else console.log('OK: restriction badge hides once 그룹번호 상차제한 is switched off');
 

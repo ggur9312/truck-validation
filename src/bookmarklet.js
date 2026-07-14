@@ -18,8 +18,15 @@ var SEL = {
 var CTRL = { SKIP: 'TVCS', WAYBILL: 'TVCW', REPRINT: 'TVCR' };
 
 var SETTING_DEFS = [
-  { key: 'restrictionEnabled', label: '그룹번호 상차제한' }
+  { key: 'restrictionEnabled', label: '그룹번호 상차제한' },
+  { key: 'dateRestrictionEnabled', label: '생성일시 상차제한' }
 ];
+
+var SETTINGS_DEFAULTS = { enabled: false, restrictedGroups: '', restrictionEnabled: true, dateRestrictionEnabled: false, dateRestrictionStart: '', dateRestrictionEnd: '' };
+/* Fields that must never survive a reload -- forced back to their default
+   every load regardless of what's saved, unlike restrictedGroups/
+   restrictionEnabled which are meant to persist. */
+var SETTINGS_RESET_ON_LOAD = ['enabled', 'dateRestrictionEnabled', 'dateRestrictionStart', 'dateRestrictionEnd'];
 
 var state = {
   mode: 'IDLE',
@@ -31,14 +38,21 @@ var state = {
 function loadSettings(){
   try {
     var saved = JSON.parse(localStorage.getItem('tv_settings') || '{}');
-    saved.enabled = false;
-    return Object.assign({ enabled: false, restrictedGroups: '', restrictionEnabled: true }, saved);
-  } catch (e) { return { enabled: false, restrictedGroups: '', restrictionEnabled: true }; }
+    SETTINGS_RESET_ON_LOAD.forEach(function(key){ saved[key] = SETTINGS_DEFAULTS[key]; });
+    return Object.assign({}, SETTINGS_DEFAULTS, saved);
+  } catch (e) { return Object.assign({}, SETTINGS_DEFAULTS); }
 }
 function saveSettings(){ localStorage.setItem('tv_settings', JSON.stringify(state.settings)); }
 
 function getRestrictedGroupList(){
   return (state.settings.restrictedGroups || '').split(',').map(function(s){ return s.trim(); }).filter(function(s){ return s; });
+}
+
+function isDateInRestrictedRange(dateStr){
+  var start = state.settings.dateRestrictionStart;
+  var end = state.settings.dateRestrictionEnd;
+  if (!state.settings.dateRestrictionEnabled || !start || !end || !dateStr) return false;
+  return dateStr >= start && dateStr <= end;
 }
 
 var C128_TABLE = ["212222","222122","222221","121223","121322","131222","122213","122312","132212","221213","221312","231212","112232","122132","122231","113222","123122","123221","223211","221132","221231","213212","223112","312131","311222","321122","321221","312212","322112","322211","212123","212321","232121","111323","131123","131321","112313","132113","132311","211313","231113","231311","112133","112331","132131","113123","113321","133121","313121","211331","231131","213113","213311","213131","311123","311321","331121","312113","312311","332111","314111","221411","431111","111224","111422","121124","121421","141122","141221","112214","112412","122114","122411","142112","142211","241211","221114","413111","241112","134111","111242","121142","121241","114212","124112","124211","411212","421112","421211","212141","214121","412121","111143","111341","131141","114113","114311","411113","411311","113141","114131","311141","411131","211412","211214","211232"];
@@ -176,6 +190,10 @@ var CSS =
   '.tv-group-input{width:100%;box-sizing:border-box;padding:10px 12px;border-radius:10px;border:1px solid var(--tv-border);background:var(--tv-surface-2);color:var(--tv-text);font-size:14px;font-family:inherit}' +
   '.tv-group-input:focus{outline:none;border-color:var(--tv-accent)}' +
   '.tv-field-hint{font-size:12px;color:var(--tv-text-soft);margin-top:6px}' +
+  '.tv-date-range-row{display:flex;align-items:center;gap:8px}' +
+  '.tv-date-input{flex:1;min-width:0;box-sizing:border-box;padding:9px 10px;border-radius:10px;border:1px solid var(--tv-border);background:var(--tv-surface-2);color:var(--tv-text);font-size:13.5px;font-family:inherit}' +
+  '.tv-date-input:focus{outline:none;border-color:var(--tv-accent)}' +
+  '.tv-date-range-sep{flex-shrink:0;color:var(--tv-text-soft);font-weight:700}' +
 
   '.tv-activate-btn{position:relative;overflow:hidden;margin-top:16px;width:100%;padding:14px;border:none;border-radius:12px;background:var(--tv-accent);color:#fff;font-size:16px;font-weight:800;letter-spacing:.1px;cursor:pointer;box-shadow:0 12px 24px rgba(79,124,255,.3);transition:transform .15s,box-shadow .15s}' +
   '.tv-activate-btn:hover{transform:translateY(-2px);box-shadow:0 16px 30px rgba(79,124,255,.4)}' +
@@ -254,7 +272,8 @@ function initUI(){
     '<div class="tv-float-area tv-reprint-area tv-top-left" popover="manual"></div>' +
     '<div class="tv-status-badge tv-hidden">' +
     '<div class="tv-status-badge-main"><span class="tv-status-dot"></span>트럭검증 활성화</div>' +
-    '<div class="tv-status-badge-restrict tv-hidden"></div>' +
+    '<div class="tv-status-badge-restrict tv-restrict-group tv-hidden"></div>' +
+    '<div class="tv-status-badge-restrict tv-restrict-date tv-hidden"></div>' +
     '</div>' +
     '<button class="tv-gear-btn tv-hidden" title="프로그램 설정">⚙</button>';
   ui.shadow = shadow;
@@ -265,7 +284,8 @@ function initUI(){
   ui.waybillOverlay = shadow.querySelector('.tv-waybill-area');
   ui.reprintOverlay = shadow.querySelector('.tv-reprint-area');
   ui.statusBadge = shadow.querySelector('.tv-status-badge');
-  ui.restrictBadge = shadow.querySelector('.tv-status-badge-restrict');
+  ui.restrictBadge = shadow.querySelector('.tv-restrict-group');
+  ui.dateRestrictBadge = shadow.querySelector('.tv-restrict-date');
   ui.gearBtn = shadow.querySelector('.tv-gear-btn');
   ui.gearBtn.addEventListener('click', toggleSettings);
   attachRipple(ui.gearBtn);
@@ -343,14 +363,24 @@ function renderSettingsHTML(){
       '<input type="checkbox" data-key="' + d.key + '" ' + (state.settings[d.key] ? 'checked' : '') + '/>' +
       '<span class="tv-switch"></span></label>';
   }).join('');
-  var fieldHidden = state.settings.restrictionEnabled ? '' : ' tv-hidden';
+  var groupFieldHidden = state.settings.restrictionEnabled ? '' : ' tv-hidden';
+  var dateFieldHidden = state.settings.dateRestrictionEnabled ? '' : ' tv-hidden';
   return '<div class="tv-card tv-settings-card">' +
     '<div class="tv-settings-title">트럭검증 설정</div>' +
     toggles +
-    '<div class="tv-field-row' + fieldHidden + '">' +
+    '<div class="tv-field-row tv-group-field-row' + groupFieldHidden + '">' +
     '<label class="tv-field-label">상차제한 그룹번호</label>' +
     '<input type="text" class="tv-group-input" placeholder="예: 12,34,56" value="' + escapeHtml(state.settings.restrictedGroups || '') + '"/>' +
     '<div class="tv-field-hint">쉼표(,)로 여러 그룹번호 입력 가능</div>' +
+    '</div>' +
+    '<div class="tv-field-row tv-date-field-row' + dateFieldHidden + '">' +
+    '<label class="tv-field-label">상차제한 생성일시 기간</label>' +
+    '<div class="tv-date-range-row">' +
+    '<input type="date" class="tv-date-input tv-date-start-input" value="' + escapeHtml(state.settings.dateRestrictionStart || '') + '"/>' +
+    '<span class="tv-date-range-sep">~</span>' +
+    '<input type="date" class="tv-date-input tv-date-end-input" value="' + escapeHtml(state.settings.dateRestrictionEnd || '') + '"/>' +
+    '</div>' +
+    '<div class="tv-field-hint">이 기간에 생성된 토트만 상차제한됩니다</div>' +
     '</div>' +
     '<button class="tv-activate-btn">저장</button>' +
     '</div>';
@@ -363,9 +393,14 @@ function bindSettingsEvents(){
       state.settings[cb.dataset.key] = cb.checked;
       saveSettings();
       updateRestrictBadge();
+      updateDateRestrictBadge();
       if (cb.dataset.key === 'restrictionEnabled') {
-        var fieldRow = overlay.querySelector('.tv-field-row');
+        var fieldRow = overlay.querySelector('.tv-group-field-row');
         if (fieldRow) fieldRow.classList.toggle('tv-hidden', !cb.checked);
+      }
+      if (cb.dataset.key === 'dateRestrictionEnabled') {
+        var dateFieldRow = overlay.querySelector('.tv-date-field-row');
+        if (dateFieldRow) dateFieldRow.classList.toggle('tv-hidden', !cb.checked);
       }
     });
   });
@@ -375,6 +410,22 @@ function bindSettingsEvents(){
       state.settings.restrictedGroups = groupInput.value;
       saveSettings();
       updateRestrictBadge();
+    });
+  }
+  var dateStartInput = overlay.querySelector('.tv-date-start-input');
+  var dateEndInput = overlay.querySelector('.tv-date-end-input');
+  if (dateStartInput) {
+    dateStartInput.addEventListener('input', function(){
+      state.settings.dateRestrictionStart = dateStartInput.value;
+      saveSettings();
+      updateDateRestrictBadge();
+    });
+  }
+  if (dateEndInput) {
+    dateEndInput.addEventListener('input', function(){
+      state.settings.dateRestrictionEnd = dateEndInput.value;
+      saveSettings();
+      updateDateRestrictBadge();
     });
   }
   var btn = overlay.querySelector('.tv-activate-btn');
@@ -392,6 +443,7 @@ function showActiveIndicators(){
   ui.gearBtn.classList.remove('tv-hidden');
   ui.statusBadge.classList.remove('tv-hidden');
   updateRestrictBadge();
+  updateDateRestrictBadge();
 }
 
 function updateRestrictBadge(){
@@ -402,6 +454,17 @@ function updateRestrictBadge(){
   }
   ui.restrictBadge.innerHTML = '<div class="tv-restrict-label">🚫 그룹번호 상차제한 활성화</div><div class="tv-restrict-groups">' + escapeHtml(groups.join(', ')) + '</div>';
   ui.restrictBadge.classList.remove('tv-hidden');
+}
+
+function updateDateRestrictBadge(){
+  var start = state.settings.dateRestrictionStart;
+  var end = state.settings.dateRestrictionEnd;
+  if (!state.settings.enabled || !state.settings.dateRestrictionEnabled || !start || !end) {
+    ui.dateRestrictBadge.classList.add('tv-hidden');
+    return;
+  }
+  ui.dateRestrictBadge.innerHTML = '<div class="tv-restrict-label">📅 생성일시 상차제한 활성화</div><div class="tv-restrict-groups">' + escapeHtml(start) + ' ~ ' + escapeHtml(end) + '</div>';
+  ui.dateRestrictBadge.classList.remove('tv-hidden');
 }
 
 function setNativeValue(el, value){
@@ -669,12 +732,16 @@ function parseDeliveryType(doc){
   return false;
 }
 
-function parseGroupRestriction(doc){
+function parseRestrictionInfo(doc){
   var t1 = getTable(doc, 0);
   var t2 = getTable(doc, 1);
   var r1 = t1 && getRows(t1)[0];
   var r2 = t2 && getRows(t2)[0];
-  return { groupNo: r1 ? td(r1, 0) : '', vendorName: r2 ? td(r2, 0) : '' };
+  return {
+    groupNo: r1 ? td(r1, 0) : '',
+    creationDate: r1 ? td(r1, 5).slice(0, 10) : '',
+    vendorName: r2 ? td(r2, 0) : ''
+  };
 }
 
 function parseToteAndProducts(doc){
@@ -721,8 +788,10 @@ function processRow(row){
   showStatus('상세정보 조회 중...', 'loading');
   Promise.all([fetchDoc(linkProduct.href), fetchDoc(linkType.href)]).then(function(docs){
     var isTruck = parseDeliveryType(docs[1]);
-    var restriction = parseGroupRestriction(docs[1]);
-    var isRestricted = state.settings.restrictionEnabled && getRestrictedGroupList().indexOf(restriction.groupNo) !== -1;
+    var restriction = parseRestrictionInfo(docs[1]);
+    var groupRestricted = state.settings.restrictionEnabled && getRestrictedGroupList().indexOf(restriction.groupNo) !== -1;
+    var dateRestricted = isDateInRestrictedRange(restriction.creationDate);
+    var isRestricted = groupRestricted || dateRestricted;
     var info = parseToteAndProducts(docs[0]);
     if (!info) { showStatus('상품 정보를 해석하지 못했습니다', 'error'); state.mode = 'IDLE'; return; }
     state.toteInfo = Object.assign({ isTruck: isTruck, isRestricted: isRestricted, restrictedVendor: restriction.vendorName }, info);
