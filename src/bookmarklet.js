@@ -131,15 +131,15 @@ var CSS =
   '.tv-verify-close{position:absolute;right:16px;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:50%;border:none;background:var(--tv-surface-3);color:var(--tv-text-soft);font-size:14px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s,color .15s;overflow:hidden}' +
   '.tv-verify-close:hover{background:var(--tv-surface-2);color:var(--tv-text)}' +
   '.tv-verify-body{padding:22px 24px 24px}' +
-  '.tv-type-banner{display:flex;align-items:center;justify-content:center;gap:10px;margin:4px -24px 16px;padding:14px 22px;font-size:21px;font-weight:800;color:#fff;animation:tvTypeGlow 2.4s ease-in-out infinite}' +
+  '.tv-type-banner{display:flex;align-items:center;justify-content:center;gap:10px;margin:8px 0 18px;padding:14px 22px;border-radius:18px;font-size:21px;font-weight:800;color:#fff;box-shadow:0 10px 24px rgba(0,0,0,.18);animation:tvTypeGlow 2.4s ease-in-out infinite}' +
   '.tv-type-banner.truck{background:linear-gradient(135deg,#f87171,#c93f3f)}' +
   '.tv-type-banner.courier{background:linear-gradient(135deg,#34d399,#1f9d6c)}' +
   '.tv-type-banner-icon{font-size:25px}' +
   '@keyframes tvTypeGlow{0%,100%{box-shadow:inset 0 0 0 0 rgba(255,255,255,0);filter:brightness(1)}50%{box-shadow:inset 0 0 50px 8px rgba(255,255,255,.45);filter:brightness(1.14)}}' +
 
   '.tv-verify-hero{display:flex;flex-direction:row;align-items:center;justify-content:center;text-align:center;gap:12px;padding:2px 0 8px}' +
-  '.tv-hero-icon{flex-shrink:0;width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:19px;background:var(--tv-accent);color:#fff;box-shadow:0 0 0 6px rgba(79,124,255,.14);animation:tvHeroPop .35s var(--tv-ease)}' +
-  '.tv-hero-icon.done{background:var(--tv-success);box-shadow:0 0 0 6px rgba(52,211,153,.16)}' +
+  '.tv-hero-icon{flex-shrink:0;width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:19px;background:linear-gradient(135deg,var(--tv-accent),var(--tv-accent-dark));color:#fff;box-shadow:0 0 0 6px rgba(79,124,255,.14);animation:tvHeroPop .35s var(--tv-ease)}' +
+  '.tv-hero-icon.done{background:linear-gradient(135deg,var(--tv-success),#1f9d6c);box-shadow:0 0 0 6px rgba(52,211,153,.16)}' +
   '@keyframes tvHeroPop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:scale(1)}}' +
   '.tv-hero-text{display:flex;flex-direction:column;gap:2px;min-width:0}' +
   '.tv-hero-title{font-size:19px;font-weight:800;letter-spacing:-.2px}' +
@@ -185,10 +185,10 @@ var CSS =
   '@keyframes tvRowIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}' +
   '.tv-product-status{flex-shrink:0;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;background:var(--tv-surface-3);color:var(--tv-text-soft);border:2px solid var(--tv-border)}' +
   '.tv-product-body{flex:1;min-width:0}' +
-  '.tv-product-top{display:flex;justify-content:space-between;align-items:flex-start;font-size:16px;font-weight:700;margin-bottom:6px;gap:10px}' +
+  '.tv-product-top{display:flex;justify-content:space-between;align-items:center;font-size:16px;font-weight:700;margin-bottom:6px;gap:10px}' +
   '.tv-product-name{display:flex;flex-direction:column;gap:2px;min-width:0}' +
   '.tv-product-barcode{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:16px;font-weight:700;color:var(--tv-text);letter-spacing:.4px}' +
-  '.tv-product-count{flex-shrink:0;color:var(--tv-text-soft);font-weight:700;font-variant-numeric:tabular-nums;padding-top:1px;font-size:15px}' +
+  '.tv-product-count{flex-shrink:0;color:var(--tv-text-soft);font-weight:700;font-variant-numeric:tabular-nums;font-size:15px}' +
   '.tv-progress{height:5px;border-radius:3px;background:var(--tv-border);overflow:hidden}' +
   '.tv-progress-fill{height:100%;border-radius:3px;background:var(--tv-accent);transition:width .25s ease}' +
   '.tv-product-row.done{background:var(--tv-success-tint);border-color:var(--tv-success)}' +
