@@ -28,11 +28,26 @@
       // byte-identical markup both times (no artificial per-search
       // uniqueness), since that's the scenario that used to hang.
       if (tote === 'TOTE_NONE') { table.innerHTML = '<tr><td colspan="11">조회된 내역이 없습니다</td></tr>'; return; }
-      var actionBtn = generatedTotes[tote]
+      // TOTE_MISMATCH simulates a WMS returning a row for a different tote
+      // than what was actually scanned/searched (e.g. a stale result) --
+      // the first td deliberately does NOT match the scanned value.
+      if (tote === 'TOTE_MISMATCH') {
+        table.innerHTML = '<tr>' +
+          '<td><a href="/detail/OTHER_TOTE">OTHER_TOTE</a></td>' +
+          '<td>2</td>' +
+          '<td><a href="/type/OTHER_TOTE">타입1</a></td>' +
+          '<td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td>' +
+          '<td><button data-action="open-waybill-modal" onclick="openWaybillModal(\'OTHER_TOTE\')">운송장생성</button></td>' +
+          '</tr>';
+        return;
+      }
+      // TOTE_NOBTN simulates a tote whose row has neither a reprint nor an
+      // "운송장생성" button -- some other status prevents loading entirely.
+      var actionBtn = tote === 'TOTE_NOBTN' ? '' : generatedTotes[tote]
         ? '<button class="btn-waybill-print-single" onclick="openReprintModal()">재출력</button>'
         : '<button data-action="open-waybill-modal" onclick="openWaybillModal(\'' + tote + '\')">운송장생성</button>';
       table.innerHTML = '<tr>' +
-        '<td><a href="/detail/' + tote + '">상세1</a></td>' +
+        '<td><a href="/detail/' + tote + '">' + tote + '</a></td>' +
         '<td>2</td>' +
         '<td><a href="/type/' + tote + '">타입1</a></td>' +
         '<td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td>' +

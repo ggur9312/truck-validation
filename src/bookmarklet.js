@@ -99,7 +99,7 @@ var CSS =
   '--tv-elev-1:0 1px 2px rgba(0,0,0,.35);--tv-elev-2:0 10px 28px rgba(0,0,0,.45),0 2px 8px rgba(0,0,0,.3);--tv-elev-3:0 24px 60px rgba(0,0,0,.55),0 6px 18px rgba(0,0,0,.35);' +
   '--tv-ease:cubic-bezier(.17,.67,.35,1)}' +
 
-  '.tv-status-overlay{position:fixed;inset:0;z-index:2147483500;display:none;align-items:center;justify-content:center;pointer-events:none}' +
+  '.tv-status-overlay{position:fixed;inset:0;z-index:2147483500;display:none;align-items:flex-start;justify-content:center;padding-top:90px;pointer-events:none}' +
   '.tv-status-overlay.tv-show{display:flex}' +
   '.tv-status-card{background:var(--tv-surface);border-radius:14px;box-shadow:var(--tv-elev-2);border:1px solid var(--tv-border);padding:20px 28px;display:flex;align-items:center;gap:14px;animation:tvPop .18s var(--tv-ease)}' +
   '.tv-status-icon{width:22px;height:22px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800}' +
@@ -614,7 +614,15 @@ function startSearch(toteBarcode){
   var prevRowEl = getFirstRow();
   btn.click();
   waitForSearchResult(prevRowEl).then(function(row){
-    if (row) { processRow(row); return; }
+    if (row) {
+      if (td(row, 0) !== toteBarcode) {
+        showStatus('스캔한 토트와 조회 결과가 일치하지 않습니다', 'error');
+        state.mode = 'IDLE';
+        return;
+      }
+      processRow(row);
+      return;
+    }
     if (!emptyResultDebugLogged) {
       emptyResultDebugLogged = true;
       try {
@@ -700,6 +708,11 @@ function processRow(row){
   if (last && last.querySelector('.btn-waybill-print-single')) {
     hideStatus();
     showReprintOverlay();
+    return;
+  }
+  if (!last || !last.querySelector('[data-action="open-waybill-modal"]')) {
+    showStatus('상차 불가한 토트입니다', 'error');
+    state.mode = 'IDLE';
     return;
   }
   var linkProduct = tds[0] && tds[0].querySelector('a[href]');
