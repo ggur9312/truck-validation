@@ -18,7 +18,7 @@ function sendScan(page, text){
   var page = await browser.newPage();
   page.on('pageerror', function(err){ console.error('PAGE ERROR:', err.message); process.exitCode = 1; });
 
-  // waybill dialog is rendered WITHOUT the expected "waybill-dialog" class,
+  // waybill modal is rendered WITHOUT the expected "modalOutboundWaybill" id,
   // simulating a real WMS whose actual markup differs from our assumed selector.
   await page.goto('http://localhost:8934/fixture.html?mismatch=1');
 
@@ -35,11 +35,11 @@ function sendScan(page, text){
   await sendScan(page, 'BAR002');
   await page.locator('.tv-verify-overlay').waitFor({ state: 'hidden', timeout: 5000 });
 
-  var dialogHasExpectedClass = await page.evaluate(function(){ return !!document.querySelector('dialog.waybill-dialog'); });
-  if (dialogHasExpectedClass) { console.error('FAIL: test setup broken, dialog should NOT have waybill-dialog class'); process.exitCode = 1; }
+  var dialogHasExpectedId = await page.evaluate(function(){ return !!document.getElementById('modalOutboundWaybill'); });
+  if (dialogHasExpectedId) { console.error('FAIL: test setup broken, modal should NOT have the modalOutboundWaybill id'); process.exitCode = 1; }
 
   await page.locator('.tv-waybill-area canvas').waitFor({ state: 'visible', timeout: 8000 });
-  console.log('OK: virtual waybill barcode still detected via fallback selector (#waybill-modal-submit) despite mismatched dialog class');
+  console.log('OK: virtual waybill barcode still detected via fallback selector (#waybill-modal-submit) despite mismatched modal id');
 
   await sendScan(page, 'TVCW');
   await page.waitForFunction(function(){ return !document.querySelector('#waybill-modal-submit'); }, null, { timeout: 5000 });

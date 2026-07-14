@@ -8,7 +8,7 @@ var SEL = {
   searchBtn: '#search',
   dateRange: '#date-range-input',
   resultTable: '#vendorReturnTotePage',
-  waybillDialog: 'div.waybill-dialog',
+  waybillDialog: '#modalOutboundWaybill',
   waybillSubmit: '#waybill-modal-submit',
   waybillBoxInput: '#waybill-modal-barcode-input',
   reprintModal: '#modalWaybillPrintList',
@@ -844,8 +844,9 @@ function isElementVisible(el){
 }
 
 function findWaybillModalNode(){
+  var dialog = document.querySelector(SEL.waybillDialog);
+  if (dialog) return dialog.classList.contains('is-open') ? dialog : null;
   var candidates = [
-    document.querySelector(SEL.waybillDialog),
     document.querySelector(SEL.waybillSubmit),
     document.querySelector(SEL.waybillBoxInput)
   ];
@@ -880,7 +881,7 @@ function watchWaybillDialog(){
     }
   }
   waybillObserver = new MutationObserver(check);
-  waybillObserver.observe(document.body, { childList: true, subtree: true });
+  waybillObserver.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
   waybillPollId = setInterval(check, 400);
   waybillTimeoutId = setTimeout(function(){
     if (state.mode === 'WAITING_WAYBILL_OPEN') {

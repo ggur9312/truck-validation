@@ -100,11 +100,11 @@ function sendScan(page, text){
   await page.locator('.tv-verify-overlay').waitFor({ state: 'hidden', timeout: 5000 });
   console.log('OK: verify modal auto-closed after full scan');
 
-  await page.waitForSelector('.waybill-dialog', { timeout: 5000 });
-  console.log('OK: WMS waybill-dialog (native <dialog> shown via showModal(), i.e. top-layer) opened automatically (courier flow)');
+  await page.waitForSelector('#modalOutboundWaybill.is-open', { timeout: 5000 });
+  console.log('OK: WMS waybill modal (#modalOutboundWaybill gains "is-open" class) opened automatically (courier flow)');
 
   await page.locator('.tv-waybill-area canvas').waitFor({ state: 'visible', timeout: 5000 });
-  console.log('OK: virtual waybill barcode rendered top-right and visible even with a native top-layer <dialog> open');
+  console.log('OK: virtual waybill barcode rendered top-right and visible while the WMS waybill modal is open');
 
   var boxInputVal = await page.locator('#waybill-modal-barcode-input').inputValue();
   if (boxInputVal !== '') { console.error('FAIL: box input should remain untouched, got', boxInputVal); process.exitCode = 1; }
@@ -112,8 +112,8 @@ function sendScan(page, text){
 
   await sendScan(page, 'TVCW');
 
-  await page.waitForFunction(function(){ return !document.querySelector('.waybill-dialog'); }, null, { timeout: 5000 });
-  console.log('OK: waybill-dialog closed after virtual barcode scan (submit clicked)');
+  await page.waitForFunction(function(){ return !document.querySelector('#modalOutboundWaybill.is-open'); }, null, { timeout: 5000 });
+  console.log('OK: waybill modal closed (is-open class removed) after virtual barcode scan (submit clicked)');
 
   await page.locator('.tv-reprint-area canvas').waitFor({ state: 'visible', timeout: 5000 });
   console.log('OK: reprint virtual barcode shown top-left after re-search (proves the post-waybill re-search completed)');

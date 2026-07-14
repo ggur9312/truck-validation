@@ -31,28 +31,29 @@ function sendScan(page, text){
   await sendScan(page, 'BAR002');
   await page.locator('.tv-verify-overlay').waitFor({ state: 'hidden', timeout: 5000 });
 
-  await page.waitForSelector('.waybill-dialog', { timeout: 5000 });
+  await page.waitForSelector('#modalOutboundWaybill.is-open', { timeout: 5000 });
   await page.locator('.tv-waybill-area canvas').waitFor({ state: 'visible', timeout: 5000 });
-  console.log('OK: waybill dialog open, virtual barcode visible');
+  console.log('OK: waybill modal open, virtual barcode visible');
 
-  // Close the native <dialog> directly (as a user would with its own X/close
-  // button), WITHOUT scanning our virtual barcode. dialog.close() does not
-  // remove the element from the DOM -- it just becomes closed/hidden.
+  // Close the modal directly (as a user would with its own X/close button),
+  // WITHOUT scanning our virtual barcode. The real WMS modal never leaves the
+  // DOM -- it just loses the "is-open" class -- so this must be detected via
+  // that class, not via element presence/removal.
   await page.click('#manual-close-x');
 
   await page.locator('.tv-waybill-area canvas').waitFor({ state: 'hidden', timeout: 5000 });
-  console.log('OK: virtual waybill barcode disappears when the WMS dialog is closed manually (not via our scan)');
+  console.log('OK: virtual waybill barcode disappears when the WMS modal is closed manually (not via our scan)');
 
-  var dialogStillInDom = await page.evaluate(function(){ return !!document.querySelector('.waybill-dialog'); });
-  var dialogOpen = await page.evaluate(function(){ var d = document.querySelector('.waybill-dialog'); return d ? d.open : null; });
+  var dialogStillInDom = await page.evaluate(function(){ return !!document.getElementById('modalOutboundWaybill'); });
+  var dialogOpenClass = await page.evaluate(function(){ var d = document.getElementById('modalOutboundWaybill'); return d ? d.classList.contains('is-open') : null; });
   if (!dialogStillInDom) {
-    console.error('FAIL: test setup broken, dialog element should remain in DOM after close() (not remove())');
+    console.error('FAIL: test setup broken, modal element should remain in DOM after manual close (class toggle, not removal)');
     process.exitCode = 1;
-  } else if (dialogOpen !== false) {
-    console.error('FAIL: test setup broken, dialog.open should be false after manual close');
+  } else if (dialogOpenClass !== false) {
+    console.error('FAIL: test setup broken, is-open class should be removed after manual close');
     process.exitCode = 1;
   } else {
-    console.log('OK: confirmed this genuinely exercises the "closed but still in DOM" case, not just element removal');
+    console.log('OK: confirmed this genuinely exercises the "closed via class toggle but still in DOM" case, not element removal');
   }
 
   console.log(process.exitCode ? 'MANUAL CLOSE SMOKE TEST: SOME FAILURES' : 'MANUAL CLOSE SMOKE TEST: ALL PASSED');

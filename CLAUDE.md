@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-A browser bookmarklet (Korean UI) that automates a warehouse WMS's "집품 현황 조회" (pick-status lookup) page: scan a tote barcode → auto-search → detect truck vs. courier delivery → verify scanned products against expected quantities → for courier shipments, auto-open the WMS's native waybill-generation dialog and drive it via a scannable virtual barcode. There is no access to the real WMS; all development is verified against a hand-rolled mock (`test/fixture.html` + `test/server.js`).
+A browser bookmarklet (Korean UI) that automates a warehouse WMS's "집품 현황 조회" (pick-status lookup) page: scan a tote barcode → auto-search → detect truck vs. courier delivery → verify scanned products against expected quantities → for courier shipments, auto-open the WMS's waybill-generation modal and drive it via a scannable virtual barcode. There is no access to the real WMS; all development is verified against a hand-rolled mock (`test/fixture.html` + `test/server.js`).
 
 ## Commands
 
@@ -13,16 +13,19 @@ A browser bookmarklet (Korean UI) that automates a warehouse WMS's "집품 현�
     node test/code128.test.js            # CODE128 encoder unit tests (no browser)
     node test/smoke.js                   # courier flow e2e (waybill generate + reprint)
     node test/smoke_truck.js             # truck flow e2e
-    node test/smoke_fallback.js          # waybill modal detected via fallback selector when class mismatches
+    node test/smoke_fallback.js          # waybill modal detected via fallback selector when its id mismatches
     node test/smoke_reload.js            # activation must NOT persist across a fresh page reload
     node test/smoke_manual_typing.js     # manual typing + Enter still triggers search (not just scanner speed)
     node test/smoke_reprint_immediate.js # tote that already has a waybill skips straight to reprint
-    node test/smoke_manual_close.js      # closing the WMS's native <dialog> manually still clears our overlay
+    node test/smoke_manual_close.js      # closing the WMS's waybill modal manually (is-open class removed) still clears our overlay
+    node test/smoke_repeat_search.js     # re-searching the same tote twice in a row must not hang
+    node test/smoke_no_results.js        # a tote with zero matching rows is reported as "no results", not a timeout error
+    node test/smoke_scan_during_reprint.js # scanning a new tote while the reprint barcode is showing must start a fresh search
     node test/screenshot.js              # renders settings/verify/waybill states to dist/screenshots/*.png
 
-`package.json`'s `test:smoke` script only wires up `smoke.js` + `smoke_truck.js` — the other five smoke files above are not in any npm script and must be run individually. There is no test runner/framework; each file is a plain Node script that `console.log`s `OK:`/`FAIL:` lines and sets `process.exitCode`. Every smoke test starts its own instance of `test/server.js` (a plain `http` server on port 8934) as a side effect of `require`, so run smoke tests as separate `node` processes (as above), not concurrently in the same process.
+`package.json`'s `test:smoke` script only wires up `smoke.js` + `smoke_truck.js` — the other smoke files above are not in any npm script and must be run individually. There is no test runner/framework; each file is a plain Node script that `console.log`s `OK:`/`FAIL:` lines and sets `process.exitCode`. Every smoke test starts its own instance of `test/server.js` (a plain `http` server on port 8934) as a side effect of `require`, so run smoke tests as separate `node` processes (as above), not concurrently in the same process.
 
-After any change to `src/bookmarklet.js`, run **all** of the commands above (unit + all 8 smoke files) before considering the change done, then `node build.js` and sanity-check `dist/bookmarklet.txt` (e.g. `node -e "new Function(require('fs').readFileSync('dist/bookmarklet.txt','utf8').replace(/^javascript:/,''))"`) — `dist/bookmarklet.txt` is the actual shipped artifact and is committed to git (not gitignored), so it must be rebuilt and committed alongside any `src/` change.
+After any change to `src/bookmarklet.js`, run **all** of the commands above (unit test + all 10 smoke files) before considering the change done, then `node build.js` and sanity-check `dist/bookmarklet.txt` (e.g. `node -e "new Function(require('fs').readFileSync('dist/bookmarklet.txt','utf8').replace(/^javascript:/,''))"`) — `dist/bookmarklet.txt` is the actual shipped artifact and is committed to git (not gitignored), so it must be rebuilt and committed alongside any `src/` change.
 
 ## Architecture
 
@@ -38,9 +41,9 @@ Top-of-file constants are the seams for adapting to a real WMS whose DOM differs
 
 **UI isolation**: a single host `<div>` is appended to `document.documentElement` with `attachShadow({mode:'open'})`; the entire stylesheet is one big JS string (`CSS`) injected as a `<style>` tag inside the shadow root, using CSS custom properties (`--tv-*` tokens on `:host`) for the whole dark theme. Nothing is written to global document styles.
 
-**Two native-`<dialog>` gotchas baked into the code, worth knowing before touching the waybill-watching logic:**
-1. `dialog.close()` does *not* remove the element from the DOM — it just clears the `open` attribute. `findWaybillModalNode()` therefore checks real visibility (`offsetWidth`/`offsetHeight`/`getClientRects().length` via `isElementVisible`), not mere presence, or a manually-closed WMS dialog would be mistaken for still-open.
-2. Native `<dialog>` renders in the browser's top layer, which beats any `z-index`. The floating virtual-barcode overlays (`.tv-waybill-area`/`.tv-reprint-area`) use the CSS Popover API (`popover="manual"` + `showPopover()`/`hidePopover()`, see `setPopoverVisible`) to get into the top layer themselves, with a `classList.toggle('tv-show', …)` fallback for browsers without Popover support.
+**Waybill modal detection, worth knowing before touching the waybill-watching logic:** the real WMS's waybill modal is a persistent `<div id="modalOutboundWaybill">` — it is never added to or removed from the DOM by opening/closing; instead its `class` toggles between `waybill-overlay is-open` (open) and `waybill-overlay` (closed). `findWaybillModalNode()` therefore treats presence of the `is-open` class on `SEL.waybillDialog` (`#modalOutboundWaybill`) as the *authoritative* open/closed signal when that element is found at all — it does **not** fall back to geometry checks for it, since a hidden-but-still-rendered descendant (e.g. via `visibility`/`opacity` instead of `display:none`) could report nonzero `offsetWidth`/`offsetHeight` forever and mask a real close. Geometry-based visibility (`isElementVisible`, via `offsetWidth`/`offsetHeight`/`getClientRects().length`) is used only for the two fallback candidates (`SEL.waybillSubmit`/`SEL.waybillBoxInput`), which is what kicks in when `SEL.waybillDialog` doesn't match at all (real WMS markup drifted from our assumed id — see `smoke_fallback.js`). Because the modal is a persistent element with a toggled class rather than a node that gets inserted/removed, `watchWaybillDialog()`'s `MutationObserver` watches `attributes`/`class` (not just `childList`) so a manual close is caught immediately instead of waiting for the 400ms poll fallback.
+
+The floating virtual-barcode overlays (`.tv-waybill-area`/`.tv-reprint-area`) use the CSS Popover API (`popover="manual"` + `showPopover()`/`hidePopover()`, see `setPopoverVisible`) to render above the WMS's own high-z-index overlay, with a `classList.toggle('tv-show', …)` fallback for browsers without Popover support.
 
 **Watch out for the `CSS` name collision**: the file's own top-level stylesheet variable is `var CSS = '...'`, which shadows the global `window.CSS` namespace object *everywhere in this file's scope*. Calling `CSS.escape(...)` will silently resolve to a property on the stylesheet string, not the browser API, and throw `CSS.escape is not a function` at runtime — this bit us once already. Find elements by attribute value via a manual `Array.prototype.filter` over `.children` (see `findProductRow`) instead.
 

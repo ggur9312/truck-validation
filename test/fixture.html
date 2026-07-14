@@ -40,14 +40,34 @@
         '</tr>';
     }
     function openWaybillModal(tote){
-      var d = document.createElement('dialog');
       var mismatch = location.search.indexOf('mismatch=1') !== -1;
-      d.className = mismatch ? 'unknown-dialog-xyz' : 'waybill-dialog';
+      // Real WMS modal: a persistent div#modalOutboundWaybill whose class
+      // toggles between "waybill-overlay is-open" (open) and "waybill-overlay"
+      // (closed) -- it is never removed from the DOM, unlike a native <dialog>.
+      // mismatch=1 simulates a WMS whose modal id differs from our assumed
+      // selector, so it never matches SEL.waybillDialog and detection must
+      // fall back to the #waybill-modal-submit geometry check instead; that
+      // fallback path relies on the element actually leaving the DOM/layout
+      // on close, so this branch keeps the old create/remove behavior.
+      if (mismatch) {
+        var m = document.createElement('div');
+        m.className = 'unknown-overlay-xyz is-open';
+        m.innerHTML = '<input id="waybill-modal-barcode-input"/>' +
+          '<button id="waybill-modal-submit" onclick="generatedTotes[\'' + tote + '\']=true; this.closest(\'.unknown-overlay-xyz\').remove();">생성</button>' +
+          '<button id="manual-close-x" onclick="this.closest(\'.unknown-overlay-xyz\').remove();">직접닫기(재출력X)</button>';
+        document.body.appendChild(m);
+        return;
+      }
+      var d = document.getElementById('modalOutboundWaybill');
+      if (!d) {
+        d = document.createElement('div');
+        d.id = 'modalOutboundWaybill';
+        document.body.appendChild(d);
+      }
+      d.className = 'waybill-overlay is-open';
       d.innerHTML = '<input id="waybill-modal-barcode-input"/>' +
-        '<button id="waybill-modal-submit" onclick="generatedTotes[\'' + tote + '\']=true; var dlg=this.closest(\'dialog\'); dlg.close(); dlg.remove();">생성</button>' +
-        '<button id="manual-close-x" onclick="this.closest(\'dialog\').close();">직접닫기(재출력X)</button>';
-      document.body.appendChild(d);
-      d.showModal();
+        '<button id="waybill-modal-submit" onclick="generatedTotes[\'' + tote + '\']=true; document.getElementById(\'modalOutboundWaybill\').className=\'waybill-overlay\';">생성</button>' +
+        '<button id="manual-close-x" onclick="document.getElementById(\'modalOutboundWaybill\').className=\'waybill-overlay\';">직접닫기(재출력X)</button>';
     }
     function openReprintModal(){
       var d = document.createElement('div');

@@ -48,9 +48,9 @@ function sendScan(page, text){
   console.log('OK: verify modal closed after truck-flow scan completion');
 
   await page.waitForTimeout(1500);
-  var dialogPresent = await page.evaluate(function(){ return !!document.querySelector('.waybill-dialog'); });
-  if (dialogPresent) { console.error('FAIL: waybill-dialog should NOT open for truck flow'); process.exitCode = 1; }
-  else console.log('OK: waybill-dialog correctly NOT opened for truck flow');
+  var dialogPresent = await page.evaluate(function(){ return !!document.querySelector('#modalOutboundWaybill.is-open'); });
+  if (dialogPresent) { console.error('FAIL: waybill modal should NOT open for truck flow'); process.exitCode = 1; }
+  else console.log('OK: waybill modal correctly NOT opened for truck flow');
 
   console.log(process.exitCode ? 'TRUCK SMOKE TEST: SOME FAILURES' : 'TRUCK SMOKE TEST: ALL PASSED');
   await browser.close();
