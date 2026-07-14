@@ -53,22 +53,47 @@ function sendScan(page, text){
   if (sawScrollbar) { console.error('FAIL: overflow-x briefly left "hidden" during the error shake'); process.exitCode = 1; }
   else console.log('OK: no scrollbar flash during repeat-scan error shake');
 
-  var toastText = await page.locator('.tv-status-overlay.tv-show .tv-status-text').textContent().catch(function(){ return null; });
-  if (!toastText || toastText.indexOf('이미 스캔') === -1) {
-    console.error('FAIL: expected a clear "already scanned" toast, got', toastText);
+  var modalText = await page.locator('.tv-mismatch-overlay.tv-show .tv-mismatch-message').textContent().catch(function(){ return null; });
+  if (!modalText || modalText.indexOf('이미 스캔') === -1) {
+    console.error('FAIL: expected a blocking modal for an already-scanned product, got', modalText);
     process.exitCode = 1;
   } else {
-    console.log('OK: unmistakable center-screen toast shown for an already-completed product:', toastText.trim());
+    console.log('OK: blocking modal shown for an already-completed product:', modalText.trim());
   }
 
-  await page.waitForTimeout(2200); // let toast auto-hide before the next one
+  // Unlike the old toast (which auto-hid after 2s), this modal must stay up
+  // until explicitly dismissed.
+  await page.waitForTimeout(2200);
+  var stillVisibleAfterDelay = await page.locator('.tv-mismatch-overlay').evaluate(function(el){ return el.classList.contains('tv-show'); });
+  if (!stillVisibleAfterDelay) { console.error('FAIL: mismatch modal should NOT auto-hide, it must require explicit dismissal'); process.exitCode = 1; }
+  else console.log('OK: mismatch modal stays open, does not auto-hide like the old toast');
+
+  // Close it via the close button.
+  await page.locator('.tv-mismatch-close').click();
+  var hiddenAfterClose = await page.locator('.tv-mismatch-overlay').evaluate(function(el){ return !el.classList.contains('tv-show'); });
+  if (!hiddenAfterClose) { console.error('FAIL: clicking the close button should dismiss the mismatch modal'); process.exitCode = 1; }
+  else console.log('OK: close button dismisses the mismatch modal');
 
   // Scanning a barcode that isn't in the expected list at all used to give
   // almost no feedback (no row to highlight, just a subtle card shake).
   var scanPromise2 = sendScan(page, 'BAR_TOTALLY_UNKNOWN');
-  await page.locator('.tv-status-overlay.tv-show .tv-status-text').filter({ hasText: '등록되지 않은' }).waitFor({ timeout: 2000 });
-  console.log('OK: unmistakable toast shown for a barcode not in the expected list at all');
+  await page.locator('.tv-mismatch-overlay.tv-show .tv-mismatch-message').filter({ hasText: '등록되지 않은' }).waitFor({ timeout: 2000 });
+  console.log('OK: blocking modal shown for a barcode not in the expected list at all');
   await scanPromise2;
+
+  // Enter must also dismiss it (scanners emit Enter after every scan).
+  await page.evaluate(function(){
+    document.activeElement.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
+  });
+  var hiddenAfterEnter = await page.locator('.tv-mismatch-overlay').evaluate(function(el){ return !el.classList.contains('tv-show'); });
+  if (!hiddenAfterEnter) { console.error('FAIL: pressing Enter should dismiss the mismatch modal'); process.exitCode = 1; }
+  else console.log('OK: pressing Enter dismisses the mismatch modal');
+
+  // A fresh scan after dismissal must be processed normally, not swallowed
+  // by residual modal-blocking state.
+  await sendScan(page, 'BAR002');
+  await page.locator('.tv-verify-overlay').waitFor({ state: 'hidden', timeout: 5000 });
+  console.log('OK: scanning normally after dismissing the modal completes verification');
 
   console.log(process.exitCode ? 'MISMATCH FEEDBACK SMOKE TEST: SOME FAILURES' : 'MISMATCH FEEDBACK SMOKE TEST: ALL PASSED');
   await browser.close();
