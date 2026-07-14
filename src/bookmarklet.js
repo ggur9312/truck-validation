@@ -179,7 +179,7 @@ var CSS =
   '.tv-ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.35);transform:scale(0);animation:tvRipple .5s var(--tv-ease) forwards;pointer-events:none}' +
   '@keyframes tvRipple{to{transform:scale(1);opacity:0}}' +
 
-  '.tv-product-list{margin-top:2px;max-height:380px;overflow-y:auto;display:flex;flex-direction:column;gap:8px}' +
+  '.tv-product-list{margin-top:2px;max-height:380px;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;gap:8px}' +
   '.tv-product-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;background:var(--tv-surface-2);border:1px solid var(--tv-border);transition:background .2s,border-color .2s}' +
   '.tv-product-row.tv-row-enter{animation:tvRowIn .3s var(--tv-ease)}' +
   '@keyframes tvRowIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}' +
@@ -209,7 +209,7 @@ var CSS =
 
   '.tv-flash-ok{animation:tvFlashOk .4s}.tv-flash-err{animation:tvFlashErr .4s}' +
   '@keyframes tvFlashOk{0%{box-shadow:0 0 0 0 rgba(52,211,153,.6)}100%{box-shadow:0 0 0 16px rgba(52,211,153,0)}}' +
-  '@keyframes tvFlashErr{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}' +
+  '@keyframes tvFlashErr{0%,100%{transform:translateX(0);box-shadow:0 0 0 0 rgba(248,113,113,0)}20%{transform:translateX(-7px);box-shadow:0 0 0 8px rgba(248,113,113,.5)}40%{transform:translateX(7px)}60%{transform:translateX(-5px);box-shadow:0 0 0 12px rgba(248,113,113,.25)}80%{transform:translateX(5px)}}' +
   '.tv-complete{animation:tvComplete .65s ease}' +
   '@keyframes tvComplete{0%{transform:scale(1)}50%{transform:scale(1.03)}100%{transform:scale(1);opacity:.4}}' +
 
@@ -798,10 +798,17 @@ function updateScanStatusPill(ok){
 
 function markProductScan(barcode){
   var p = state.expected.get(barcode);
-  if (!p || p.scanned >= p.required) {
+  if (!p) {
     updateScanStatusPill(false);
     flashCardError();
-    if (p) focusProductRow(barcode, false);
+    showStatus('❌ 등록되지 않은 상품 바코드입니다', 'error');
+    return;
+  }
+  if (p.scanned >= p.required) {
+    updateScanStatusPill(false);
+    flashCardError();
+    focusProductRow(barcode, false);
+    showStatus('❌ 이미 스캔 완료된 상품입니다', 'error');
     return;
   }
   p.scanned += 1;
