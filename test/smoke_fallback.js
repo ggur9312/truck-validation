@@ -38,7 +38,7 @@ function sendScan(page, text){
   var dialogHasExpectedId = await page.evaluate(function(){ return !!document.getElementById('modalOutboundWaybill'); });
   if (dialogHasExpectedId) { console.error('FAIL: test setup broken, modal should NOT have the modalOutboundWaybill id'); process.exitCode = 1; }
 
-  await page.locator('.tv-waybill-area canvas').waitFor({ state: 'visible', timeout: 8000 });
+  await page.locator('.tv-status-badge-waybill canvas').waitFor({ state: 'visible', timeout: 8000 });
   console.log('OK: virtual waybill barcode still detected via fallback selector (#waybill-modal-submit) despite mismatched modal id');
 
   await sendScan(page, 'TVCW');

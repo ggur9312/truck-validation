@@ -265,7 +265,11 @@ var CSS =
   '.tv-float-area.tv-show,.tv-float-area:popover-open{display:block}' +
   '.tv-float-label{font-size:13px;font-weight:700;letter-spacing:.1px;color:var(--tv-text-soft);margin-bottom:7px}' +
   '.tv-float-area .tv-barcode-wrap{padding:12px 14px;border-radius:14px}' +
-  '.tv-top-right{top:80px;right:24px}.tv-top-left{top:20px;left:24px}';
+  '.tv-top-left{top:20px;left:24px}' +
+  '.tv-status-badge-waybill{margin-top:6px;padding-top:10px;border-top:1px solid var(--tv-border)}' +
+  '.tv-status-badge-waybill.tv-hidden{display:none}' +
+  '.tv-status-badge-waybill-label{font-size:13px;font-weight:700;letter-spacing:.1px;color:var(--tv-text-soft);margin-bottom:8px}' +
+  '.tv-status-badge-waybill .tv-barcode-wrap{padding:10px 12px;border-radius:12px}';
 
 var ui = {};
 
@@ -288,13 +292,13 @@ function initUI(){
     '<div class="tv-mismatch-hint">Enter 또는 닫기 버튼으로 닫으세요</div>' +
     '</div>' +
     '</div>' +
-    '<div class="tv-float-area tv-waybill-area tv-top-right" popover="manual"></div>' +
     '<div class="tv-float-area tv-reprint-area tv-top-left" popover="manual"></div>' +
     '<div class="tv-status-badge tv-hidden">' +
     '<div class="tv-status-badge-main"><span class="tv-status-dot"></span>트럭검증 활성화</div>' +
     '<div class="tv-status-badge-restrict-header tv-hidden">🚫 상차제한 활성화 중</div>' +
     '<div class="tv-restrict-detail-line tv-restrict-group-line tv-hidden"></div>' +
     '<div class="tv-restrict-detail-line tv-restrict-date-line tv-hidden"></div>' +
+    '<div class="tv-status-badge-waybill tv-hidden"></div>' +
     '</div>' +
     '<button class="tv-gear-btn tv-hidden" title="프로그램 설정">⚙</button>';
   ui.shadow = shadow;
@@ -307,7 +311,7 @@ function initUI(){
   ui.mismatchScanned = shadow.querySelector('.tv-mismatch-scanned');
   shadow.querySelector('.tv-mismatch-close').addEventListener('click', hideMismatchModal);
   attachRipple(shadow.querySelector('.tv-mismatch-close'));
-  ui.waybillOverlay = shadow.querySelector('.tv-waybill-area');
+  ui.waybillSection = shadow.querySelector('.tv-status-badge-waybill');
   ui.reprintOverlay = shadow.querySelector('.tv-reprint-area');
   ui.statusBadge = shadow.querySelector('.tv-status-badge');
   ui.restrictHeader = shadow.querySelector('.tv-status-badge-restrict-header');
@@ -817,10 +821,17 @@ function buildExpectedMap(products){
   return map;
 }
 
+function rowHasReprintButton(row){
+  if (!row) return false;
+  var tds = row.querySelectorAll('td');
+  var last = tds[tds.length - 1];
+  return !!(last && last.querySelector('.btn-waybill-print-single'));
+}
+
 function processRow(row){
   var tds = row.querySelectorAll('td');
   var last = tds[tds.length - 1];
-  if (last && last.querySelector('.btn-waybill-print-single')) {
+  if (rowHasReprintButton(row)) {
     hideStatus();
     showReprintOverlay();
     return;
@@ -1102,12 +1113,12 @@ function watchWaybillDialog(){
 var FLOAT_BARCODE_OPTS = { moduleWidth: 1.8, height: 40, quiet: 8 };
 
 function showWaybillOverlay(){
-  var overlay = ui.waybillOverlay;
-  overlay.innerHTML = '<div class="tv-float-label">📮 스캔하여 운송장생성</div><div class="tv-barcode-wrap"><canvas></canvas></div>';
-  drawCode128(overlay.querySelector('canvas'), CTRL.WAYBILL, FLOAT_BARCODE_OPTS);
-  setPopoverVisible(overlay, true);
+  var section = ui.waybillSection;
+  section.innerHTML = '<div class="tv-status-badge-waybill-label">📮 스캔하여 운송장생성</div><div class="tv-barcode-wrap"><canvas></canvas></div>';
+  drawCode128(section.querySelector('canvas'), CTRL.WAYBILL, FLOAT_BARCODE_OPTS);
+  section.classList.remove('tv-hidden');
 }
-function hideWaybillOverlay(){ setPopoverVisible(ui.waybillOverlay, false); ui.waybillOverlay.innerHTML = ''; }
+function hideWaybillOverlay(){ ui.waybillSection.classList.add('tv-hidden'); ui.waybillSection.innerHTML = ''; }
 
 function clickWaybillSubmit(){
   var btn = document.querySelector(SEL.waybillSubmit);
@@ -1116,11 +1127,21 @@ function clickWaybillSubmit(){
 
 function afterWaybillClosed(){
   state.mode = 'REFRESHING';
-  showStatus('운송장 생성 완료 - 재조회 중...', 'loading');
+  showStatus('재조회 중...', 'loading');
   var prevRowEl = getFirstRow();
   var btn = document.querySelector(SEL.searchBtn);
   if (btn) btn.click();
-  waitForSearchResult(prevRowEl).then(showReprintOverlay, showReprintOverlay);
+  waitForSearchResult(prevRowEl).then(function(row){
+    if (rowHasReprintButton(row)) {
+      showReprintOverlay();
+      return;
+    }
+    state.mode = 'IDLE';
+    showStatus('운송장이 생성되지 않았습니다', 'error');
+  }, function(){
+    state.mode = 'IDLE';
+    showStatus('재조회에 실패했습니다', 'error');
+  });
 }
 
 function showReprintOverlay(){

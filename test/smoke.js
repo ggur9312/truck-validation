@@ -111,8 +111,8 @@ function sendScan(page, text){
   await page.waitForSelector('#modalOutboundWaybill.is-open', { timeout: 5000 });
   console.log('OK: WMS waybill modal (#modalOutboundWaybill gains "is-open" class) opened automatically (courier flow)');
 
-  await page.locator('.tv-waybill-area canvas').waitFor({ state: 'visible', timeout: 5000 });
-  console.log('OK: virtual waybill barcode rendered top-right and visible while the WMS waybill modal is open');
+  await page.locator('.tv-status-badge-waybill canvas').waitFor({ state: 'visible', timeout: 5000 });
+  console.log('OK: virtual waybill barcode rendered inside the status badge and visible while the WMS waybill modal is open');
 
   var boxInputVal = await page.locator('#waybill-modal-barcode-input').inputValue();
   if (boxInputVal !== '') { console.error('FAIL: box input should remain untouched, got', boxInputVal); process.exitCode = 1; }
