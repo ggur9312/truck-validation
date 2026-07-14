@@ -128,7 +128,7 @@ var CSS =
   '.tv-overlay{position:fixed;inset:0;z-index:2147483000;display:none;align-items:center;justify-content:center;background:rgba(8,10,18,.6);backdrop-filter:blur(10px) saturate(150%);-webkit-backdrop-filter:blur(10px) saturate(150%)}' +
   '.tv-overlay.tv-show{display:flex}' +
   '.tv-overlay.tv-corner{align-items:flex-end;justify-content:flex-start;background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;padding:0 0 92px 22px}' +
-  '.tv-mismatch-overlay{z-index:2147483550;background:rgba(4,5,9,.97);backdrop-filter:none;-webkit-backdrop-filter:none}' +
+  '.tv-mismatch-overlay{z-index:2147483550;background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none}' +
   '.tv-mismatch-card{background:var(--tv-surface);color:var(--tv-text);border-radius:20px;box-shadow:var(--tv-elev-2);border:1px solid var(--tv-border);box-sizing:border-box;animation:tvPop .22s var(--tv-ease);position:relative;width:340px;max-width:88vw;padding:34px 28px 26px;text-align:center}' +
   '.tv-mismatch-close{position:absolute;right:14px;top:14px;width:32px;height:32px;border-radius:50%;border:none;background:var(--tv-surface-3);color:var(--tv-text-soft);font-size:14px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s,color .15s}' +
   '.tv-mismatch-close:hover{background:var(--tv-surface-2);color:var(--tv-text)}' +
@@ -525,7 +525,6 @@ function fmtDate(d){
   return y + '-' + m + '-' + day;
 }
 
-var dateDebugLogged = false;
 
 function setDateRange(){
   var el = document.querySelector(SEL.dateRange);
@@ -543,11 +542,6 @@ function setDateRange(){
     el.enddate = endStr; el.startdate = startStr;
   } catch (e) {}
   ['input', 'change'].forEach(function(t){ el.dispatchEvent(new Event(t, { bubbles: true })); });
-
-  if (!dateDebugLogged) {
-    dateDebugLogged = true;
-    try { console.log('[트럭검증] date-range-input 구조 (문제 재발 시 이 내용을 알려주세요):', el.outerHTML); } catch (e) {}
-  }
 
   function isHiddenProxy(node){
     var n = node;
@@ -716,7 +710,6 @@ function waitForSelector(sel, timeout){
   });
 }
 
-var emptyResultDebugLogged = false;
 
 function startSearch(toteBarcode){
   state.mode = 'SEARCHING';
@@ -737,13 +730,6 @@ function startSearch(toteBarcode){
       }
       processRow(row);
       return;
-    }
-    if (!emptyResultDebugLogged) {
-      emptyResultDebugLogged = true;
-      try {
-        var table = document.querySelector(SEL.resultTable);
-        console.log('[트럭검증] 조회 결과 없음 판정 시 테이블 상태 (오판이면 알려주세요):', table ? table.outerHTML : '(테이블 없음)');
-      } catch (e) {}
     }
     showStatus('조회된 결과가 없습니다', 'error');
     state.mode = 'IDLE';
@@ -767,18 +753,12 @@ function fetchDoc(url){
     .then(function(text){ return new DOMParser().parseFromString(text, 'text/html'); });
 }
 
-var deliveryTypeDebugLogged = false;
-
 function parseDeliveryType(doc){
   var table = getTable(doc, 1);
   if (!table) return null;
   var rows = getRows(table);
   if (!rows[0]) return null;
   var val = td(rows[0], 3);
-  if (!deliveryTypeDebugLogged) {
-    deliveryTypeDebugLogged = true;
-    try { console.log('[트럭검증] 트럭/택배 판별 값 (문제 재발 시 이 내용을 알려주세요):', JSON.stringify(val)); } catch (e) {}
-  }
   if (val.indexOf('트럭') !== -1) return true;
   if (val.indexOf('택배') !== -1) return false;
   return false;

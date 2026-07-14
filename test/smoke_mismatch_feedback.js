@@ -69,11 +69,11 @@ function sendScan(page, text){
     var m = getComputedStyle(el).backgroundColor.match(/[\d.]+/g);
     return m ? parseFloat(m[3] === undefined ? '1' : m[3]) : null;
   });
-  if (backdropAlpha === null || backdropAlpha < 0.9) {
-    console.error('FAIL: mismatch modal backdrop should be opaque (not see-through), got alpha', backdropAlpha);
+  if (backdropAlpha !== null && backdropAlpha > 0.05) {
+    console.error('FAIL: mismatch overlay should have no visible backdrop (just the card), got alpha', backdropAlpha);
     process.exitCode = 1;
   } else {
-    console.log('OK: mismatch modal backdrop is opaque (alpha=' + backdropAlpha + ')');
+    console.log('OK: mismatch overlay has no visible backdrop, only the card shows (alpha=' + backdropAlpha + ')');
   }
 
   // Unlike the old toast (which auto-hid after 2s), this modal must stay up
