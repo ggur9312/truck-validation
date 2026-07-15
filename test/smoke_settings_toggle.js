@@ -22,24 +22,22 @@ require('./server.js');
     console.log('OK: settings title has a rocket icon ahead of "INC14 Return"');
   }
 
-  // The icon sits only left of the text -- a plain flex row centered as one
-  // block would shift the text right of the card's true center by about
-  // half the icon's width. Measure the actual text run, not just a CSS
-  // property, so this catches that regression.
-  var centering = await page.locator('.tv-settings-title').evaluate(function(el){
+  // The icon must sit immediately beside the text (small gap), with the
+  // icon+text pair centered as one unit -- not pinned to the card's left
+  // edge with a balancing spacer on the right.
+  var layout = await page.locator('.tv-settings-title').evaluate(function(el){
+    var iconRect = el.querySelector('.tv-settings-title-icon').getBoundingClientRect();
     var textNode = Array.prototype.filter.call(el.childNodes, function(n){ return n.nodeType === 3 && n.textContent.trim(); })[0];
     var range = document.createRange();
     range.selectNodeContents(textNode);
     var textRect = range.getBoundingClientRect();
-    var containerRect = el.getBoundingClientRect();
-    return { textCenter: textRect.left + textRect.width / 2, containerCenter: containerRect.left + containerRect.width / 2 };
+    return { gap: textRect.left - iconRect.right, display: getComputedStyle(el).display, justifyContent: getComputedStyle(el).justifyContent };
   });
-  var centerDiff = Math.abs(centering.textCenter - centering.containerCenter);
-  if (centerDiff > 2) {
-    console.error('FAIL: "INC14 Return" text should be visually centered in the title row despite the icon sitting to its left, got offset=', centerDiff, centering);
+  if (layout.gap > 10 || layout.gap < 0 || layout.display !== 'flex' || layout.justifyContent !== 'center') {
+    console.error('FAIL: icon should sit immediately next to the text in a centered flex row, got', layout);
     process.exitCode = 1;
   } else {
-    console.log('OK: "INC14 Return" text is visually centered in the title row (offset=' + centerDiff.toFixed(2) + 'px)');
+    console.log('OK: icon sits right next to the text (gap=' + layout.gap.toFixed(2) + 'px) as a centered row');
   }
 
   var windowStroke = await page.locator('.tv-settings-title-icon svg circle').evaluate(function(el){ return el.getAttribute('stroke'); });

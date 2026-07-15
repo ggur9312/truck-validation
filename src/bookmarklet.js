@@ -216,7 +216,7 @@ var CSS =
   '@keyframes tvSlideUp{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:translateY(0)}}' +
 
   '.tv-settings-card{width:340px;max-width:88vw;padding:24px}' +
-  '.tv-settings-title{display:grid;grid-template-columns:32px 1fr 32px;align-items:center;gap:4px;font-size:20.5px;font-weight:600;margin-bottom:14px;letter-spacing:-.2px;text-align:center}' +
+  '.tv-settings-title{display:flex;align-items:center;justify-content:center;gap:4px;font-size:20.5px;font-weight:600;margin-bottom:14px;letter-spacing:-.2px}' +
   '.tv-settings-title-icon{display:flex;color:var(--tv-accent)}' +
   '.tv-settings-title-icon svg{width:32px;height:32px;overflow:visible;transform:rotate(25deg);transform-origin:center}' +
   '.tv-verify{width:680px;max-width:95vw;max-height:88vh;padding:0;overflow:hidden;display:flex;flex-direction:column}' +
