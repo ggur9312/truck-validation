@@ -124,10 +124,15 @@ function sendScan(page, text){
 
   // Hero counter tracks scanned *units* against total required units (BAR001
   // needs 2 + BAR002 needs 1 = 3 total), not "product types done" -- after
-  // one of BAR001's two units, it should read 1/3, not 0/2.
-  var heroAfterOne = (await page.locator('.tv-hero-title').textContent()).trim();
-  if (heroAfterOne !== '검증 중 (1/3)') { console.error('FAIL: hero counter should read "검증 중 (1/3)" after scanning 1 of 3 total required units, got', heroAfterOne); process.exitCode = 1; }
-  else console.log('OK: hero counter tracks scanned units against total required units:', heroAfterOne);
+  // one of BAR001's two units, it should read 1/3, not 0/2. It now lives in
+  // the stepper's 검증 중 label, not a separate header element.
+  var heroAfterOne = (await page.locator('.tv-stepper-label').nth(1).textContent()).trim();
+  if (heroAfterOne !== '검증 중 (1/3)') { console.error('FAIL: 검증 중 stepper label should read "검증 중 (1/3)" after scanning 1 of 3 total required units, got', heroAfterOne); process.exitCode = 1; }
+  else console.log('OK: 검증 중 stepper label tracks scanned units against total required units:', heroAfterOne);
+
+  var heroTitleGone = await page.locator('.tv-hero-title').count();
+  if (heroTitleGone !== 0) { console.error('FAIL: .tv-hero-title should no longer exist in the header'); process.exitCode = 1; }
+  else console.log('OK: the separate header counter element is gone');
 
   var pillHasSvg = await page.locator('.tv-scan-status-pill svg').count();
   var pillText = (await page.locator('.tv-scan-status-pill').textContent()).trim();
