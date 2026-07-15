@@ -77,13 +77,11 @@ var ICONS = {
     '<path d="M9 12H15M9 15H15M9 18H12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>' +
     '</svg>',
   rocket: '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">' +
-    '<path d="M12 2C15.3 4.3 17 8.2 16.6 12.2C16.4 13.9 15.2 15.2 12 15.8C8.8 15.2 7.6 13.9 7.4 12.2C7 8.2 8.7 4.3 12 2Z" fill="currentColor"/>' +
-    '<path d="M8 12.3L3.5 17.8L8.6 15.7Z" fill="currentColor"/>' +
-    '<path d="M16 12.3L20.5 17.8L15.4 15.7Z" fill="currentColor"/>' +
-    '<circle cx="12" cy="8.5" r="2" fill="#fff"/>' +
-    '<path d="M0.5 12.5L5 13.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>' +
-    '<path d="M0 16L4.8 16.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>' +
-    '<path d="M0.5 19.5L4.5 19.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>' +
+    '<path d="M12 1.3C15 2.9 16.7 6.4 16.6 10.3C16.5 13.7 14.9 16.4 12 18C9.1 16.4 7.5 13.7 7.4 10.3C7.3 6.4 9 2.9 12 1.3Z" fill="currentColor"/>' +
+    '<circle cx="12" cy="8" r="2.6" fill="#fff"/>' +
+    '<path d="M11 14L4 17.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>' +
+    '<path d="M10 17.3L5 20.2" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>' +
+    '<path d="M9.3 20.5L6 22.3" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>' +
     '</svg>'
 };
 
