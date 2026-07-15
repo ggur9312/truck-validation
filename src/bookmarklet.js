@@ -310,7 +310,7 @@ var CSS =
   '.tv-status-badge-waybill-label{font-size:14.5px;font-weight:600;letter-spacing:.1px;color:var(--tv-text-soft);margin-bottom:8px}' +
   '.tv-status-badge-waybill .tv-barcode-wrap{padding:10px 12px;border-radius:12px}' +
 
-  '.tv-simplified-notice{width:380px;max-width:92vw;text-align:left;position:relative;background:#fff;border:1px solid #e2e6f0;border-left:6px solid rgb(var(--tv-notice-fg,52,211,153));padding:20px 40px 20px 20px}' +
+  '.tv-simplified-notice{width:max-content;min-width:380px;max-width:92vw;text-align:left;position:relative;background:#fff;border:1px solid #e2e6f0;border-left:6px solid rgb(var(--tv-notice-fg,52,211,153));padding:20px 40px 20px 20px}' +
   '.tv-simplified-notice.tv-show,.tv-simplified-notice:popover-open{display:flex;align-items:flex-start;gap:16px}' +
   '.tv-simplified-notice.truck{--tv-notice-fg:248,113,113}' +
   '.tv-simplified-notice.courier{--tv-notice-fg:52,211,153}' +
@@ -319,9 +319,9 @@ var CSS =
   '.tv-simplified-notice-close:hover{background:#e2e6f0}' +
   '.tv-simplified-notice-icon{flex-shrink:0;width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(var(--tv-notice-fg),.14);color:rgb(var(--tv-notice-fg))}' +
   '.tv-simplified-notice-icon svg{width:28px;height:28px}' +
-  '.tv-simplified-notice-info{flex:1;min-width:0}' +
-  '.tv-simplified-notice-vendor{font-size:19px;font-weight:600;color:#161a26;word-break:break-all}' +
-  '.tv-simplified-notice-tote{margin-top:4px;font-size:19px;font-weight:600;color:#161a26;word-break:break-all}' +
+  '.tv-simplified-notice-info{flex-shrink:0}' +
+  '.tv-simplified-notice-vendor{font-size:19px;font-weight:600;color:#161a26;white-space:nowrap}' +
+  '.tv-simplified-notice-tote{margin-top:4px;font-size:19px;font-weight:600;color:#161a26;white-space:nowrap}' +
   '.tv-simplified-notice-qty{flex-shrink:0;text-align:right}' +
   '.tv-simplified-notice-qty-label{font-size:14px;font-weight:600;color:#5b6274}' +
   '.tv-simplified-notice-qty-value{font-size:28px;font-weight:700;color:rgb(var(--tv-notice-fg))}' +
@@ -550,6 +550,7 @@ function bindSettingsEvents(){
   btn.addEventListener('click', function(){
     state.settings.enabled = true;
     saveSettings();
+    if (!state.settings.simplifiedMode) hideSimplifiedNotice();
     closeSettingsModal();
     showActiveIndicators();
     showStatus('설정 저장됨');
@@ -997,8 +998,7 @@ function openSimplifiedBlockModal(){
     lines = '<div class="tv-simplified-line">' + escapeHtml(info.restrictedVendor) + '</div>' +
       (info.dateRestricted ? '<div class="tv-simplified-line sub">생성일시 : ' + escapeHtml(info.restrictedDate) + '</div>' : '');
   } else {
-    lines = '<div class="tv-simplified-line">해당 상품은 트럭 운송 상품입니다.</div>' +
-      '<div class="tv-simplified-line sub">택배 스캔 시 오류가 발생할 수 있습니다.</div>';
+    lines = '<div class="tv-simplified-line">해당 상품은 트럭 운송 상품입니다.</div>';
   }
   ui.simplifiedOverlay.innerHTML =
     '<div class="tv-card tv-simplified-block ' + typeClass + '">' +
