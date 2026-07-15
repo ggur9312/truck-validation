@@ -77,11 +77,11 @@ var ICONS = {
     '<path d="M9 12H15M9 15H15M9 18H12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>' +
     '</svg>',
   rocket: '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">' +
-    '<path d="M12 2C15 4 17 8 17 12C17 15 15.5 18 12 21C8.5 18 7 15 7 12C7 8 9 4 12 2Z" stroke="currentColor" stroke-width="2.3" stroke-linejoin="round"/>' +
-    '<circle cx="12" cy="10" r="2" fill="currentColor"/>' +
-    '<path d="M7 14L4 17V21L8 18" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>' +
-    '<path d="M17 14L20 17V21L16 18" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>' +
-    '<path d="M10.5 18C9.5 19.3 9.4 20.8 10.5 22C11.1 21.1 11.6 20.5 11.8 19.5C11.1 19.1 10.7 18.6 10.5 18Z" fill="#fb923c"/>' +
+    '<path d="M12 2C15.3 4.3 17 8.2 16.6 12.2C16.4 13.9 15.2 15.2 12 15.8C8.8 15.2 7.6 13.9 7.4 12.2C7 8.2 8.7 4.3 12 2Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>' +
+    '<circle cx="12" cy="8.5" r="2.1" fill="currentColor"/>' +
+    '<path d="M8 12.3L3.5 17.8L8.6 15.7Z" fill="currentColor"/>' +
+    '<path d="M16 12.3L20.5 17.8L15.4 15.7Z" fill="currentColor"/>' +
+    '<path d="M12 16C10.2 18 9.7 20.3 12 22.3C14.3 20.3 13.8 18 12 16Z" fill="#fb923c"/>' +
     '</svg>'
 };
 
@@ -331,6 +331,9 @@ var CSS =
   '.tv-product-top{display:flex;justify-content:space-between;align-items:center;font-size:17.5px;font-weight:600;margin-bottom:6px;gap:10px}' +
   '.tv-product-name{display:flex;flex-direction:column;gap:2px;min-width:0;font-size:15px}' +
   '.tv-product-barcode{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:17.5px;font-weight:600;color:var(--tv-text-soft);letter-spacing:.4px}' +
+  '.tv-verify.truck .tv-product-barcode{color:var(--tv-truck-fg)}' +
+  '.tv-verify.courier .tv-product-barcode{color:var(--tv-courier-fg)}' +
+  '.tv-verify.restricted .tv-product-barcode{color:var(--tv-restricted-fg)}' +
   '.tv-product-count{flex-shrink:0;color:var(--tv-text-soft);font-weight:600;font-variant-numeric:tabular-nums;font-size:16.5px}' +
   '.tv-progress{height:5px;border-radius:3px;background:var(--tv-border);overflow:hidden}' +
   '.tv-progress-fill{height:100%;border-radius:3px;background:var(--tv-accent);transition:width .25s ease}' +

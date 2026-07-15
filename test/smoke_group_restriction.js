@@ -133,6 +133,10 @@ function sendScan(page, text){
   if (cardBorder.indexOf('251, 146, 60') === -1) { console.error('FAIL: verify card border should use the restricted orange color, got', cardBorder); process.exitCode = 1; }
   else console.log('OK: verify card border uses the orange restricted color');
 
+  var restrictedBarcodeColor = await page.locator('.tv-product-barcode').first().evaluate(function(el){ return getComputedStyle(el).color; });
+  if (restrictedBarcodeColor !== 'rgb(251, 146, 60)') { console.error('FAIL: product barcode should use the restricted orange status color, got', restrictedBarcodeColor); process.exitCode = 1; }
+  else console.log('OK: product barcode uses the restricted orange status color:', restrictedBarcodeColor);
+
   // Fully scan both products -- verification should still run normally.
   await sendScan(page, 'BAR001');
   await sendScan(page, 'BAR001');

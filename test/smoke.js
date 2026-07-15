@@ -106,6 +106,14 @@ function sendScan(page, text){
     console.log('OK: product name and barcode use different text colors:', nameColor, 'vs', barcodeColor);
   }
 
+  // Barcode color should match the delivery-type state color (green for courier).
+  if (barcodeColor !== 'rgb(52, 211, 153)') {
+    console.error('FAIL: product barcode should use the courier green status color, got', barcodeColor);
+    process.exitCode = 1;
+  } else {
+    console.log('OK: product barcode uses the courier green status color:', barcodeColor);
+  }
+
   var verifyBg = await page.locator('.tv-verify-overlay').evaluate(function(el){ return getComputedStyle(el).backgroundColor; });
   if (verifyBg === 'rgba(0, 0, 0, 0)' || verifyBg === 'transparent') {
     console.error('FAIL: verify overlay should now have a dim backdrop tint, got', verifyBg);

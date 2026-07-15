@@ -36,6 +36,10 @@ function sendScan(page, text){
   if (truckSubText !== '해당 토트는 트럭 운송 토트입니다.') { console.error('FAIL: truck type-hero subtitle should read "해당 토트는 트럭 운송 토트입니다.", got', truckSubText); process.exitCode = 1; }
   else console.log('OK: truck type-hero subtitle reads correctly:', truckSubText);
 
+  var truckBarcodeColor = await page.locator('.tv-product-barcode').first().evaluate(function(el){ return getComputedStyle(el).color; });
+  if (truckBarcodeColor !== 'rgb(248, 113, 113)') { console.error('FAIL: product barcode should use the truck red status color, got', truckBarcodeColor); process.exitCode = 1; }
+  else console.log('OK: product barcode uses the truck red status color:', truckBarcodeColor);
+
   await page.locator('.tv-verify-close').click();
   await page.locator('.tv-verify-overlay').waitFor({ state: 'hidden', timeout: 3000 });
   console.log('OK: close button dismisses verify modal');
