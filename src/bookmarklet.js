@@ -218,7 +218,7 @@ var CSS =
   '.tv-settings-card{width:340px;max-width:88vw;padding:24px}' +
   '.tv-settings-title{display:flex;align-items:center;justify-content:center;gap:8px;font-size:20.5px;font-weight:600;margin-bottom:14px;letter-spacing:-.2px}' +
   '.tv-settings-title-icon{display:flex;color:var(--tv-accent)}' +
-  '.tv-settings-title-icon svg{width:22px;height:22px;overflow:visible;transform:rotate(25deg);transform-origin:center}' +
+  '.tv-settings-title-icon svg{width:32px;height:32px;overflow:visible;transform:rotate(25deg);transform-origin:center}' +
   '.tv-verify{width:680px;max-width:95vw;max-height:88vh;padding:0;overflow:hidden;display:flex;flex-direction:column}' +
   '.tv-verify.truck{box-shadow:0 0 0 5px rgba(248,113,113,.6),var(--tv-elev-2)}' +
   '.tv-verify.courier{box-shadow:0 0 0 5px rgba(52,211,153,.6),var(--tv-elev-2)}' +
@@ -612,6 +612,12 @@ function bindSettingsEvents(){
   var btn = overlay.querySelector('.tv-activate-btn');
   attachRipple(btn);
   btn.addEventListener('click', function(){
+    if (state.settings.restrictionEnabled && getRestrictedGroupList().length === 0) {
+      state.settings.restrictionEnabled = false;
+    }
+    if (state.settings.dateRestrictionEnabled && !state.settings.dateRestrictionStart && !state.settings.dateRestrictionEnd) {
+      state.settings.dateRestrictionEnabled = false;
+    }
     state.settings.enabled = true;
     saveSettings();
     if (!state.settings.simplifiedMode) hideSimplifiedNotice();

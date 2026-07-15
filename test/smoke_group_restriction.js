@@ -209,6 +209,30 @@ function sendScan(page, text){
   await page.waitForSelector('#modalOutboundWaybill.is-open', { timeout: 5000 });
   console.log('OK: waybill modal opens normally for the same tote once restriction is toggled off');
 
+  // Scenario: switching the toggle on but leaving the group-number input
+  // empty is functionally a no-op restriction -- saving should reset the
+  // toggle back off instead of leaving a misleading "on" switch behind.
+  await page.locator('.tv-gear-btn').click();
+  await page.locator('.tv-settings-card').waitFor({ state: 'visible', timeout: 3000 });
+  await groupToggleRow3.click();
+  var fieldVisibleEmptyOn = await page.locator('.tv-group-field-row').isVisible();
+  if (!fieldVisibleEmptyOn) { console.error('FAIL: group-number input should reappear when the toggle is switched back on'); process.exitCode = 1; }
+  else console.log('OK: group-number input reappears when the toggle is switched back on');
+
+  await page.locator('.tv-group-input').fill('');
+  await page.locator('.tv-activate-btn').click();
+  await page.locator('.tv-gear-btn').click();
+  await page.locator('.tv-settings-card').waitFor({ state: 'visible', timeout: 3000 });
+  var toggleCheckedAfterEmptySave = await groupToggleRow3.locator('input[type=checkbox]').isChecked();
+  var fieldVisibleAfterEmptySave = await page.locator('.tv-group-field-row').isVisible();
+  if (toggleCheckedAfterEmptySave || fieldVisibleAfterEmptySave) {
+    console.error('FAIL: saving with the toggle on but no group numbers entered should reset the toggle back off, got checked=', toggleCheckedAfterEmptySave, 'fieldVisible=', fieldVisibleAfterEmptySave);
+    process.exitCode = 1;
+  } else {
+    console.log('OK: toggle switches back off on save when left on with no group numbers entered');
+  }
+  await page.locator('.tv-gear-btn').click();
+
   console.log(process.exitCode ? 'GROUP RESTRICTION SMOKE TEST: SOME FAILURES' : 'GROUP RESTRICTION SMOKE TEST: ALL PASSED');
   await browser.close();
   process.exit(process.exitCode || 0);

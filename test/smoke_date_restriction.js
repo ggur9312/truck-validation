@@ -225,6 +225,22 @@ function sendScan(page, text){
   if (groupInputAfterReload !== '') { console.error('FAIL: group-number input should also reset to empty after reload, got', JSON.stringify(groupInputAfterReload)); process.exitCode = 1; }
   else console.log('OK: group-number input also resets to empty after reload');
 
+  // Scenario: the 생성일시 상차제한 toggle is on (from the click above) but
+  // both date fields are empty -- functionally a no-op restriction, so
+  // saving should reset the toggle back off rather than leaving it
+  // misleadingly checked next time settings are reopened.
+  await page.locator('.tv-activate-btn').click();
+  await page.locator('.tv-gear-btn').click();
+  await page.locator('.tv-settings-card').waitFor({ state: 'visible', timeout: 3000 });
+  var dateToggleCheckedAfterEmptySave = await dateToggleRow2.locator('input[type=checkbox]').isChecked();
+  var dateFieldVisibleAfterEmptySave = await page.locator('.tv-date-field-row').isVisible();
+  if (dateToggleCheckedAfterEmptySave || dateFieldVisibleAfterEmptySave) {
+    console.error('FAIL: saving with the toggle on but no dates entered should reset the toggle back off, got checked=', dateToggleCheckedAfterEmptySave, 'fieldVisible=', dateFieldVisibleAfterEmptySave);
+    process.exitCode = 1;
+  } else {
+    console.log('OK: 생성일시 상차제한 toggle switches back off on save when left on with no dates entered');
+  }
+
   console.log(process.exitCode ? 'DATE RESTRICTION SMOKE TEST: SOME FAILURES' : 'DATE RESTRICTION SMOKE TEST: ALL PASSED');
   await browser.close();
   process.exit(process.exitCode || 0);

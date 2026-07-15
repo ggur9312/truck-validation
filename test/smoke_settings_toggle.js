@@ -27,6 +27,10 @@ require('./server.js');
   if (flameFill !== '#fb923c') { console.error('FAIL: rocket flame should use a distinct orange fill, not currentColor, got', flameFill); process.exitCode = 1; }
   else console.log('OK: rocket flame uses a distinct orange color from the rest of the icon');
 
+  var iconSize = await page.locator('.tv-settings-title-icon svg').evaluate(function(el){ return { width: getComputedStyle(el).width, height: getComputedStyle(el).height }; });
+  if (iconSize.width !== '32px' || iconSize.height !== '32px') { console.error('FAIL: rocket icon should render at 32px so it is easier to see, got', iconSize); process.exitCode = 1; }
+  else console.log('OK: rocket icon renders at a larger, more visible 32px size');
+
   var initialBtnText = (await page.locator('.tv-activate-btn').textContent()).trim();
   if (initialBtnText !== '활성화') { console.error('FAIL: settings button should say "활성화" before first activation, got', initialBtnText); process.exitCode = 1; }
   else console.log('OK: settings button says "활성화" before first activation');
