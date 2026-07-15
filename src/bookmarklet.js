@@ -76,11 +76,15 @@ var ICONS = {
     '<path d="M15 3V7H19" stroke="currentColor" stroke-width="2.3" stroke-linejoin="round"/>' +
     '<path d="M9 12H15M9 15H15M9 18H12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>' +
     '</svg>',
-  rocket: '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">' +
-    '<path d="M12 2C15 4 17 8 17 12C17 15 15.5 18 12 21C8.5 18 7 15 7 12C7 8 9 4 12 2Z" stroke="currentColor" stroke-width="2.3" stroke-linejoin="round"/>' +
-    '<circle cx="12" cy="10" r="2" fill="currentColor"/>' +
-    '<path d="M7 14L4 17V21L8 18" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>' +
-    '<path d="M17 14L20 17V21L16 18" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>' +
+  rocket: '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">' +
+    '<path d="M10.2 13.5C8.7 15.3 8.3 17.7 9.3 19.8C10.3 18.5 11.5 17.8 12 16.3C11.1 15.7 10.5 14.7 10.2 13.5Z" fill="#fb923c"/>' +
+    '<path d="M10.7 14.6C9.9 15.9 9.7 17.4 10.4 18.7C11 17.9 11.6 17.4 11.9 16.5C11.3 16 11 15.3 10.7 14.6Z" fill="#fde047"/>' +
+    '<path d="M8.6 11.5C6.3 12.2 4.7 14 4.2 16.3C5.9 16.1 7.6 15.3 8.9 14Z" fill="#ef4444"/>' +
+    '<path d="M15.4 11.5C17.7 12.2 19.3 14 19.8 16.3C18.1 16.1 16.4 15.3 15.1 14Z" fill="#ef4444"/>' +
+    '<path d="M12 1.5C14.8 4 16 8 15.5 12.5C15.3 14.3 14.2 15.6 12 16.2C9.8 15.6 8.7 14.3 8.5 12.5C8 8 9.2 4 12 1.5Z" fill="#8ecae6"/>' +
+    '<path d="M12 1.5C13.6 3.6 14.6 6.8 14.9 10C15.1 12 14.9 13.8 14.3 15C13.8 15.6 13.1 16 12.3 16.2C13.6 14.8 14.3 12.7 14.2 10.3C14.1 7.2 13.3 4.2 12 1.5Z" fill="#4f9eea"/>' +
+    '<circle cx="12" cy="8" r="2.1" fill="#eef4fb"/>' +
+    '<circle cx="12" cy="8" r="2.1" fill="none" stroke="#bcd9f0" stroke-width="0.6"/>' +
     '</svg>'
 };
 
@@ -216,7 +220,7 @@ var CSS =
 
   '.tv-settings-card{width:340px;max-width:88vw;padding:24px}' +
   '.tv-settings-title{display:flex;align-items:center;justify-content:center;gap:8px;font-size:20.5px;font-weight:600;margin-bottom:14px;letter-spacing:-.2px}' +
-  '.tv-settings-title-icon{display:flex;color:var(--tv-accent)}' +
+  '.tv-settings-title-icon{display:flex}' +
   '.tv-settings-title-icon svg{width:22px;height:22px}' +
   '.tv-verify{width:680px;max-width:95vw;max-height:88vh;padding:0;overflow:hidden;display:flex;flex-direction:column}' +
   '.tv-verify.truck{box-shadow:0 0 0 5px rgba(248,113,113,.6),var(--tv-elev-2)}' +
