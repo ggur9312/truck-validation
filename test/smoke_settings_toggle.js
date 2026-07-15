@@ -23,13 +23,14 @@ require('./server.js');
     console.log('OK: settings title is centered with a rocket icon ahead of "INC14 Return"');
   }
 
-  var windowFill = await page.locator('.tv-settings-title-icon svg circle').evaluate(function(el){ return el.getAttribute('fill'); });
-  var motionLineCount = await page.locator('.tv-settings-title-icon svg path[stroke]').count();
-  if (windowFill !== '#fff' || motionLineCount !== 3) {
-    console.error('FAIL: rocket should be a solid-fill silhouette with a white window and 3 motion lines, got windowFill=', windowFill, 'motionLineCount=', motionLineCount);
+  var windowStroke = await page.locator('.tv-settings-title-icon svg circle').evaluate(function(el){ return el.getAttribute('stroke'); });
+  var outlineStrokeCount = await page.locator('.tv-settings-title-icon svg path[stroke]').count();
+  var flameFill = await page.locator('.tv-settings-title-icon svg path[fill="#fb923c"]').count();
+  if (windowStroke !== 'currentColor' || outlineStrokeCount !== 3 || flameFill !== 1) {
+    console.error('FAIL: rocket should be a stroked outline (body + 2 fins) with an outlined window and one filled flame accent, got windowStroke=', windowStroke, 'outlineStrokeCount=', outlineStrokeCount, 'flameFill=', flameFill);
     process.exitCode = 1;
   } else {
-    console.log('OK: rocket icon is a solid-fill silhouette with a white window and 3 trailing motion lines');
+    console.log('OK: rocket icon is a stroked classic outline (body + 2 fins + outlined window) with an orange flame accent');
   }
 
   var iconSize = await page.locator('.tv-settings-title-icon svg').evaluate(function(el){ return { width: getComputedStyle(el).width, height: getComputedStyle(el).height }; });

@@ -77,11 +77,11 @@ var ICONS = {
     '<path d="M9 12H15M9 15H15M9 18H12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>' +
     '</svg>',
   rocket: '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">' +
-    '<path d="M12 1.3C15 2.9 16.7 6.4 16.6 10.3C16.5 13.7 14.9 16.4 12 18C9.1 16.4 7.5 13.7 7.4 10.3C7.3 6.4 9 2.9 12 1.3Z" fill="currentColor"/>' +
-    '<circle cx="12" cy="8" r="2.6" fill="#fff"/>' +
-    '<path d="M11 14L4 17.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>' +
-    '<path d="M10 17.3L5 20.2" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>' +
-    '<path d="M9.3 20.5L6 22.3" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>' +
+    '<path d="M12 2C13.8 2 15.2 5 15 9C14.9 11.5 14.2 13.5 12 15C9.8 13.5 9.1 11.5 9 9C8.8 5 10.2 2 12 2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>' +
+    '<circle cx="12" cy="7.5" r="1.6" fill="none" stroke="currentColor" stroke-width="1.6"/>' +
+    '<path d="M9 11L5.5 15.5L9.3 13.8Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>' +
+    '<path d="M15 11L18.5 15.5L14.7 13.8Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>' +
+    '<path d="M10.5 14.5C10.5 14.5 11 18.5 12 19.8C13 18.5 13.5 14.5 13.5 14.5C13.5 14.5 12 15.6 12 15.6C12 15.6 10.5 14.5 10.5 14.5Z" fill="#fb923c"/>' +
     '</svg>'
 };
 
@@ -216,7 +216,7 @@ var CSS =
   '@keyframes tvSlideUp{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:translateY(0)}}' +
 
   '.tv-settings-card{width:340px;max-width:88vw;padding:24px}' +
-  '.tv-settings-title{display:flex;align-items:center;justify-content:center;gap:8px;font-size:20.5px;font-weight:600;margin-bottom:14px;letter-spacing:-.2px}' +
+  '.tv-settings-title{display:flex;align-items:center;justify-content:center;gap:4px;font-size:20.5px;font-weight:600;margin-bottom:14px;letter-spacing:-.2px}' +
   '.tv-settings-title-icon{display:flex;color:var(--tv-accent)}' +
   '.tv-settings-title-icon svg{width:32px;height:32px;overflow:visible;transform:rotate(25deg);transform-origin:center}' +
   '.tv-verify{width:680px;max-width:95vw;max-height:88vh;padding:0;overflow:hidden;display:flex;flex-direction:column}' +
