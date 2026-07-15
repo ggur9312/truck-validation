@@ -76,12 +76,14 @@ var ICONS = {
     '<path d="M15 3V7H19" stroke="currentColor" stroke-width="2.3" stroke-linejoin="round"/>' +
     '<path d="M9 12H15M9 15H15M9 18H12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>' +
     '</svg>',
-  rocket: '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">' +
-    '<path d="M12 2C15.3 4.3 17 8.2 16.6 12.2C16.4 13.9 15.2 15.2 12 15.8C8.8 15.2 7.6 13.9 7.4 12.2C7 8.2 8.7 4.3 12 2Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>' +
-    '<circle cx="12" cy="8.5" r="2.1" fill="currentColor"/>' +
+  rocket: '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">' +
+    '<path d="M12 2C15.3 4.3 17 8.2 16.6 12.2C16.4 13.9 15.2 15.2 12 15.8C8.8 15.2 7.6 13.9 7.4 12.2C7 8.2 8.7 4.3 12 2Z" fill="currentColor"/>' +
     '<path d="M8 12.3L3.5 17.8L8.6 15.7Z" fill="currentColor"/>' +
     '<path d="M16 12.3L20.5 17.8L15.4 15.7Z" fill="currentColor"/>' +
-    '<path d="M12 16C10.2 18 9.7 20.3 12 22.3C14.3 20.3 13.8 18 12 16Z" fill="#fb923c"/>' +
+    '<circle cx="12" cy="8.5" r="2" fill="#fff"/>' +
+    '<path d="M0.5 12.5L5 13.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>' +
+    '<path d="M0 16L4.8 16.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>' +
+    '<path d="M0.5 19.5L4.5 19.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>' +
     '</svg>'
 };
 

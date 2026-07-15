@@ -23,9 +23,14 @@ require('./server.js');
     console.log('OK: settings title is centered with a rocket icon ahead of "INC14 Return"');
   }
 
-  var flameFill = await page.locator('.tv-settings-title-icon svg path').last().evaluate(function(el){ return el.getAttribute('fill'); });
-  if (flameFill !== '#fb923c') { console.error('FAIL: rocket flame should use a distinct orange fill, not currentColor, got', flameFill); process.exitCode = 1; }
-  else console.log('OK: rocket flame uses a distinct orange color from the rest of the icon');
+  var windowFill = await page.locator('.tv-settings-title-icon svg circle').evaluate(function(el){ return el.getAttribute('fill'); });
+  var motionLineCount = await page.locator('.tv-settings-title-icon svg path[stroke]').count();
+  if (windowFill !== '#fff' || motionLineCount !== 3) {
+    console.error('FAIL: rocket should be a solid-fill silhouette with a white window and 3 motion lines, got windowFill=', windowFill, 'motionLineCount=', motionLineCount);
+    process.exitCode = 1;
+  } else {
+    console.log('OK: rocket icon is a solid-fill silhouette with a white window and 3 trailing motion lines');
+  }
 
   var iconSize = await page.locator('.tv-settings-title-icon svg').evaluate(function(el){ return { width: getComputedStyle(el).width, height: getComputedStyle(el).height }; });
   if (iconSize.width !== '32px' || iconSize.height !== '32px') { console.error('FAIL: rocket icon should render at 32px so it is easier to see, got', iconSize); process.exitCode = 1; }
