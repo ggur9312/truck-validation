@@ -13,14 +13,33 @@ require('./server.js');
   await page.evaluate(src);
   await page.locator('.tv-card').waitFor({ timeout: 3000 });
 
-  var titleJustify = await page.locator('.tv-settings-title').evaluate(function(el){ return getComputedStyle(el).justifyContent; });
   var titleIconCount = await page.locator('.tv-settings-title-icon svg').count();
   var titleText = (await page.locator('.tv-settings-title').textContent()).trim();
-  if (titleJustify !== 'center' || titleIconCount !== 1 || titleText !== 'INC14 Return') {
-    console.error('FAIL: settings title should be centered with a rocket icon and read "INC14 Return", got justify=', titleJustify, 'iconCount=', titleIconCount, 'text=', titleText);
+  if (titleIconCount !== 1 || titleText !== 'INC14 Return') {
+    console.error('FAIL: settings title should have a rocket icon and read "INC14 Return", got iconCount=', titleIconCount, 'text=', titleText);
     process.exitCode = 1;
   } else {
-    console.log('OK: settings title is centered with a rocket icon ahead of "INC14 Return"');
+    console.log('OK: settings title has a rocket icon ahead of "INC14 Return"');
+  }
+
+  // The icon sits only left of the text -- a plain flex row centered as one
+  // block would shift the text right of the card's true center by about
+  // half the icon's width. Measure the actual text run, not just a CSS
+  // property, so this catches that regression.
+  var centering = await page.locator('.tv-settings-title').evaluate(function(el){
+    var textNode = Array.prototype.filter.call(el.childNodes, function(n){ return n.nodeType === 3 && n.textContent.trim(); })[0];
+    var range = document.createRange();
+    range.selectNodeContents(textNode);
+    var textRect = range.getBoundingClientRect();
+    var containerRect = el.getBoundingClientRect();
+    return { textCenter: textRect.left + textRect.width / 2, containerCenter: containerRect.left + containerRect.width / 2 };
+  });
+  var centerDiff = Math.abs(centering.textCenter - centering.containerCenter);
+  if (centerDiff > 2) {
+    console.error('FAIL: "INC14 Return" text should be visually centered in the title row despite the icon sitting to its left, got offset=', centerDiff, centering);
+    process.exitCode = 1;
+  } else {
+    console.log('OK: "INC14 Return" text is visually centered in the title row (offset=' + centerDiff.toFixed(2) + 'px)');
   }
 
   var windowStroke = await page.locator('.tv-settings-title-icon svg circle').evaluate(function(el){ return el.getAttribute('stroke'); });
