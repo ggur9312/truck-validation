@@ -22,22 +22,29 @@ require('./server.js');
     console.log('OK: settings title has a rocket icon ahead of "INC14 Return"');
   }
 
-  // The icon must sit immediately beside the text (small gap), with the
-  // icon+text pair centered as one unit -- not pinned to the card's left
-  // edge with a balancing spacer on the right.
+  // The icon is positioned out of flow (absolute) so it never affects the
+  // text's own layout width -- the text span must be truly dead-center in
+  // the title row, and the icon must still sit immediately beside it.
   var layout = await page.locator('.tv-settings-title').evaluate(function(el){
+    var containerRect = el.getBoundingClientRect();
+    var textRect = el.querySelector('.tv-settings-title-text').getBoundingClientRect();
     var iconRect = el.querySelector('.tv-settings-title-icon').getBoundingClientRect();
-    var textNode = Array.prototype.filter.call(el.childNodes, function(n){ return n.nodeType === 3 && n.textContent.trim(); })[0];
-    var range = document.createRange();
-    range.selectNodeContents(textNode);
-    var textRect = range.getBoundingClientRect();
-    return { gap: textRect.left - iconRect.right, display: getComputedStyle(el).display, justifyContent: getComputedStyle(el).justifyContent };
+    return {
+      centerDiff: Math.abs((textRect.left + textRect.width / 2) - (containerRect.left + containerRect.width / 2)),
+      gap: textRect.left - iconRect.right
+    };
   });
-  if (layout.gap > 10 || layout.gap < 0 || layout.display !== 'flex' || layout.justifyContent !== 'center') {
-    console.error('FAIL: icon should sit immediately next to the text in a centered flex row, got', layout);
+  if (layout.centerDiff > 2) {
+    console.error('FAIL: "INC14 Return" text should be truly centered in the title row regardless of the icon, got', layout);
     process.exitCode = 1;
   } else {
-    console.log('OK: icon sits right next to the text (gap=' + layout.gap.toFixed(2) + 'px) as a centered row');
+    console.log('OK: "INC14 Return" text is dead-center in the title row (offset=' + layout.centerDiff.toFixed(2) + 'px)');
+  }
+  if (layout.gap > 10 || layout.gap < 0) {
+    console.error('FAIL: icon should sit immediately next to the text, got gap=', layout.gap);
+    process.exitCode = 1;
+  } else {
+    console.log('OK: icon sits right next to the text (gap=' + layout.gap.toFixed(2) + 'px)');
   }
 
   var windowStroke = await page.locator('.tv-settings-title-icon svg circle').evaluate(function(el){ return el.getAttribute('stroke'); });

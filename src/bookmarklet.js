@@ -216,8 +216,9 @@ var CSS =
   '@keyframes tvSlideUp{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:translateY(0)}}' +
 
   '.tv-settings-card{width:340px;max-width:88vw;padding:24px}' +
-  '.tv-settings-title{display:flex;align-items:center;justify-content:center;gap:4px;font-size:20.5px;font-weight:600;margin-bottom:14px;letter-spacing:-.2px}' +
-  '.tv-settings-title-icon{display:flex;color:var(--tv-accent)}' +
+  '.tv-settings-title{position:relative;text-align:center;font-size:20.5px;font-weight:600;margin-bottom:14px;letter-spacing:-.2px}' +
+  '.tv-settings-title-text{position:relative;display:inline-block}' +
+  '.tv-settings-title-icon{position:absolute;right:calc(100% + 4px);top:50%;transform:translateY(-50%);display:flex;color:var(--tv-accent)}' +
   '.tv-settings-title-icon svg{width:32px;height:32px;overflow:visible;transform:rotate(25deg);transform-origin:center}' +
   '.tv-verify{width:680px;max-width:95vw;max-height:88vh;padding:0;overflow:hidden;display:flex;flex-direction:column}' +
   '.tv-verify.truck{box-shadow:0 0 0 5px rgba(248,113,113,.6),var(--tv-elev-2)}' +
@@ -550,7 +551,7 @@ function renderSettingsHTML(){
   var groupFieldHidden = state.settings.restrictionEnabled ? '' : ' tv-hidden';
   var dateFieldHidden = state.settings.dateRestrictionEnabled ? '' : ' tv-hidden';
   return '<div class="tv-card tv-settings-card">' +
-    '<div class="tv-settings-title"><span class="tv-settings-title-icon">' + ICONS.rocket + '</span>INC14 Return</div>' +
+    '<div class="tv-settings-title"><span class="tv-settings-title-text"><span class="tv-settings-title-icon">' + ICONS.rocket + '</span>INC14 Return</span></div>' +
     renderToggleRow(findSettingDef('simplifiedMode')) +
     renderToggleRow(findSettingDef('restrictionEnabled')) +
     '<div class="tv-field-row tv-group-field-row' + groupFieldHidden + '">' +
