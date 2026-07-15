@@ -97,6 +97,15 @@ function sendScan(page, text){
     console.log('OK: product barcode values shown:', barcodeTexts.join(', '));
   }
 
+  var nameColor = await page.locator('.tv-product-name').first().evaluate(function(el){ return getComputedStyle(el).color; });
+  var barcodeColor = await page.locator('.tv-product-barcode').first().evaluate(function(el){ return getComputedStyle(el).color; });
+  if (nameColor === barcodeColor) {
+    console.error('FAIL: product name and barcode should use different text colors so they are visually distinguishable, both got', nameColor);
+    process.exitCode = 1;
+  } else {
+    console.log('OK: product name and barcode use different text colors:', nameColor, 'vs', barcodeColor);
+  }
+
   var verifyBg = await page.locator('.tv-verify-overlay').evaluate(function(el){ return getComputedStyle(el).backgroundColor; });
   if (verifyBg === 'rgba(0, 0, 0, 0)' || verifyBg === 'transparent') {
     console.error('FAIL: verify overlay should now have a dim backdrop tint, got', verifyBg);

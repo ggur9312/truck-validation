@@ -81,7 +81,7 @@ var ICONS = {
     '<circle cx="12" cy="10" r="2" fill="currentColor"/>' +
     '<path d="M7 14L4 17V21L8 18" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>' +
     '<path d="M17 14L20 17V21L16 18" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>' +
-    '<path d="M10.5 18C9.5 19.3 9.4 20.8 10.5 22C11.1 21.1 11.6 20.5 11.8 19.5C11.1 19.1 10.7 18.6 10.5 18Z" fill="currentColor"/>' +
+    '<path d="M10.5 18C9.5 19.3 9.4 20.8 10.5 22C11.1 21.1 11.6 20.5 11.8 19.5C11.1 19.1 10.7 18.6 10.5 18Z" fill="#fb923c"/>' +
     '</svg>'
 };
 
@@ -330,7 +330,7 @@ var CSS =
   '.tv-product-body{flex:1;min-width:0}' +
   '.tv-product-top{display:flex;justify-content:space-between;align-items:center;font-size:17.5px;font-weight:600;margin-bottom:6px;gap:10px}' +
   '.tv-product-name{display:flex;flex-direction:column;gap:2px;min-width:0;font-size:15px}' +
-  '.tv-product-barcode{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:17.5px;font-weight:600;color:var(--tv-text);letter-spacing:.4px}' +
+  '.tv-product-barcode{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:17.5px;font-weight:600;color:var(--tv-text-soft);letter-spacing:.4px}' +
   '.tv-product-count{flex-shrink:0;color:var(--tv-text-soft);font-weight:600;font-variant-numeric:tabular-nums;font-size:16.5px}' +
   '.tv-progress{height:5px;border-radius:3px;background:var(--tv-border);overflow:hidden}' +
   '.tv-progress-fill{height:100%;border-radius:3px;background:var(--tv-accent);transition:width .25s ease}' +

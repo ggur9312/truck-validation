@@ -23,6 +23,10 @@ require('./server.js');
     console.log('OK: settings title is centered with a rocket icon ahead of "INC14 Return"');
   }
 
+  var flameFill = await page.locator('.tv-settings-title-icon svg path').last().evaluate(function(el){ return el.getAttribute('fill'); });
+  if (flameFill !== '#fb923c') { console.error('FAIL: rocket flame should use a distinct orange fill, not currentColor, got', flameFill); process.exitCode = 1; }
+  else console.log('OK: rocket flame uses a distinct orange color from the rest of the icon');
+
   var initialBtnText = (await page.locator('.tv-activate-btn').textContent()).trim();
   if (initialBtnText !== '활성화') { console.error('FAIL: settings button should say "활성화" before first activation, got', initialBtnText); process.exitCode = 1; }
   else console.log('OK: settings button says "활성화" before first activation');
