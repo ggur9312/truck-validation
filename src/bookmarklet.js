@@ -305,6 +305,7 @@ var CSS =
   '.tv-float-area .tv-barcode-wrap{padding:12px 14px;border-radius:14px}' +
   '.tv-top-left{top:20px;left:24px}' +
   '.tv-bottom-right{bottom:20px;right:24px}' +
+  '.tv-reprint-area{--tv-surface:#1b2132;--tv-surface-2:#242b40;--tv-surface-3:#2d3552;--tv-text:#f2f4fa;--tv-text-soft:#aab3c6;--tv-border:rgba(255,255,255,.09)}' +
   '.tv-status-badge-waybill{margin-top:6px;padding-top:10px;border-top:1px solid var(--tv-border)}' +
   '.tv-status-badge-waybill.tv-hidden{display:none}' +
   '.tv-status-badge-waybill-label{font-size:14.5px;font-weight:600;letter-spacing:.1px;color:var(--tv-text-soft);margin-bottom:8px}' +
@@ -321,7 +322,6 @@ var CSS =
   '.tv-simplified-notice-icon svg{width:28px;height:28px}' +
   '.tv-simplified-notice-info{flex-shrink:0}' +
   '.tv-simplified-notice-vendor{font-size:19px;font-weight:600;color:#161a26;white-space:nowrap}' +
-  '.tv-simplified-notice-tote{margin-top:4px;font-size:19px;font-weight:600;color:#161a26;white-space:nowrap}' +
   '.tv-simplified-notice-qty{flex-shrink:0;text-align:right}' +
   '.tv-simplified-notice-qty-label{font-size:14px;font-weight:600;color:#5b6274}' +
   '.tv-simplified-notice-qty-value{font-size:28px;font-weight:700;color:rgb(var(--tv-notice-fg))}' +
@@ -892,14 +892,16 @@ function rowHasReprintButton(row){
 function processRow(row){
   var tds = row.querySelectorAll('td');
   var last = tds[tds.length - 1];
-  if (rowHasReprintButton(row)) {
-    hideStatus();
-    showReprintOverlay();
-    return;
-  }
-  if (!last || !last.querySelector('[data-action="open-waybill-modal"]')) {
+  var hasReprintBtn = rowHasReprintButton(row);
+  var hasWaybillBtn = !!(last && last.querySelector('[data-action="open-waybill-modal"]'));
+  if (!hasReprintBtn && !hasWaybillBtn) {
     showStatus('상차 불가한 토트입니다', 'error');
     state.mode = 'IDLE';
+    return;
+  }
+  if (hasReprintBtn && !state.settings.simplifiedMode) {
+    hideStatus();
+    showReprintOverlay();
     return;
   }
   var linkProduct = tds[0] && tds[0].querySelector('a[href]');
@@ -924,6 +926,10 @@ function processRow(row){
     hideStatus();
     if (state.settings.simplifiedMode) {
       showSimplifiedNotice();
+      if (hasReprintBtn) {
+        showReprintOverlay();
+        return;
+      }
       if (state.toteInfo.isRestricted || state.toteInfo.isTruck) {
         openSimplifiedBlockModal();
       } else {
@@ -1029,7 +1035,6 @@ function showSimplifiedNotice(){
     '<div class="tv-simplified-notice-icon">' + icon + '</div>' +
     '<div class="tv-simplified-notice-info">' +
     '<div class="tv-simplified-notice-vendor">' + escapeHtml(info.vendor) + '</div>' +
-    '<div class="tv-simplified-notice-tote">스캔토트 ' + escapeHtml(info.toteBarcode) + '</div>' +
     '</div>' +
     '<div class="tv-simplified-notice-qty">' +
     '<div class="tv-simplified-notice-qty-label">집품수량</div>' +

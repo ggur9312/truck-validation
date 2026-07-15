@@ -31,6 +31,10 @@ function sendScan(page, text){
   await page.locator('.tv-reprint-area canvas').waitFor({ state: 'visible', timeout: 5000 });
   console.log('OK: reprint barcode appears immediately after scanning a tote that already has a waybill (verification skipped)');
 
+  var reprintBg = await page.locator('.tv-reprint-area').evaluate(function(el){ return getComputedStyle(el).backgroundColor; });
+  if (reprintBg !== 'rgb(27, 33, 50)') { console.error('FAIL: reprint area should use the dark background (#1b2132), got', reprintBg); process.exitCode = 1; }
+  else console.log('OK: reprint area uses the dark background');
+
   var verifyShown = await page.locator('.tv-verify-overlay').evaluate(function(el){ return el.classList.contains('tv-show'); });
   if (verifyShown) { console.error('FAIL: verify modal should NOT have opened for an already-generated tote'); process.exitCode = 1; }
   else console.log('OK: verify modal correctly skipped');

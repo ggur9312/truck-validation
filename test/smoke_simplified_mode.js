@@ -69,12 +69,15 @@ function sendEnter(page){
   else console.log('OK: verify modal skipped entirely for courier tote in simplified mode');
 
   var noticeText = await page.locator('.tv-simplified-notice').textContent();
-  if (noticeText.indexOf('TOTE001') === -1 || noticeText.indexOf('업체A') === -1 || noticeText.indexOf('7') === -1 || noticeText.indexOf('EA') === -1) {
-    console.error('FAIL: simplified notice should show tote/vendor/qty, got', noticeText);
+  if (noticeText.indexOf('업체A') === -1 || noticeText.indexOf('7') === -1 || noticeText.indexOf('EA') === -1) {
+    console.error('FAIL: simplified notice should show vendor/qty, got', noticeText);
     process.exitCode = 1;
   } else {
-    console.log('OK: simplified notice shows tote barcode, vendor, and pick quantity');
+    console.log('OK: simplified notice shows vendor and pick quantity');
   }
+
+  if (noticeText.indexOf('스캔토트') !== -1) { console.error('FAIL: simplified notice should no longer show the 스캔토트 line, got', noticeText); process.exitCode = 1; }
+  else console.log('OK: simplified notice no longer shows a 스캔토트 line');
 
   var noticeClass = await page.locator('.tv-simplified-notice').getAttribute('class');
   if (noticeClass.indexOf('courier') === -1) { console.error('FAIL: notice should show the courier (green) variant, got', noticeClass); process.exitCode = 1; }
@@ -83,6 +86,19 @@ function sendEnter(page){
   // Close the WMS waybill modal manually so we can reset for the next scenario.
   await page.evaluate(function(){ document.querySelector('#modalOutboundWaybill').classList.remove('is-open'); });
   await page.waitForTimeout(500);
+
+  // Scenario 2b: a tote that already has a waybill (reprint button, not the
+  // waybill-generation button) must still update the notice from freshly
+  // fetched data in simplified mode, not just skip straight to reprint.
+  await sendScan(page, 'TOTE_REPRINT');
+  await page.locator('.tv-reprint-area canvas').waitFor({ state: 'visible', timeout: 5000 });
+  var reprintNoticeText = await page.locator('.tv-simplified-notice').textContent();
+  if (reprintNoticeText.indexOf('업체R') === -1 || reprintNoticeText.indexOf('5') === -1) {
+    console.error('FAIL: notice should update with the reprint-ready tote\'s own data, got', reprintNoticeText);
+    process.exitCode = 1;
+  } else {
+    console.log('OK: notice updates with freshly fetched data even for a tote that already has a waybill');
+  }
 
   // Scenario 3: truck + simplifiedMode -- big red blocking modal, dismiss via bare Enter.
   await sendScan(page, 'TOTE002');
