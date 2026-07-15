@@ -118,8 +118,16 @@ function sendScan(page, text){
   else console.log('OK: delivery-type value is the generic "상차제한" label:', typeValueText);
 
   var typeValueFontSize = await page.locator('.tv-verify-type-hero-title').evaluate(function(el){ return getComputedStyle(el).fontSize; });
-  if (typeValueFontSize !== '22px') { console.error('FAIL: delivery-type hero title font-size should be 22px (same size for all three variants), got', typeValueFontSize); process.exitCode = 1; }
-  else console.log('OK: restricted delivery-type hero title font-size is 22px, same as truck/courier');
+  if (typeValueFontSize !== '25px') { console.error('FAIL: delivery-type hero title font-size should be 25px (same size for all three variants), got', typeValueFontSize); process.exitCode = 1; }
+  else console.log('OK: restricted delivery-type hero title font-size is 25px, same as truck/courier');
+
+  var typeValueFontWeight = await page.locator('.tv-verify-type-hero-title').evaluate(function(el){ return getComputedStyle(el).fontWeight; });
+  if (typeValueFontWeight !== '500') { console.error('FAIL: delivery-type hero title font-weight should be 500, got', typeValueFontWeight); process.exitCode = 1; }
+  else console.log('OK: delivery-type hero title font-weight is 500');
+
+  var restrictedSubText = (await page.locator('.tv-verify-type-hero-sub').textContent()).trim();
+  if (restrictedSubText !== '해당 토트는 상차 제한 토트입니다.') { console.error('FAIL: restricted type-hero subtitle should read "해당 토트는 상차 제한 토트입니다.", got', restrictedSubText); process.exitCode = 1; }
+  else console.log('OK: restricted type-hero subtitle reads correctly:', restrictedSubText);
 
   var cardBorder = await page.locator('.tv-verify').evaluate(function(el){ return getComputedStyle(el).boxShadow; });
   if (cardBorder.indexOf('251, 146, 60') === -1) { console.error('FAIL: verify card border should use the restricted orange color, got', cardBorder); process.exitCode = 1; }

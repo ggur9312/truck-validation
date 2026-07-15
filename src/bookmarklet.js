@@ -272,7 +272,7 @@ var CSS =
   '.tv-verify-type-hero.restricted{background:linear-gradient(135deg,#fb923c,#c2680f);animation:tvTypeGlowRestricted 1.8s ease-in-out infinite}' +
   '.tv-verify-type-hero-icon{flex-shrink:0;width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.25);color:#fff}' +
   '.tv-verify-type-hero-icon svg{width:28px;height:28px}' +
-  '.tv-verify-type-hero-title{font-size:22px;font-weight:700;color:#fff;word-break:keep-all}' +
+  '.tv-verify-type-hero-title{font-size:25px;font-weight:500;color:#fff;word-break:keep-all}' +
   '.tv-verify-type-hero-sub{font-size:13.5px;font-weight:500;color:rgba(255,255,255,.9);margin-top:2px}' +
   '@keyframes tvTypeGlowTruck{0%,100%{box-shadow:0 8px 20px rgba(0,0,0,.2),inset 0 0 0 0 rgba(255,255,255,0);filter:brightness(1)}50%{box-shadow:0 8px 20px rgba(0,0,0,.2),inset 0 0 26px 6px rgba(255,255,255,.5);filter:brightness(1.15)}}' +
   '@keyframes tvTypeGlowCourier{0%,100%{box-shadow:0 8px 20px rgba(0,0,0,.2),inset 0 0 0 0 rgba(255,255,255,0);filter:brightness(1)}50%{box-shadow:0 8px 20px rgba(0,0,0,.2),inset 0 0 26px 6px rgba(255,255,255,.5);filter:brightness(1.15)}}' +
@@ -1014,11 +1014,12 @@ function openVerifyModal(){
   var typeIcon = info.isRestricted ? ICONS.restricted : (info.isTruck ? ICONS.truck : ICONS.courier);
   var typeClass = info.isRestricted ? 'restricted' : (info.isTruck ? 'truck' : 'courier');
   var typeValue = info.isRestricted ? '상차제한' : (info.isTruck ? '트럭' : '택배');
+  var typeHeroSub = info.isRestricted ? '해당 토트는 상차 제한 토트입니다.' : (info.isTruck ? '해당 토트는 트럭 운송 토트입니다.' : '상품 정보를 확인하고 스캔해주세요.');
   var typeHeroHtml = '<div class="tv-verify-type-hero ' + typeClass + '">' +
     '<span class="tv-verify-type-hero-icon">' + typeIcon + '</span>' +
     '<div class="tv-verify-type-hero-text">' +
     '<div class="tv-verify-type-hero-title">' + typeValue + '</div>' +
-    '<div class="tv-verify-type-hero-sub">상품 정보를 확인하고 스캔해주세요.</div>' +
+    '<div class="tv-verify-type-hero-sub">' + typeHeroSub + '</div>' +
     '</div>' +
     '</div>';
   ui.verifyOverlay.innerHTML =
@@ -1074,7 +1075,7 @@ function openSimplifiedBlockModal(){
     lines = '<div class="tv-simplified-line">' + escapeHtml(info.restrictedVendor) + '</div>' +
       (info.dateRestricted ? '<div class="tv-simplified-line sub">생성일시 : ' + escapeHtml(info.restrictedDate) + '</div>' : '');
   } else {
-    lines = '<div class="tv-simplified-line">해당 상품은 트럭 운송 상품입니다.</div>';
+    lines = '<div class="tv-simplified-line">해당 토트는 트럭 운송 토트입니다.</div>';
   }
   ui.simplifiedOverlay.innerHTML =
     '<div class="tv-card tv-simplified-block ' + typeClass + '">' +

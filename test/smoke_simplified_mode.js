@@ -154,7 +154,7 @@ function sendEnter(page){
   else console.log('OK: notice shows the truck (red) variant for a truck tote');
 
   var blockText = await page.locator('.tv-simplified-block').textContent();
-  if (blockText.indexOf('해당 상품은 트럭 운송 상품입니다.') === -1) {
+  if (blockText.indexOf('해당 토트는 트럭 운송 토트입니다.') === -1) {
     console.error('FAIL: truck modal should show the reference copy, got', blockText);
     process.exitCode = 1;
   } else if (blockText.indexOf('택배 스캔 시 오류가 발생할 수 있습니다.') !== -1) {

@@ -32,6 +32,10 @@ function sendScan(page, text){
   if (badgeText.indexOf('트럭') === -1) { console.error('FAIL: expected truck badge, got', badgeText); process.exitCode = 1; }
   else console.log('OK: truck badge shown:', badgeText.trim());
 
+  var truckSubText = (await page.locator('.tv-verify-type-hero-sub').textContent()).trim();
+  if (truckSubText !== '해당 토트는 트럭 운송 토트입니다.') { console.error('FAIL: truck type-hero subtitle should read "해당 토트는 트럭 운송 토트입니다.", got', truckSubText); process.exitCode = 1; }
+  else console.log('OK: truck type-hero subtitle reads correctly:', truckSubText);
+
   await page.locator('.tv-verify-close').click();
   await page.locator('.tv-verify-overlay').waitFor({ state: 'hidden', timeout: 3000 });
   console.log('OK: close button dismisses verify modal');
