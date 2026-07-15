@@ -251,7 +251,8 @@ var CSS =
   '.tv-gear-btn:hover{transform:rotate(30deg) scale(1.05)}' +
   '.tv-gear-btn.tv-hidden{display:none}' +
 
-  '.tv-status-badge{position:fixed;top:20px;right:24px;z-index:2147483600;width:max-content;max-width:300px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 20px;border-radius:16px;background:var(--tv-surface);color:var(--tv-text);border:1px solid var(--tv-border);box-shadow:var(--tv-elev-2)}' +
+  '.tv-status-badge{position:fixed;top:20px;right:24px;z-index:2147483600;width:max-content;max-width:300px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 20px;border-radius:16px;background:var(--tv-surface);color:var(--tv-text);border:1px solid var(--tv-border);box-shadow:var(--tv-elev-2);' +
+  '--tv-surface:#1b2132;--tv-surface-2:#242b40;--tv-surface-3:#2d3552;--tv-text:#f2f4fa;--tv-text-soft:#aab3c6;--tv-border:rgba(255,255,255,.09)}' +
   '.tv-status-badge.tv-hidden{display:none}' +
   '.tv-status-badge-main{display:flex;align-items:center;justify-content:center;gap:10px;font-size:19.5px;font-weight:600;letter-spacing:.1px;text-align:center}' +
   '.tv-status-badge-restrict-header{display:flex;align-items:center;justify-content:center;gap:8px;font-size:19.5px;font-weight:600;letter-spacing:.1px;color:var(--tv-restricted-fg);text-align:center}' +
@@ -309,22 +310,22 @@ var CSS =
   '.tv-status-badge-waybill-label{font-size:14.5px;font-weight:600;letter-spacing:.1px;color:var(--tv-text-soft);margin-bottom:8px}' +
   '.tv-status-badge-waybill .tv-barcode-wrap{padding:10px 12px;border-radius:12px}' +
 
-  '.tv-simplified-notice{width:300px;text-align:left;position:relative;background:#fff;border:1px solid #e2e6f0;border-left:5px solid rgb(var(--tv-notice-fg,52,211,153));padding:14px 34px 14px 14px}' +
-  '.tv-simplified-notice.tv-show,.tv-simplified-notice:popover-open{display:flex;align-items:center;gap:12px}' +
+  '.tv-simplified-notice{width:380px;max-width:92vw;text-align:left;position:relative;background:#fff;border:1px solid #e2e6f0;border-left:6px solid rgb(var(--tv-notice-fg,52,211,153));padding:20px 40px 20px 20px}' +
+  '.tv-simplified-notice.tv-show,.tv-simplified-notice:popover-open{display:flex;align-items:flex-start;gap:16px}' +
   '.tv-simplified-notice.truck{--tv-notice-fg:248,113,113}' +
   '.tv-simplified-notice.courier{--tv-notice-fg:52,211,153}' +
   '.tv-simplified-notice.restricted{--tv-notice-fg:251,146,60}' +
-  '.tv-simplified-notice-close{position:absolute;right:8px;top:8px;width:22px;height:22px;border-radius:50%;border:none;background:#eef1f7;color:#5b6274;font-size:10.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}' +
+  '.tv-simplified-notice-close{position:absolute;right:10px;top:10px;width:26px;height:26px;border-radius:50%;border:none;background:#eef1f7;color:#5b6274;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}' +
   '.tv-simplified-notice-close:hover{background:#e2e6f0}' +
-  '.tv-simplified-notice-icon{flex-shrink:0;width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(var(--tv-notice-fg),.14);color:rgb(var(--tv-notice-fg))}' +
-  '.tv-simplified-notice-icon svg{width:22px;height:22px}' +
+  '.tv-simplified-notice-icon{flex-shrink:0;width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(var(--tv-notice-fg),.14);color:rgb(var(--tv-notice-fg))}' +
+  '.tv-simplified-notice-icon svg{width:28px;height:28px}' +
   '.tv-simplified-notice-info{flex:1;min-width:0}' +
-  '.tv-simplified-notice-vendor{font-size:16px;font-weight:600;color:#161a26;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
-  '.tv-simplified-notice-tote{margin-top:3px;font-size:13px;font-weight:500;color:#5b6274;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
+  '.tv-simplified-notice-vendor{font-size:19px;font-weight:600;color:#161a26;word-break:break-all}' +
+  '.tv-simplified-notice-tote{margin-top:4px;font-size:19px;font-weight:600;color:#161a26;word-break:break-all}' +
   '.tv-simplified-notice-qty{flex-shrink:0;text-align:right}' +
-  '.tv-simplified-notice-qty-label{font-size:12px;font-weight:600;color:#5b6274}' +
-  '.tv-simplified-notice-qty-value{font-size:22px;font-weight:700;color:rgb(var(--tv-notice-fg))}' +
-  '.tv-simplified-notice-qty-value span{font-size:12.5px;font-weight:600;margin-left:2px}' +
+  '.tv-simplified-notice-qty-label{font-size:14px;font-weight:600;color:#5b6274}' +
+  '.tv-simplified-notice-qty-value{font-size:28px;font-weight:700;color:rgb(var(--tv-notice-fg))}' +
+  '.tv-simplified-notice-qty-value span{font-size:14px;font-weight:600;margin-left:2px}' +
 
   '.tv-simplified-block{width:460px;max-width:92vw;padding:0;overflow:hidden;position:relative;animation:tvPop .22s var(--tv-ease),tvAuraPulse 1.6s ease-in-out infinite}' +
   '.tv-simplified-block.truck{--tv-aura:248,113,113}' +
@@ -1028,7 +1029,7 @@ function showSimplifiedNotice(){
     '<div class="tv-simplified-notice-icon">' + icon + '</div>' +
     '<div class="tv-simplified-notice-info">' +
     '<div class="tv-simplified-notice-vendor">' + escapeHtml(info.vendor) + '</div>' +
-    '<div class="tv-simplified-notice-tote">토트번호 ' + escapeHtml(info.toteBarcode) + '</div>' +
+    '<div class="tv-simplified-notice-tote">스캔토트 ' + escapeHtml(info.toteBarcode) + '</div>' +
     '</div>' +
     '<div class="tv-simplified-notice-qty">' +
     '<div class="tv-simplified-notice-qty-label">집품수량</div>' +
