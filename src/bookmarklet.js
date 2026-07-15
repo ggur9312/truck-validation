@@ -51,6 +51,11 @@ var ICONS = {
     '<path d="M3 7L12 3L21 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>' +
     '<path d="M12 7V21" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>' +
     '</svg>',
+  qty: '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+    '<rect x="4" y="14" width="4" height="7" rx="1" fill="currentColor"/>' +
+    '<rect x="10" y="9" width="4" height="12" rx="1" fill="currentColor"/>' +
+    '<rect x="16" y="4" width="4" height="17" rx="1" fill="currentColor"/>' +
+    '</svg>',
   close: '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">' +
     '<path d="M5 5L19 19M19 5L5 19" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>' +
     '</svg>',
@@ -249,20 +254,18 @@ var CSS =
   '.tv-stat-tile{background:var(--tv-surface-2);border:1px solid var(--tv-border);border-radius:14px;padding:14px 10px;text-align:center;box-shadow:var(--tv-elev-1)}' +
   '.tv-stat-icon{width:40px;height:40px;margin:0 auto 8px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff}' +
   '.tv-stat-icon svg{width:20px;height:20px}' +
-  '.tv-stat-icon.vendor{background:#4f7cff}.tv-stat-icon.tote{background:#8b5cf6}' +
+  '.tv-stat-icon.vendor{background:#4f7cff}.tv-stat-icon.tote{background:#8b5cf6}.tv-stat-icon.qty{background:#fb923c}' +
   '.tv-stat-label{font-size:13.5px;color:var(--tv-text-soft);font-weight:600;margin-bottom:4px}' +
   '.tv-stat-value{font-size:18.5px;font-weight:600;color:var(--tv-text);word-break:break-all}' +
-  '.tv-stat-caption{font-size:18.5px;color:var(--tv-text);font-weight:500;margin-top:3px}' +
 
-  '.tv-type-banner{border-radius:14px;padding:14px 10px;text-align:center;box-shadow:0 8px 20px rgba(0,0,0,.2)}' +
-  '.tv-type-banner.truck{background:linear-gradient(135deg,#f87171,#c93f3f);animation:tvTypeGlowTruck 1.8s ease-in-out infinite}' +
-  '.tv-type-banner.courier{background:linear-gradient(135deg,#34d399,#1f9d6c);animation:tvTypeGlowCourier 1.8s ease-in-out infinite}' +
-  '.tv-type-banner.restricted{background:linear-gradient(135deg,#fb923c,#c2680f);animation:tvTypeGlowRestricted 1.8s ease-in-out infinite}' +
-  '.tv-type-icon{width:40px;height:40px;margin:0 auto 8px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;background:rgba(255,255,255,.25);color:#fff}' +
-  '.tv-type-icon svg{width:20px;height:20px}' +
-  '.tv-type-label{font-size:13.5px;font-weight:600;color:rgba(255,255,255,.85);margin-bottom:4px;word-break:keep-all}' +
-  '.tv-type-value{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:5px;font-size:25px;font-weight:600;color:#fff;word-break:keep-all;margin-top:2px}' +
-  '.tv-type-value.restricted{font-size:20px}' +
+  '.tv-verify-type-hero{flex-shrink:0;display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:14px;margin-bottom:14px;box-shadow:0 8px 20px rgba(0,0,0,.2)}' +
+  '.tv-verify-type-hero.truck{background:linear-gradient(135deg,#f87171,#c93f3f);animation:tvTypeGlowTruck 1.8s ease-in-out infinite}' +
+  '.tv-verify-type-hero.courier{background:linear-gradient(135deg,#34d399,#1f9d6c);animation:tvTypeGlowCourier 1.8s ease-in-out infinite}' +
+  '.tv-verify-type-hero.restricted{background:linear-gradient(135deg,#fb923c,#c2680f);animation:tvTypeGlowRestricted 1.8s ease-in-out infinite}' +
+  '.tv-verify-type-hero-icon{flex-shrink:0;width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.25);color:#fff}' +
+  '.tv-verify-type-hero-icon svg{width:28px;height:28px}' +
+  '.tv-verify-type-hero-title{font-size:22px;font-weight:700;color:#fff;word-break:keep-all}' +
+  '.tv-verify-type-hero-sub{font-size:13.5px;font-weight:500;color:rgba(255,255,255,.9);margin-top:2px}' +
   '@keyframes tvTypeGlowTruck{0%,100%{box-shadow:0 8px 20px rgba(0,0,0,.2),inset 0 0 0 0 rgba(255,255,255,0);filter:brightness(1)}50%{box-shadow:0 8px 20px rgba(0,0,0,.2),inset 0 0 26px 6px rgba(255,255,255,.5);filter:brightness(1.15)}}' +
   '@keyframes tvTypeGlowCourier{0%,100%{box-shadow:0 8px 20px rgba(0,0,0,.2),inset 0 0 0 0 rgba(255,255,255,0);filter:brightness(1)}50%{box-shadow:0 8px 20px rgba(0,0,0,.2),inset 0 0 26px 6px rgba(255,255,255,.5);filter:brightness(1.15)}}' +
   '@keyframes tvTypeGlowRestricted{0%,100%{box-shadow:0 8px 20px rgba(0,0,0,.2),inset 0 0 0 0 rgba(255,255,255,0);filter:brightness(1)}50%{box-shadow:0 8px 20px rgba(0,0,0,.2),inset 0 0 26px 6px rgba(255,255,255,.5);filter:brightness(1.15)}}' +
@@ -356,14 +359,11 @@ var CSS =
   '.tv-status-badge-waybill-icon svg{width:15px;height:15px}' +
   '.tv-status-badge-waybill .tv-barcode-wrap{padding:10px 12px;border-radius:12px}' +
 
-  '.tv-simplified-notice{width:max-content;min-width:380px;max-width:92vw;text-align:left;position:relative;background:#fff;border:1px solid #e2e6f0;border-left:6px solid rgb(var(--tv-notice-fg,52,211,153));padding:20px 40px 20px 20px}' +
+  '.tv-simplified-notice{width:max-content;min-width:380px;max-width:92vw;text-align:left;position:relative;background:#fff;border:1px solid #e2e6f0;border-left:6px solid rgb(var(--tv-notice-fg,52,211,153));padding:20px}' +
   '.tv-simplified-notice.tv-show,.tv-simplified-notice:popover-open{display:flex;align-items:flex-start;gap:16px}' +
   '.tv-simplified-notice.truck{--tv-notice-fg:248,113,113}' +
   '.tv-simplified-notice.courier{--tv-notice-fg:52,211,153}' +
   '.tv-simplified-notice.restricted{--tv-notice-fg:251,146,60}' +
-  '.tv-simplified-notice-close{position:absolute;right:10px;top:10px;width:26px;height:26px;border-radius:50%;border:none;background:#eef1f7;color:#5b6274;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}' +
-  '.tv-simplified-notice-close svg{width:12px;height:12px}' +
-  '.tv-simplified-notice-close:hover{background:#e2e6f0}' +
   '.tv-simplified-notice-icon{flex-shrink:0;width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(var(--tv-notice-fg),.14);color:rgb(var(--tv-notice-fg))}' +
   '.tv-simplified-notice-icon svg{width:28px;height:28px}' +
   '.tv-simplified-notice-info{flex-shrink:0}' +
@@ -999,7 +999,13 @@ function openVerifyModal(){
   var typeIcon = info.isRestricted ? ICONS.restricted : (info.isTruck ? ICONS.truck : ICONS.courier);
   var typeClass = info.isRestricted ? 'restricted' : (info.isTruck ? 'truck' : 'courier');
   var typeValue = info.isRestricted ? '상차제한' : (info.isTruck ? '트럭' : '택배');
-  var typeBannerHtml = '<div class="tv-type-banner ' + typeClass + '"><span class="tv-type-icon">' + typeIcon + '</span><div class="tv-type-label">배송 방식</div><div class="tv-type-value ' + typeClass + '">' + typeValue + '</div></div>';
+  var typeHeroHtml = '<div class="tv-verify-type-hero ' + typeClass + '">' +
+    '<span class="tv-verify-type-hero-icon">' + typeIcon + '</span>' +
+    '<div class="tv-verify-type-hero-text">' +
+    '<div class="tv-verify-type-hero-title">' + typeValue + '</div>' +
+    '<div class="tv-verify-type-hero-sub">상품 정보를 확인하고 스캔해주세요.</div>' +
+    '</div>' +
+    '</div>';
   ui.verifyOverlay.innerHTML =
     '<div class="tv-card tv-verify ' + typeClass + '">' +
     '<div class="tv-verify-header">' +
@@ -1015,10 +1021,11 @@ function openVerifyModal(){
     '<div class="tv-stepper-labels"><span class="tv-stepper-label active">준비</span><span class="tv-stepper-label">검증 중</span><span class="tv-stepper-label">검증완료</span></div>' +
     '<div class="tv-stepper-track"><span class="tv-stepper-dot active"></span><span class="tv-stepper-line"></span><span class="tv-stepper-dot"></span><span class="tv-stepper-line"></span><span class="tv-stepper-dot"></span></div>' +
     '</div>' +
+    typeHeroHtml +
     '<div class="tv-stat-grid">' +
     '<div class="tv-stat-tile"><span class="tv-stat-icon vendor">' + ICONS.vendor + '</span><div class="tv-stat-label">업체명</div><div class="tv-stat-value">' + escapeHtml(info.vendor) + '</div></div>' +
-    '<div class="tv-stat-tile"><span class="tv-stat-icon tote">' + ICONS.tote + '</span><div class="tv-stat-label">토트바코드</div><div class="tv-stat-value">' + escapeHtml(info.toteBarcode) + '</div><div class="tv-stat-caption">집품 수량 ' + info.totalQty + '개</div></div>' +
-    typeBannerHtml +
+    '<div class="tv-stat-tile"><span class="tv-stat-icon tote">' + ICONS.tote + '</span><div class="tv-stat-label">토트바코드</div><div class="tv-stat-value">' + escapeHtml(info.toteBarcode) + '</div></div>' +
+    '<div class="tv-stat-tile"><span class="tv-stat-icon qty">' + ICONS.qty + '</span><div class="tv-stat-label">전체 집품수량</div><div class="tv-stat-value">' + info.totalQty + '</div></div>' +
     '</div>' +
     '<div class="tv-product-list"></div>' +
     '<div class="tv-skip-area"><div class="tv-skip-label">검증 건너뛰기 (스캔)</div><div class="tv-barcode-wrap"><canvas class="tv-skip-barcode"></canvas></div></div>' +
@@ -1079,7 +1086,6 @@ function showSimplifiedNotice(){
   var icon = info.isRestricted ? ICONS.restricted : (info.isTruck ? ICONS.truck : ICONS.courier);
   ui.simplifiedNotice.className = 'tv-float-area tv-simplified-notice tv-bottom-right ' + typeClass;
   ui.simplifiedNotice.innerHTML =
-    '<button class="tv-simplified-notice-close" title="닫기">' + ICONS.close + '</button>' +
     '<div class="tv-simplified-notice-icon">' + icon + '</div>' +
     '<div class="tv-simplified-notice-info">' +
     '<div class="tv-simplified-notice-vendor">' + escapeHtml(info.vendor) + '</div>' +
@@ -1089,7 +1095,6 @@ function showSimplifiedNotice(){
     '<div class="tv-simplified-notice-qty-label">집품수량</div>' +
     '<div class="tv-simplified-notice-qty-value">' + info.totalQty + '<span>EA</span></div>' +
     '</div>';
-  ui.simplifiedNotice.querySelector('.tv-simplified-notice-close').addEventListener('click', hideSimplifiedNotice);
   setPopoverVisible(ui.simplifiedNotice, true);
 }
 

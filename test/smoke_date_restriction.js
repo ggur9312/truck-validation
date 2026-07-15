@@ -78,14 +78,14 @@ function sendScan(page, text){
 
   await sendScan(page, 'TOTE001');
   await page.locator('.tv-verify').filter({ hasText: '업체A' }).waitFor({ timeout: 5000 });
-  var bannerClass = await page.locator('.tv-type-banner').getAttribute('class');
+  var bannerClass = await page.locator('.tv-verify-type-hero').getAttribute('class');
   if (bannerClass.indexOf('restricted') === -1) { console.error('FAIL: tote created 2026-01-15 should be restricted by the 2026-01-01~2026-01-31 range, got', bannerClass); process.exitCode = 1; }
   else console.log('OK: tote whose creation date falls inside the configured range is restricted');
 
   // The tile is a generic "상차제한" indicator -- it must not disclose
   // whether it's a group-number or date restriction (that detail lives
   // only in the top-right status badge).
-  var dateTypeValueText = (await page.locator('.tv-type-value').textContent()).trim();
+  var dateTypeValueText = (await page.locator('.tv-verify-type-hero-title').textContent()).trim();
   if (dateTypeValueText !== '상차제한') { console.error('FAIL: delivery-type value should read exactly "상차제한" with no date specifics, got', dateTypeValueText); process.exitCode = 1; }
   else console.log('OK: delivery-type value is the generic "상차제한" label:', dateTypeValueText);
 
@@ -102,7 +102,7 @@ function sendScan(page, text){
   // must NOT be restricted.
   await sendScan(page, 'TOTE002');
   await page.locator('.tv-verify').filter({ hasText: '업체B' }).waitFor({ timeout: 5000 });
-  var bannerClassOutside = await page.locator('.tv-type-banner').getAttribute('class');
+  var bannerClassOutside = await page.locator('.tv-verify-type-hero').getAttribute('class');
   if (bannerClassOutside.indexOf('restricted') !== -1) { console.error('FAIL: tote created 2026-02-20 should NOT be restricted by the 2026-01-01~2026-01-31 range, got', bannerClassOutside); process.exitCode = 1; }
   else console.log('OK: tote whose creation date falls outside the configured range is not restricted');
 
@@ -128,7 +128,7 @@ function sendScan(page, text){
 
   await sendScan(page, 'TOTE001');
   await page.locator('.tv-verify').filter({ hasText: '업체A' }).waitFor({ timeout: 5000 });
-  var bannerTote001StartOnly = await page.locator('.tv-type-banner').getAttribute('class');
+  var bannerTote001StartOnly = await page.locator('.tv-verify-type-hero').getAttribute('class');
   if (bannerTote001StartOnly.indexOf('restricted') !== -1) { console.error('FAIL: TOTE001 (2026-01-15) should NOT be restricted by a start-only range beginning 2026-02-01, got', bannerTote001StartOnly); process.exitCode = 1; }
   else console.log('OK: tote before a start-only date is not restricted');
   await page.locator('.tv-verify-close').click();
@@ -136,7 +136,7 @@ function sendScan(page, text){
 
   await sendScan(page, 'TOTE002');
   await page.locator('.tv-verify').filter({ hasText: '업체B' }).waitFor({ timeout: 5000 });
-  var bannerTote002StartOnly = await page.locator('.tv-type-banner').getAttribute('class');
+  var bannerTote002StartOnly = await page.locator('.tv-verify-type-hero').getAttribute('class');
   if (bannerTote002StartOnly.indexOf('restricted') === -1) { console.error('FAIL: TOTE002 (2026-02-20) should be restricted by a start-only range beginning 2026-02-01, got', bannerTote002StartOnly); process.exitCode = 1; }
   else console.log('OK: tote on/after a start-only date is restricted (open-ended forward)');
   await page.locator('.tv-verify-close').click();
@@ -157,7 +157,7 @@ function sendScan(page, text){
 
   await sendScan(page, 'TOTE001');
   await page.locator('.tv-verify').filter({ hasText: '업체A' }).waitFor({ timeout: 5000 });
-  var bannerTote001EndOnly = await page.locator('.tv-type-banner').getAttribute('class');
+  var bannerTote001EndOnly = await page.locator('.tv-verify-type-hero').getAttribute('class');
   if (bannerTote001EndOnly.indexOf('restricted') === -1) { console.error('FAIL: TOTE001 (2026-01-15) should be restricted by an end-only range ending 2026-02-01, got', bannerTote001EndOnly); process.exitCode = 1; }
   else console.log('OK: tote on/before an end-only date is restricted (open-ended backward)');
   await page.locator('.tv-verify-close').click();
@@ -165,7 +165,7 @@ function sendScan(page, text){
 
   await sendScan(page, 'TOTE002');
   await page.locator('.tv-verify').filter({ hasText: '업체B' }).waitFor({ timeout: 5000 });
-  var bannerTote002EndOnly = await page.locator('.tv-type-banner').getAttribute('class');
+  var bannerTote002EndOnly = await page.locator('.tv-verify-type-hero').getAttribute('class');
   if (bannerTote002EndOnly.indexOf('restricted') !== -1) { console.error('FAIL: TOTE002 (2026-02-20) should NOT be restricted by an end-only range ending 2026-02-01, got', bannerTote002EndOnly); process.exitCode = 1; }
   else console.log('OK: tote after an end-only date is not restricted');
   await page.locator('.tv-verify-close').click();

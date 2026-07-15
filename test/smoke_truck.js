@@ -28,7 +28,7 @@ function sendScan(page, text){
   await sendScan(page, 'TOTE002');
 
   await page.locator('.tv-verify').filter({ hasText: '업체B' }).waitFor({ timeout: 5000 });
-  var badgeText = await page.locator('.tv-type-banner').textContent();
+  var badgeText = await page.locator('.tv-verify-type-hero').textContent();
   if (badgeText.indexOf('트럭') === -1) { console.error('FAIL: expected truck badge, got', badgeText); process.exitCode = 1; }
   else console.log('OK: truck badge shown:', badgeText.trim());
 

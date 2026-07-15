@@ -62,34 +62,32 @@ function sendScan(page, text){
   await page.locator('.tv-verify').filter({ hasText: '업체A' }).waitFor({ timeout: 5000 });
   console.log('OK: verify modal shows vendor 업체A');
 
-  var badgeText = await page.locator('.tv-type-banner').textContent();
-  if (badgeText.indexOf('택배') === -1) { console.error('FAIL: expected courier badge, got', badgeText); process.exitCode = 1; }
-  else console.log('OK: courier badge shown:', badgeText.trim());
+  var badgeText = await page.locator('.tv-verify-type-hero').textContent();
+  if (badgeText.indexOf('택배') === -1 || badgeText.indexOf('상품 정보를 확인하고 스캔해주세요') === -1) {
+    console.error('FAIL: expected courier type hero with title + subtitle, got', badgeText);
+    process.exitCode = 1;
+  } else {
+    console.log('OK: courier type hero banner shown with title + subtitle:', badgeText.trim());
+  }
 
   var toteText = await page.locator('.tv-verify').textContent();
   if (toteText.indexOf('TOTE001') === -1 || toteText.indexOf('7') === -1) { console.error('FAIL: tote info missing'); process.exitCode = 1; }
   else console.log('OK: tote barcode + qty shown');
 
-  // Every pictographic icon in the verify modal (delivery-type header icon,
-  // type banner icon, vendor/tote stat tile icons, close button) is now a
-  // hand-drawn inline SVG, not an emoji glyph -- lock that in.
-  var verifyIconSelectors = ['.tv-verify-header-icon svg', '.tv-type-icon svg', '.tv-stat-icon.vendor svg', '.tv-stat-icon.tote svg', '.tv-verify-close svg'];
+  var qtyTileText = (await page.locator('.tv-stat-tile').filter({ hasText: '전체 집품수량' }).textContent()).trim();
+  if (qtyTileText.indexOf('7') === -1) { console.error('FAIL: 전체 집품수량 stat tile should show the total qty, got', qtyTileText); process.exitCode = 1; }
+  else console.log('OK: 전체 집품수량 stat tile shows the total qty:', qtyTileText);
+
+  // Every pictographic icon in the verify modal (type-hero banner icon,
+  // vendor/tote/qty stat tile icons, close button) is now a hand-drawn
+  // inline SVG, not an emoji glyph -- lock that in.
+  var verifyIconSelectors = ['.tv-verify-header-icon svg', '.tv-verify-type-hero-icon svg', '.tv-stat-icon.vendor svg', '.tv-stat-icon.tote svg', '.tv-stat-icon.qty svg', '.tv-verify-close svg'];
   var allVerifyIconsSvg = true;
   for (var vi = 0; vi < verifyIconSelectors.length; vi++) {
     var count = await page.locator(verifyIconSelectors[vi]).count();
     if (count !== 1) { console.error('FAIL: expected exactly one <svg> for', verifyIconSelectors[vi], 'got', count); allVerifyIconsSvg = false; process.exitCode = 1; }
   }
-  if (allVerifyIconsSvg) console.log('OK: verify modal delivery-type + stat-tile + close icons are all hand-drawn SVG, not emoji');
-
-  // 집품 수량 caption should now match the 토트바코드 value's font-size/color.
-  var captionStyle = await page.locator('.tv-stat-caption').evaluate(function(el){ return { fontSize: getComputedStyle(el).fontSize, color: getComputedStyle(el).color }; });
-  var valueStyle = await page.locator('.tv-stat-tile .tv-stat-value').last().evaluate(function(el){ return { fontSize: getComputedStyle(el).fontSize, color: getComputedStyle(el).color }; });
-  if (captionStyle.fontSize !== valueStyle.fontSize || captionStyle.color !== valueStyle.color) {
-    console.error('FAIL: 집품 수량 caption should match 토트바코드 value font-size/color, got', captionStyle, 'vs', valueStyle);
-    process.exitCode = 1;
-  } else {
-    console.log('OK: 집품 수량 caption matches 토트바코드 value font-size/color:', captionStyle);
-  }
+  if (allVerifyIconsSvg) console.log('OK: verify modal type-hero + stat-tile + close icons are all hand-drawn SVG, not emoji');
 
   var barcodeTexts = await page.locator('.tv-product-barcode').allTextContents();
   if (barcodeTexts.indexOf('BAR001') === -1 || barcodeTexts.indexOf('BAR002') === -1) {

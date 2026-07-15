@@ -83,6 +83,10 @@ function sendEnter(page){
   if (noticeClass.indexOf('courier') === -1) { console.error('FAIL: notice should show the courier (green) variant, got', noticeClass); process.exitCode = 1; }
   else console.log('OK: notice shows the courier (green) variant for a courier tote');
 
+  var noticeCloseBtnCount = await page.locator('.tv-simplified-notice-close').count();
+  if (noticeCloseBtnCount !== 0) { console.error('FAIL: simplified notice should no longer have its own close button, got count', noticeCloseBtnCount); process.exitCode = 1; }
+  else console.log('OK: simplified notice has no close button (dismissed only by mode-off or being overwritten)');
+
   // Close the WMS waybill modal manually so we can reset for the next scenario.
   await page.evaluate(function(){ document.querySelector('#modalOutboundWaybill').classList.remove('is-open'); });
   await page.waitForTimeout(500);

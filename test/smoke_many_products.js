@@ -47,7 +47,7 @@ async function openManyProducts(browser, height){
 
   // The header, hero, banner, stat grid and skip barcode must all stay
   // fully visible without scrolling -- only the product list scrolls.
-  var chromeSelectors = ['.tv-verify-header', '.tv-verify-hero', '.tv-type-banner', '.tv-stat-grid', '.tv-skip-area'];
+  var chromeSelectors = ['.tv-verify-header', '.tv-verify-hero', '.tv-verify-type-hero', '.tv-stat-grid', '.tv-skip-area'];
   var allChromeOk = true;
   for (var i = 0; i < chromeSelectors.length; i++) {
     var box = await page.locator(chromeSelectors[i]).boundingBox();

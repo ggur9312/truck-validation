@@ -93,11 +93,11 @@ function sendScan(page, text){
   await sendScan(page, 'TOTE001');
   await page.locator('.tv-verify').filter({ hasText: '업체A' }).waitFor({ timeout: 5000 });
 
-  var bannerClass = await page.locator('.tv-type-banner').getAttribute('class');
+  var bannerClass = await page.locator('.tv-verify-type-hero').getAttribute('class');
   if (bannerClass.indexOf('restricted') === -1) { console.error('FAIL: banner should have the "restricted" class, got', bannerClass); process.exitCode = 1; }
   else console.log('OK: type banner switches to the restricted (orange) variant');
 
-  var bannerText = await page.locator('.tv-type-banner').textContent();
+  var bannerText = await page.locator('.tv-verify-type-hero').textContent();
   if (bannerText.indexOf('상차제한') === -1) {
     console.error('FAIL: banner should show the restriction phrase, got', bannerText);
     process.exitCode = 1;
@@ -105,7 +105,7 @@ function sendScan(page, text){
     console.log('OK: banner shows restriction phrase:', bannerText.trim());
   }
 
-  var tileBg = await page.locator('.tv-type-banner').evaluate(function(el){ return getComputedStyle(el).backgroundImage; });
+  var tileBg = await page.locator('.tv-verify-type-hero').evaluate(function(el){ return getComputedStyle(el).backgroundImage; });
   if (tileBg.indexOf('251, 146, 60') === -1) { console.error('FAIL: delivery-type tile should use the restricted orange gradient, got', tileBg); process.exitCode = 1; }
   else console.log('OK: delivery-type tile uses the orange restricted gradient');
 
@@ -113,13 +113,13 @@ function sendScan(page, text){
   // whether it's a group-number or date restriction (that detail lives
   // only in the top-right status badge), and must not repeat the vendor
   // name (already shown on the separate 업체명 stat tile).
-  var typeValueText = (await page.locator('.tv-type-value').textContent()).trim();
+  var typeValueText = (await page.locator('.tv-verify-type-hero-title').textContent()).trim();
   if (typeValueText !== '상차제한') { console.error('FAIL: delivery-type value should read exactly "상차제한" with no group/date/vendor specifics, got', typeValueText); process.exitCode = 1; }
   else console.log('OK: delivery-type value is the generic "상차제한" label:', typeValueText);
 
-  var typeValueFontSize = await page.locator('.tv-type-value').evaluate(function(el){ return getComputedStyle(el).fontSize; });
-  if (typeValueFontSize !== '20px') { console.error('FAIL: restricted delivery-type value font-size should be 20px, got', typeValueFontSize); process.exitCode = 1; }
-  else console.log('OK: restricted delivery-type value font-size is 20px');
+  var typeValueFontSize = await page.locator('.tv-verify-type-hero-title').evaluate(function(el){ return getComputedStyle(el).fontSize; });
+  if (typeValueFontSize !== '22px') { console.error('FAIL: delivery-type hero title font-size should be 22px (same size for all three variants), got', typeValueFontSize); process.exitCode = 1; }
+  else console.log('OK: restricted delivery-type hero title font-size is 22px, same as truck/courier');
 
   var cardBorder = await page.locator('.tv-verify').evaluate(function(el){ return getComputedStyle(el).boxShadow; });
   if (cardBorder.indexOf('251, 146, 60') === -1) { console.error('FAIL: verify card border should use the restricted orange color, got', cardBorder); process.exitCode = 1; }
@@ -186,7 +186,7 @@ function sendScan(page, text){
 
   await sendScan(page, 'TOTE001');
   await page.locator('.tv-verify').filter({ hasText: '업체A' }).waitFor({ timeout: 5000 });
-  var bannerClassOff = await page.locator('.tv-type-banner').getAttribute('class');
+  var bannerClassOff = await page.locator('.tv-verify-type-hero').getAttribute('class');
   if (bannerClassOff.indexOf('restricted') !== -1) { console.error('FAIL: banner should NOT be restricted once the toggle is off, got', bannerClassOff); process.exitCode = 1; }
   else console.log('OK: tote is treated as a normal (non-restricted) courier delivery once the toggle is off');
 
