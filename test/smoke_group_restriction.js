@@ -58,8 +58,8 @@ function sendScan(page, text){
   await page.locator('.tv-activate-btn').click();
 
   var restrictHeaderText = (await page.locator('.tv-status-badge-restrict-header').textContent()).trim();
-  if (!(await page.locator('.tv-status-badge-restrict-header').isVisible()) || restrictHeaderText.indexOf('상차제한 활성화 중') === -1) {
-    console.error('FAIL: restriction header should read "상차제한 활성화 중", got', restrictHeaderText);
+  if (!(await page.locator('.tv-status-badge-restrict-header').isVisible()) || restrictHeaderText.indexOf('상차제한 활성화') === -1) {
+    console.error('FAIL: restriction header should read "상차제한 활성화", got', restrictHeaderText);
     process.exitCode = 1;
   } else {
     console.log('OK: shared restriction header reads correctly:', restrictHeaderText);

@@ -61,6 +61,28 @@ function sendEnter(page){
   await simplifiedToggleRowReloaded.click();
   await page.locator('.tv-activate-btn').click();
 
+  var simplifiedHeaderVisible = await page.locator('.tv-status-badge-simplified-header').isVisible();
+  var simplifiedHeaderText = (await page.locator('.tv-status-badge-simplified-header').textContent()).trim();
+  if (!simplifiedHeaderVisible || simplifiedHeaderText !== '간소화 활성화') {
+    console.error('FAIL: status badge should show "간소화 활성화" once simplified mode is on, got visible=', simplifiedHeaderVisible, 'text=', simplifiedHeaderText);
+    process.exitCode = 1;
+  } else {
+    console.log('OK: status badge shows "간소화 활성화" once simplified mode is on');
+  }
+
+  var badgeOrder = await page.locator('.tv-status-badge').evaluate(function(el){
+    return Array.prototype.map.call(el.children, function(c){ return c.className; });
+  });
+  var mainIdx = badgeOrder.findIndex(function(c){ return c.indexOf('tv-status-badge-main') !== -1; });
+  var simplifiedIdx = badgeOrder.findIndex(function(c){ return c.indexOf('tv-status-badge-simplified-header') !== -1; });
+  var restrictIdx = badgeOrder.findIndex(function(c){ return c.indexOf('tv-status-badge-restrict-header') !== -1; });
+  if (!(mainIdx < simplifiedIdx && simplifiedIdx < restrictIdx)) {
+    console.error('FAIL: "간소화 활성화" should sit between "트럭검증 활성화" and the 상차제한 header, got order', badgeOrder);
+    process.exitCode = 1;
+  } else {
+    console.log('OK: "간소화 활성화" is positioned between "트럭검증 활성화" and the 상차제한 header');
+  }
+
   // Scenario 2: courier + simplifiedMode -- verify modal skipped, waybill opens directly.
   await sendScan(page, 'TOTE001');
   await page.waitForSelector('#modalOutboundWaybill.is-open', { timeout: 5000 });
@@ -223,6 +245,10 @@ function sendEnter(page){
   var simplifiedToggleRow2 = page.locator('.tv-toggle-row').filter({ has: page.locator('[data-key="simplifiedMode"]') });
   await simplifiedToggleRow2.click();
   await page.locator('.tv-activate-btn').click();
+
+  var simplifiedHeaderVisibleAfterOff = await page.locator('.tv-status-badge-simplified-header').isVisible();
+  if (simplifiedHeaderVisibleAfterOff) { console.error('FAIL: "간소화 활성화" should hide once simplified mode is turned off'); process.exitCode = 1; }
+  else console.log('OK: "간소화 활성화" hides once simplified mode is turned off');
 
   // Scenario 8 (regression guard): with simplifiedMode off, the full verify flow runs unchanged.
   await sendScan(page, 'TOTE001');

@@ -299,6 +299,8 @@ var CSS =
   '--tv-surface:#1b2132;--tv-surface-2:#242b40;--tv-surface-3:#2d3552;--tv-text:#f2f4fa;--tv-text-soft:#aab3c6;--tv-border:rgba(255,255,255,.09)}' +
   '.tv-status-badge.tv-hidden{display:none}' +
   '.tv-status-badge-main{display:flex;align-items:center;justify-content:center;gap:10px;font-size:19.5px;font-weight:600;letter-spacing:.1px;text-align:center}' +
+  '.tv-status-badge-simplified-header{font-size:19.5px;font-weight:600;letter-spacing:.1px;color:var(--tv-accent);text-align:center}' +
+  '.tv-status-badge-simplified-header.tv-hidden{display:none}' +
   '.tv-status-badge-restrict-header{display:flex;align-items:center;justify-content:center;gap:8px;font-size:19.5px;font-weight:600;letter-spacing:.1px;color:var(--tv-restricted-fg);text-align:center}' +
   '.tv-status-badge-restrict-icon svg{width:18px;height:18px}' +
   '.tv-status-badge-restrict-header.tv-hidden{display:none}' +
@@ -415,7 +417,8 @@ function initUI(){
     '<div class="tv-float-area tv-simplified-notice tv-bottom-right" popover="manual"></div>' +
     '<div class="tv-status-badge tv-hidden">' +
     '<div class="tv-status-badge-main"><span class="tv-status-dot"></span>트럭검증 활성화</div>' +
-    '<div class="tv-status-badge-restrict-header tv-hidden"><span class="tv-status-badge-restrict-icon">' + ICONS.restricted + '</span>상차제한 활성화 중</div>' +
+    '<div class="tv-status-badge-simplified-header tv-hidden">간소화 활성화</div>' +
+    '<div class="tv-status-badge-restrict-header tv-hidden"><span class="tv-status-badge-restrict-icon">' + ICONS.restricted + '</span>상차제한 활성화</div>' +
     '<div class="tv-restrict-detail-line tv-restrict-group-line tv-hidden"></div>' +
     '<div class="tv-restrict-detail-line tv-restrict-date-line tv-hidden"></div>' +
     '<div class="tv-status-badge-waybill tv-hidden"></div>' +
@@ -436,6 +439,7 @@ function initUI(){
   ui.waybillSection = shadow.querySelector('.tv-status-badge-waybill');
   ui.reprintOverlay = shadow.querySelector('.tv-reprint-area');
   ui.statusBadge = shadow.querySelector('.tv-status-badge');
+  ui.simplifiedHeader = shadow.querySelector('.tv-status-badge-simplified-header');
   ui.restrictHeader = shadow.querySelector('.tv-status-badge-restrict-header');
   ui.restrictGroupLine = shadow.querySelector('.tv-restrict-group-line');
   ui.restrictDateLine = shadow.querySelector('.tv-restrict-date-line');
@@ -608,6 +612,7 @@ function bindSettingsEvents(){
 function showActiveIndicators(){
   ui.gearBtn.classList.remove('tv-hidden');
   ui.statusBadge.classList.remove('tv-hidden');
+  ui.simplifiedHeader.classList.toggle('tv-hidden', !state.settings.simplifiedMode);
   updateRestrictBadge();
 }
 

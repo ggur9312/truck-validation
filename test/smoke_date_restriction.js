@@ -57,8 +57,8 @@ function sendScan(page, text){
 
   var restrictHeaderVisible = await page.locator('.tv-status-badge-restrict-header').isVisible();
   var restrictHeaderText = (await page.locator('.tv-status-badge-restrict-header').textContent()).trim();
-  if (!restrictHeaderVisible || restrictHeaderText.indexOf('상차제한 활성화 중') === -1) {
-    console.error('FAIL: shared restriction header should show "상차제한 활성화 중" once date restriction is active, got', restrictHeaderText);
+  if (!restrictHeaderVisible || restrictHeaderText.indexOf('상차제한 활성화') === -1) {
+    console.error('FAIL: shared restriction header should show "상차제한 활성화" once date restriction is active, got', restrictHeaderText);
     process.exitCode = 1;
   } else {
     console.log('OK: shared restriction header visible once date restriction is active:', restrictHeaderText);
@@ -196,7 +196,7 @@ function sendScan(page, text){
 
   var headerCountWhenBoth = await page.locator('.tv-status-badge-restrict-header').count();
   if (headerCountWhenBoth !== 1) { console.error('FAIL: there should still be exactly one shared header, got count', headerCountWhenBoth); process.exitCode = 1; }
-  else console.log('OK: exactly one shared "상차제한 활성화 중" header, not duplicated per restriction type');
+  else console.log('OK: exactly one shared "상차제한 활성화" header, not duplicated per restriction type');
 
   // Reload -- unlike restrictedGroups, the date-restriction switch and its
   // input values must NOT survive a reload (always reset to off/empty).
