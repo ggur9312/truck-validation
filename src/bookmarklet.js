@@ -17,16 +17,18 @@ var SEL = {
 
 var CTRL = { SKIP: 'TVCS', WAYBILL: 'TVCW', REPRINT: 'TVCR' };
 
-/* Hand-drawn flat icons (no icon library -- see CODE128 note above for why):
-   24x24 viewBox, 2.5px stroke, round caps/joins for soft corners, no fills
-   beyond solid wheel/dot accents, color inherited via currentColor so CSS
-   (.tv-simplified-icon{color:rgb(var(--tv-aura))}) drives the tint. */
-var SIMPLIFIED_ICONS = {
+/* Hand-drawn flat icons (no icon library -- see CODE128 note above for why),
+   used across the whole UI (simplified-mode notice/block modal, the product
+   verification modal, close buttons, status badge, toasts): 24x24 viewBox,
+   ~2.3-2.8px stroke, round caps/joins for soft corners, no fills beyond
+   solid wheel/dot/checkmark accents, color inherited via currentColor so
+   each wrapping element's own CSS `color` drives the tint. */
+var ICONS = {
   truck: '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">' +
-    '<rect x="2" y="6" width="12" height="9" rx="1.3" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>' +
-    '<path d="M14 15V10H17L20 13.3V15" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>' +
-    '<circle cx="6.5" cy="17" r="2" fill="currentColor"/>' +
-    '<circle cx="17" cy="17" r="2" fill="currentColor"/>' +
+    '<rect x="1" y="5" width="14" height="10" rx="1.3" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>' +
+    '<path d="M15 9H18.3L22 12.4V15H15V9Z" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>' +
+    '<circle cx="6" cy="17.3" r="2.1" fill="currentColor"/>' +
+    '<circle cx="18" cy="17.3" r="2.1" fill="currentColor"/>' +
     '</svg>',
   restricted: '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">' +
     '<path d="M10.4 4.6C11.1 3.4 12.9 3.4 13.6 4.6L21.3 17.9C22 19.2 21.1 20.8 19.6 20.8H4.4C2.9 20.8 2 19.2 2.7 17.9L10.4 4.6Z" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>' +
@@ -37,6 +39,37 @@ var SIMPLIFIED_ICONS = {
     '<path d="M3 7.5L12 3L21 7.5V16.5L12 21L3 16.5V7.5Z" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>' +
     '<path d="M3 7.5L12 12L21 7.5" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>' +
     '<path d="M12 12V21" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>' +
+    '</svg>',
+  vendor: '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+    '<rect x="4" y="3" width="12" height="18" rx="1" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>' +
+    '<path d="M16 21H20V10L16 8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>' +
+    '<circle cx="8" cy="8" r="1" fill="currentColor"/><circle cx="12" cy="8" r="1" fill="currentColor"/>' +
+    '<circle cx="8" cy="13" r="1" fill="currentColor"/><circle cx="12" cy="13" r="1" fill="currentColor"/>' +
+    '</svg>',
+  tote: '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+    '<rect x="3" y="7" width="18" height="14" rx="1.3" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>' +
+    '<path d="M3 7L12 3L21 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>' +
+    '<path d="M12 7V21" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>' +
+    '</svg>',
+  close: '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+    '<path d="M5 5L19 19M19 5L5 19" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>' +
+    '</svg>',
+  check: '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+    '<path d="M4 12.5L9.5 18L20 6" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>' +
+    '</svg>',
+  mismatch: '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+    '<circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2.3"/>' +
+    '<path d="M9 9L15 15M15 9L9 15" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/>' +
+    '</svg>',
+  printer: '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+    '<path d="M7 8V3H17V8" stroke="currentColor" stroke-width="2.3" stroke-linejoin="round"/>' +
+    '<rect x="4" y="8" width="16" height="8" rx="1.3" stroke="currentColor" stroke-width="2.3" stroke-linejoin="round"/>' +
+    '<rect x="7" y="13" width="10" height="7" rx="0.8" stroke="currentColor" stroke-width="2.3" stroke-linejoin="round"/>' +
+    '</svg>',
+  waybill: '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+    '<path d="M6 3H15L19 7V21H6V3Z" stroke="currentColor" stroke-width="2.3" stroke-linejoin="round"/>' +
+    '<path d="M15 3V7H19" stroke="currentColor" stroke-width="2.3" stroke-linejoin="round"/>' +
+    '<path d="M9 12H15M9 15H15M9 18H12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>' +
     '</svg>'
 };
 
@@ -143,6 +176,7 @@ var CSS =
   '.tv-status-overlay.tv-show{display:flex}' +
   '.tv-status-card{background:var(--tv-surface);border-radius:14px;box-shadow:var(--tv-elev-2);border:1px solid var(--tv-border);padding:20px 28px;display:flex;align-items:center;gap:14px;animation:tvPop .18s var(--tv-ease)}' +
   '.tv-status-icon{width:22px;height:22px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600}' +
+  '.tv-status-icon svg{width:16px;height:16px}' +
   '.tv-status-text{font-size:17.5px;font-weight:600;color:var(--tv-text)}' +
   '.tv-status-card.error .tv-status-icon,.tv-status-card.error .tv-status-text{color:var(--tv-error)}' +
   '.tv-status-card.success .tv-status-icon{color:var(--tv-success)}' +
@@ -156,7 +190,9 @@ var CSS =
   '.tv-mismatch-card{background:var(--tv-surface);color:var(--tv-text);border-radius:20px;box-shadow:var(--tv-elev-2);border:1px solid var(--tv-border);box-sizing:border-box;animation:tvPop .22s var(--tv-ease);position:relative;width:340px;max-width:88vw;padding:34px 28px 26px;text-align:center}' +
   '.tv-mismatch-close{position:absolute;right:14px;top:14px;width:32px;height:32px;border-radius:50%;border:none;background:var(--tv-surface-3);color:var(--tv-text-soft);font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s,color .15s}' +
   '.tv-mismatch-close:hover{background:var(--tv-surface-2);color:var(--tv-text)}' +
-  '.tv-mismatch-icon{font-size:40px;margin-bottom:14px}' +
+  '.tv-mismatch-close svg{width:14px;height:14px}' +
+  '.tv-mismatch-icon{margin-bottom:14px;color:var(--tv-error)}' +
+  '.tv-mismatch-icon svg{width:48px;height:48px}' +
   '.tv-mismatch-message{font-size:18.5px;font-weight:600;line-height:1.4;color:var(--tv-error)}' +
   '.tv-mismatch-scanned{margin-top:10px;font-size:15.5px;font-weight:600;color:var(--tv-text-soft)}' +
   '.tv-mismatch-scanned span{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:var(--tv-text);font-weight:600}' +
@@ -177,16 +213,19 @@ var CSS =
   '.tv-verify-header{position:relative;display:flex;align-items:center;gap:14px;padding:12px 52px 12px 22px;border-bottom:1px solid var(--tv-border);flex-shrink:0;animation:tvSlideDown .3s var(--tv-ease)}' +
   '@keyframes tvSlideDown{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:translateY(0)}}' +
   '.tv-verify-header-icon{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}' +
+  '.tv-verify-header-icon svg{width:22px;height:22px}' +
   '.tv-verify-header-icon.truck{background:var(--tv-truck-bg);color:var(--tv-truck-fg)}' +
   '.tv-verify-header-icon.courier{background:var(--tv-courier-bg);color:var(--tv-courier-fg)}' +
   '.tv-verify-header-icon.restricted{background:var(--tv-restricted-bg);color:var(--tv-restricted-fg)}' +
   '.tv-verify-header-title{font-size:19.5px;font-weight:600;flex-shrink:0}' +
   '.tv-header-divider{flex-shrink:0;width:3px;height:18px;border-radius:2px;background:var(--tv-accent)}' +
   '.tv-hero-title{flex-shrink:0;font-size:15.5px;font-weight:600;letter-spacing:-.1px;color:var(--tv-text-soft);white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis}' +
-  '.tv-scan-status-pill{flex-shrink:0;margin-left:auto;padding:5px 12px;border-radius:999px;font-size:14.5px;font-weight:600;background:var(--tv-surface-3);color:var(--tv-text-soft);transition:background .2s,color .2s}' +
+  '.tv-scan-status-pill{flex-shrink:0;margin-left:auto;padding:5px 12px;border-radius:999px;font-size:14.5px;font-weight:600;background:var(--tv-surface-3);color:var(--tv-text-soft);transition:background .2s,color .2s;display:inline-flex;align-items:center;gap:4px}' +
+  '.tv-scan-status-pill svg{width:12px;height:12px}' +
   '.tv-scan-status-pill.ok{background:var(--tv-success);color:#0c2c20}' +
   '.tv-scan-status-pill.err{background:var(--tv-error);color:#3a0d0d}' +
   '.tv-verify-close{position:absolute;right:16px;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:50%;border:none;background:var(--tv-surface-3);color:var(--tv-text-soft);font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s,color .15s;overflow:hidden}' +
+  '.tv-verify-close svg{width:14px;height:14px}' +
   '.tv-verify-close:hover{background:var(--tv-surface-2);color:var(--tv-text)}' +
   '.tv-verify-body{padding:14px 22px 18px;display:flex;flex-direction:column;flex:1;min-height:0;overflow-y:auto;overflow-x:hidden}' +
 
@@ -209,16 +248,18 @@ var CSS =
   '.tv-stat-grid{flex-shrink:0;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}' +
   '.tv-stat-tile{background:var(--tv-surface-2);border:1px solid var(--tv-border);border-radius:14px;padding:14px 10px;text-align:center;box-shadow:var(--tv-elev-1)}' +
   '.tv-stat-icon{width:40px;height:40px;margin:0 auto 8px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff}' +
+  '.tv-stat-icon svg{width:20px;height:20px}' +
   '.tv-stat-icon.vendor{background:#4f7cff}.tv-stat-icon.tote{background:#8b5cf6}' +
   '.tv-stat-label{font-size:13.5px;color:var(--tv-text-soft);font-weight:600;margin-bottom:4px}' +
   '.tv-stat-value{font-size:18.5px;font-weight:600;color:var(--tv-text);word-break:break-all}' +
-  '.tv-stat-caption{font-size:12.5px;color:var(--tv-text-soft);font-weight:500;margin-top:3px}' +
+  '.tv-stat-caption{font-size:18.5px;color:var(--tv-text);font-weight:500;margin-top:3px}' +
 
   '.tv-type-banner{border-radius:14px;padding:14px 10px;text-align:center;box-shadow:0 8px 20px rgba(0,0,0,.2)}' +
   '.tv-type-banner.truck{background:linear-gradient(135deg,#f87171,#c93f3f);animation:tvTypeGlowTruck 1.8s ease-in-out infinite}' +
   '.tv-type-banner.courier{background:linear-gradient(135deg,#34d399,#1f9d6c);animation:tvTypeGlowCourier 1.8s ease-in-out infinite}' +
   '.tv-type-banner.restricted{background:linear-gradient(135deg,#fb923c,#c2680f);animation:tvTypeGlowRestricted 1.8s ease-in-out infinite}' +
   '.tv-type-icon{width:40px;height:40px;margin:0 auto 8px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;background:rgba(255,255,255,.25);color:#fff}' +
+  '.tv-type-icon svg{width:20px;height:20px}' +
   '.tv-type-label{font-size:13.5px;font-weight:600;color:rgba(255,255,255,.85);margin-bottom:4px;word-break:keep-all}' +
   '.tv-type-value{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:5px;font-size:25px;font-weight:600;color:#fff;word-break:keep-all;margin-top:2px}' +
   '.tv-type-value.restricted{font-size:20px}' +
@@ -256,6 +297,7 @@ var CSS =
   '.tv-status-badge.tv-hidden{display:none}' +
   '.tv-status-badge-main{display:flex;align-items:center;justify-content:center;gap:10px;font-size:19.5px;font-weight:600;letter-spacing:.1px;text-align:center}' +
   '.tv-status-badge-restrict-header{display:flex;align-items:center;justify-content:center;gap:8px;font-size:19.5px;font-weight:600;letter-spacing:.1px;color:var(--tv-restricted-fg);text-align:center}' +
+  '.tv-status-badge-restrict-icon svg{width:18px;height:18px}' +
   '.tv-status-badge-restrict-header.tv-hidden{display:none}' +
   '.tv-restrict-detail-line{font-size:15px;font-weight:600;color:var(--tv-restricted-fg);opacity:.85;text-align:center}' +
   '.tv-restrict-detail-line.tv-hidden{display:none}' +
@@ -270,6 +312,7 @@ var CSS =
   '.tv-product-row.tv-row-enter{animation:tvRowIn .3s var(--tv-ease)}' +
   '@keyframes tvRowIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}' +
   '.tv-product-status{flex-shrink:0;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13.5px;font-weight:600;background:var(--tv-surface-3);color:var(--tv-text-soft);border:2px solid var(--tv-border)}' +
+  '.tv-product-status svg{width:14px;height:14px}' +
   '.tv-product-body{flex:1;min-width:0}' +
   '.tv-product-top{display:flex;justify-content:space-between;align-items:center;font-size:17.5px;font-weight:600;margin-bottom:6px;gap:10px}' +
   '.tv-product-name{display:flex;flex-direction:column;gap:2px;min-width:0;font-size:15px}' +
@@ -301,14 +344,16 @@ var CSS =
 
   '.tv-float-area{position:fixed;z-index:2147483400;display:none;inset:auto;margin:0;width:220px;color:inherit;overflow:visible;box-sizing:border-box;background:var(--tv-surface);border-radius:16px;border:1px solid var(--tv-border);padding:14px 16px;box-shadow:var(--tv-elev-3);text-align:center;animation:tvSlideUp .3s var(--tv-ease)}' +
   '.tv-float-area.tv-show,.tv-float-area:popover-open{display:block}' +
-  '.tv-float-label{font-size:14.5px;font-weight:600;letter-spacing:.1px;color:var(--tv-text-soft);margin-bottom:7px}' +
+  '.tv-float-label{font-size:14.5px;font-weight:600;letter-spacing:.1px;color:var(--tv-text-soft);margin-bottom:7px;display:flex;align-items:center;justify-content:center;gap:6px}' +
+  '.tv-float-label-icon svg{width:14px;height:14px}' +
   '.tv-float-area .tv-barcode-wrap{padding:12px 14px;border-radius:14px}' +
   '.tv-top-left{top:20px;left:24px}' +
   '.tv-bottom-right{bottom:20px;right:24px}' +
   '.tv-reprint-area{--tv-surface:#1b2132;--tv-surface-2:#242b40;--tv-surface-3:#2d3552;--tv-text:#f2f4fa;--tv-text-soft:#aab3c6;--tv-border:rgba(255,255,255,.09)}' +
   '.tv-status-badge-waybill{margin-top:6px;padding-top:10px;border-top:1px solid var(--tv-border)}' +
   '.tv-status-badge-waybill.tv-hidden{display:none}' +
-  '.tv-status-badge-waybill-label{font-size:14.5px;font-weight:600;letter-spacing:.1px;color:var(--tv-text-soft);margin-bottom:8px}' +
+  '.tv-status-badge-waybill-label{font-size:14.5px;font-weight:600;letter-spacing:.1px;color:var(--tv-text-soft);margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:6px}' +
+  '.tv-status-badge-waybill-icon svg{width:15px;height:15px}' +
   '.tv-status-badge-waybill .tv-barcode-wrap{padding:10px 12px;border-radius:12px}' +
 
   '.tv-simplified-notice{width:max-content;min-width:380px;max-width:92vw;text-align:left;position:relative;background:#fff;border:1px solid #e2e6f0;border-left:6px solid rgb(var(--tv-notice-fg,52,211,153));padding:20px 40px 20px 20px}' +
@@ -317,11 +362,13 @@ var CSS =
   '.tv-simplified-notice.courier{--tv-notice-fg:52,211,153}' +
   '.tv-simplified-notice.restricted{--tv-notice-fg:251,146,60}' +
   '.tv-simplified-notice-close{position:absolute;right:10px;top:10px;width:26px;height:26px;border-radius:50%;border:none;background:#eef1f7;color:#5b6274;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}' +
+  '.tv-simplified-notice-close svg{width:12px;height:12px}' +
   '.tv-simplified-notice-close:hover{background:#e2e6f0}' +
   '.tv-simplified-notice-icon{flex-shrink:0;width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(var(--tv-notice-fg),.14);color:rgb(var(--tv-notice-fg))}' +
   '.tv-simplified-notice-icon svg{width:28px;height:28px}' +
   '.tv-simplified-notice-info{flex-shrink:0}' +
   '.tv-simplified-notice-vendor{font-size:19px;font-weight:600;color:#161a26;white-space:nowrap}' +
+  '.tv-simplified-notice-tote{margin-top:4px;font-size:19px;font-weight:600;color:#161a26;white-space:nowrap}' +
   '.tv-simplified-notice-qty{flex-shrink:0;text-align:right}' +
   '.tv-simplified-notice-qty-label{font-size:14px;font-weight:600;color:#5b6274}' +
   '.tv-simplified-notice-qty-value{font-size:28px;font-weight:700;color:rgb(var(--tv-notice-fg))}' +
@@ -333,6 +380,7 @@ var CSS =
   '@keyframes tvAuraPulse{0%,100%{box-shadow:0 0 0 6px rgba(var(--tv-aura),.45),0 0 40px 10px rgba(var(--tv-aura),.25),var(--tv-elev-3)}50%{box-shadow:0 0 0 10px rgba(var(--tv-aura),.75),0 0 70px 22px rgba(var(--tv-aura),.55),var(--tv-elev-3)}}' +
   '.tv-simplified-header{display:flex;align-items:center;justify-content:center;position:relative;padding:18px 22px;background:rgb(var(--tv-aura));color:#fff;font-size:19.5px;font-weight:600;letter-spacing:.1px}' +
   '.tv-simplified-close{position:absolute;right:16px;top:50%;transform:translateY(-50%);width:30px;height:30px;border-radius:50%;border:none;background:rgba(255,255,255,.22);color:#fff;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}' +
+  '.tv-simplified-close svg{width:14px;height:14px}' +
   '.tv-simplified-close:hover{background:rgba(255,255,255,.35)}' +
   '.tv-simplified-body{background:#fff;color:#161a26;padding:36px 30px 28px;text-align:center}' +
   '.tv-simplified-icon{width:100px;height:100px;margin:0 auto 18px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(var(--tv-aura),.14);color:rgb(var(--tv-aura))}' +
@@ -356,8 +404,8 @@ function initUI(){
     '<div class="tv-overlay tv-simplified-overlay"></div>' +
     '<div class="tv-overlay tv-mismatch-overlay">' +
     '<div class="tv-mismatch-card">' +
-    '<button class="tv-mismatch-close" title="닫기">✕</button>' +
-    '<div class="tv-mismatch-icon">❌</div>' +
+    '<button class="tv-mismatch-close" title="닫기">' + ICONS.close + '</button>' +
+    '<div class="tv-mismatch-icon">' + ICONS.mismatch + '</div>' +
     '<div class="tv-mismatch-message"></div>' +
     '<div class="tv-mismatch-scanned"></div>' +
     '<div class="tv-mismatch-hint">Enter 또는 닫기 버튼으로 닫으세요</div>' +
@@ -367,7 +415,7 @@ function initUI(){
     '<div class="tv-float-area tv-simplified-notice tv-bottom-right" popover="manual"></div>' +
     '<div class="tv-status-badge tv-hidden">' +
     '<div class="tv-status-badge-main"><span class="tv-status-dot"></span>트럭검증 활성화</div>' +
-    '<div class="tv-status-badge-restrict-header tv-hidden">🚫 상차제한 활성화 중</div>' +
+    '<div class="tv-status-badge-restrict-header tv-hidden"><span class="tv-status-badge-restrict-icon">' + ICONS.restricted + '</span>상차제한 활성화 중</div>' +
     '<div class="tv-restrict-detail-line tv-restrict-group-line tv-hidden"></div>' +
     '<div class="tv-restrict-detail-line tv-restrict-date-line tv-hidden"></div>' +
     '<div class="tv-status-badge-waybill tv-hidden"></div>' +
@@ -420,7 +468,7 @@ var statusHideTimer = null;
 
 function showStatus(message, kind){
   clearTimeout(statusHideTimer);
-  var icon = kind === 'loading' ? '<span class="tv-spinner"></span>' : (kind === 'error' ? '✕' : '✓');
+  var icon = kind === 'loading' ? '<span class="tv-spinner"></span>' : (kind === 'error' ? ICONS.close : ICONS.check);
   ui.statusCard.className = 'tv-status-card' + (kind === 'error' ? ' error' : kind === 'loading' ? '' : ' success');
   ui.statusCard.innerHTML = '<span class="tv-status-icon">' + icon + '</span><span class="tv-status-text">' + escapeHtml(message) + '</span>';
   ui.statusOverlay.classList.add('tv-show');
@@ -948,7 +996,7 @@ function processRow(row){
 
 function openVerifyModal(){
   var info = state.toteInfo;
-  var typeIcon = info.isRestricted ? '🚫' : (info.isTruck ? '🚚' : '📦');
+  var typeIcon = info.isRestricted ? ICONS.restricted : (info.isTruck ? ICONS.truck : ICONS.courier);
   var typeClass = info.isRestricted ? 'restricted' : (info.isTruck ? 'truck' : 'courier');
   var typeValue = info.isRestricted ? '상차제한' : (info.isTruck ? '트럭' : '택배');
   var typeBannerHtml = '<div class="tv-type-banner ' + typeClass + '"><span class="tv-type-icon">' + typeIcon + '</span><div class="tv-type-label">배송 방식</div><div class="tv-type-value ' + typeClass + '">' + typeValue + '</div></div>';
@@ -960,7 +1008,7 @@ function openVerifyModal(){
     '<span class="tv-header-divider"></span>' +
     '<span class="tv-hero-title"></span>' +
     '<span class="tv-scan-status-pill">대기중</span>' +
-    '<button class="tv-verify-close" title="닫기">✕</button>' +
+    '<button class="tv-verify-close" title="닫기">' + ICONS.close + '</button>' +
     '</div>' +
     '<div class="tv-verify-body">' +
     '<div class="tv-verify-hero">' +
@@ -968,8 +1016,8 @@ function openVerifyModal(){
     '<div class="tv-stepper-track"><span class="tv-stepper-dot active"></span><span class="tv-stepper-line"></span><span class="tv-stepper-dot"></span><span class="tv-stepper-line"></span><span class="tv-stepper-dot"></span></div>' +
     '</div>' +
     '<div class="tv-stat-grid">' +
-    '<div class="tv-stat-tile"><span class="tv-stat-icon vendor">🏢</span><div class="tv-stat-label">업체명</div><div class="tv-stat-value">' + escapeHtml(info.vendor) + '</div></div>' +
-    '<div class="tv-stat-tile"><span class="tv-stat-icon tote">📦</span><div class="tv-stat-label">토트바코드</div><div class="tv-stat-value">' + escapeHtml(info.toteBarcode) + '</div><div class="tv-stat-caption">집품 수량 ' + info.totalQty + '개</div></div>' +
+    '<div class="tv-stat-tile"><span class="tv-stat-icon vendor">' + ICONS.vendor + '</span><div class="tv-stat-label">업체명</div><div class="tv-stat-value">' + escapeHtml(info.vendor) + '</div></div>' +
+    '<div class="tv-stat-tile"><span class="tv-stat-icon tote">' + ICONS.tote + '</span><div class="tv-stat-label">토트바코드</div><div class="tv-stat-value">' + escapeHtml(info.toteBarcode) + '</div><div class="tv-stat-caption">집품 수량 ' + info.totalQty + '개</div></div>' +
     typeBannerHtml +
     '</div>' +
     '<div class="tv-product-list"></div>' +
@@ -997,7 +1045,7 @@ function openSimplifiedBlockModal(){
   var info = state.toteInfo;
   state.mode = 'SIMPLIFIED_BLOCK';
   var typeClass = info.isRestricted ? 'restricted' : 'truck';
-  var icon = info.isRestricted ? SIMPLIFIED_ICONS.restricted : SIMPLIFIED_ICONS.truck;
+  var icon = info.isRestricted ? ICONS.restricted : ICONS.truck;
   var title = info.isRestricted ? '상차제한' : '트럭';
   var lines;
   if (info.isRestricted) {
@@ -1008,7 +1056,7 @@ function openSimplifiedBlockModal(){
   }
   ui.simplifiedOverlay.innerHTML =
     '<div class="tv-card tv-simplified-block ' + typeClass + '">' +
-    '<div class="tv-simplified-header"><span>운송유형 확인</span><button class="tv-simplified-close" title="닫기">✕</button></div>' +
+    '<div class="tv-simplified-header"><span>운송유형 확인</span><button class="tv-simplified-close" title="닫기">' + ICONS.close + '</button></div>' +
     '<div class="tv-simplified-body">' +
     '<div class="tv-simplified-icon">' + icon + '</div>' +
     '<div class="tv-simplified-title">' + title + '</div>' +
@@ -1028,13 +1076,14 @@ function closeSimplifiedBlockModal(){
 function showSimplifiedNotice(){
   var info = state.toteInfo;
   var typeClass = info.isRestricted ? 'restricted' : (info.isTruck ? 'truck' : 'courier');
-  var icon = info.isRestricted ? SIMPLIFIED_ICONS.restricted : (info.isTruck ? SIMPLIFIED_ICONS.truck : SIMPLIFIED_ICONS.courier);
+  var icon = info.isRestricted ? ICONS.restricted : (info.isTruck ? ICONS.truck : ICONS.courier);
   ui.simplifiedNotice.className = 'tv-float-area tv-simplified-notice tv-bottom-right ' + typeClass;
   ui.simplifiedNotice.innerHTML =
-    '<button class="tv-simplified-notice-close" title="닫기">✕</button>' +
+    '<button class="tv-simplified-notice-close" title="닫기">' + ICONS.close + '</button>' +
     '<div class="tv-simplified-notice-icon">' + icon + '</div>' +
     '<div class="tv-simplified-notice-info">' +
     '<div class="tv-simplified-notice-vendor">' + escapeHtml(info.vendor) + '</div>' +
+    '<div class="tv-simplified-notice-tote">' + escapeHtml(info.toteBarcode) + '</div>' +
     '</div>' +
     '<div class="tv-simplified-notice-qty">' +
     '<div class="tv-simplified-notice-qty-label">집품수량</div>' +
@@ -1054,7 +1103,7 @@ function renderProductRowHtml(barcode, p, idx){
   var pulsing = p.required > 1 && p.scanned > 0 && !done;
   var pct = Math.min(100, Math.round((p.scanned / p.required) * 100));
   return '<div class="tv-product-row tv-row-enter ' + (done ? 'done' : '') + ' ' + (pulsing ? 'pulse' : '') + '" data-barcode="' + escapeHtml(barcode) + '" style="animation-delay:' + (idx * 40) + 'ms">' +
-    '<span class="tv-product-status">' + (done ? '✓' : (idx + 1)) + '</span>' +
+    '<span class="tv-product-status">' + (done ? ICONS.check : (idx + 1)) + '</span>' +
     '<div class="tv-product-body">' +
     '<div class="tv-product-top">' +
     '<span class="tv-product-name">' + escapeHtml(p.name) + '<span class="tv-product-barcode">' + escapeHtml(barcode) + '</span></span>' +
@@ -1113,7 +1162,7 @@ function updateProductRow(barcode){
   row.querySelector('.tv-progress-fill').style.width = pct + '%';
   if (done && !wasDone) {
     row.classList.add('done');
-    row.querySelector('.tv-product-status').textContent = '✓';
+    row.querySelector('.tv-product-status').innerHTML = ICONS.check;
     row.classList.remove('tv-row-pop');
     void row.offsetWidth;
     row.classList.add('tv-row-pop');
@@ -1154,7 +1203,7 @@ function updateScanStatusPill(ok){
   pill.classList.remove('ok', 'err', 'tv-flash-ok', 'tv-flash-err');
   void pill.offsetWidth;
   pill.classList.add(ok ? 'ok' : 'err', ok ? 'tv-flash-ok' : 'tv-flash-err');
-  pill.textContent = ok ? '✓ 정상' : '✕ 불일치';
+  pill.innerHTML = (ok ? ICONS.check : ICONS.close) + '<span>' + (ok ? '정상' : '불일치') + '</span>';
 }
 
 function markProductScan(barcode){
@@ -1162,14 +1211,14 @@ function markProductScan(barcode){
   if (!p) {
     updateScanStatusPill(false);
     flashCardError();
-    showMismatchModal('❌ 등록되지 않은 상품 바코드입니다', barcode);
+    showMismatchModal('등록되지 않은 상품 바코드입니다', barcode);
     return;
   }
   if (p.scanned >= p.required) {
     updateScanStatusPill(false);
     flashCardError();
     focusProductRow(barcode, false);
-    showMismatchModal('❌ 이미 스캔 완료된 상품입니다', barcode);
+    showMismatchModal('이미 스캔 완료된 상품입니다', barcode);
     return;
   }
   p.scanned += 1;
@@ -1274,7 +1323,7 @@ var FLOAT_BARCODE_OPTS = { moduleWidth: 1.8, height: 40, quiet: 8 };
 
 function showWaybillOverlay(){
   var section = ui.waybillSection;
-  section.innerHTML = '<div class="tv-status-badge-waybill-label">📮 스캔하여 운송장생성</div><div class="tv-barcode-wrap"><canvas></canvas></div>';
+  section.innerHTML = '<div class="tv-status-badge-waybill-label"><span class="tv-status-badge-waybill-icon">' + ICONS.waybill + '</span>스캔하여 운송장생성</div><div class="tv-barcode-wrap"><canvas></canvas></div>';
   drawCode128(section.querySelector('canvas'), CTRL.WAYBILL, FLOAT_BARCODE_OPTS);
   section.classList.remove('tv-hidden');
 }
@@ -1308,7 +1357,7 @@ function showReprintOverlay(){
   state.mode = 'REPRINT_READY';
   hideStatus();
   var overlay = ui.reprintOverlay;
-  overlay.innerHTML = '<div class="tv-float-label">🖨 운송장 재출력</div><div class="tv-barcode-wrap"><canvas></canvas></div>';
+  overlay.innerHTML = '<div class="tv-float-label"><span class="tv-float-label-icon">' + ICONS.printer + '</span>운송장 재출력</div><div class="tv-barcode-wrap"><canvas></canvas></div>';
   drawCode128(overlay.querySelector('canvas'), CTRL.REPRINT, FLOAT_BARCODE_OPTS);
   setPopoverVisible(overlay, true);
 }

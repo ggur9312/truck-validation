@@ -69,15 +69,15 @@ function sendEnter(page){
   else console.log('OK: verify modal skipped entirely for courier tote in simplified mode');
 
   var noticeText = await page.locator('.tv-simplified-notice').textContent();
-  if (noticeText.indexOf('업체A') === -1 || noticeText.indexOf('7') === -1 || noticeText.indexOf('EA') === -1) {
-    console.error('FAIL: simplified notice should show vendor/qty, got', noticeText);
+  if (noticeText.indexOf('업체A') === -1 || noticeText.indexOf('TOTE001') === -1 || noticeText.indexOf('7') === -1 || noticeText.indexOf('EA') === -1) {
+    console.error('FAIL: simplified notice should show vendor/tote/qty, got', noticeText);
     process.exitCode = 1;
   } else {
-    console.log('OK: simplified notice shows vendor and pick quantity');
+    console.log('OK: simplified notice shows vendor, tote barcode, and pick quantity');
   }
 
-  if (noticeText.indexOf('스캔토트') !== -1) { console.error('FAIL: simplified notice should no longer show the 스캔토트 line, got', noticeText); process.exitCode = 1; }
-  else console.log('OK: simplified notice no longer shows a 스캔토트 line');
+  if (noticeText.indexOf('스캔토트') !== -1) { console.error('FAIL: simplified notice should not show the 스캔토트 label word, got', noticeText); process.exitCode = 1; }
+  else console.log('OK: simplified notice shows the tote barcode value without the 스캔토트 label');
 
   var noticeClass = await page.locator('.tv-simplified-notice').getAttribute('class');
   if (noticeClass.indexOf('courier') === -1) { console.error('FAIL: notice should show the courier (green) variant, got', noticeClass); process.exitCode = 1; }
@@ -93,7 +93,7 @@ function sendEnter(page){
   await sendScan(page, 'TOTE_REPRINT');
   await page.locator('.tv-reprint-area canvas').waitFor({ state: 'visible', timeout: 5000 });
   var reprintNoticeText = await page.locator('.tv-simplified-notice').textContent();
-  if (reprintNoticeText.indexOf('업체R') === -1 || reprintNoticeText.indexOf('5') === -1) {
+  if (reprintNoticeText.indexOf('업체R') === -1 || reprintNoticeText.indexOf('TOTE_REPRINT') === -1 || reprintNoticeText.indexOf('5') === -1) {
     console.error('FAIL: notice should update with the reprint-ready tote\'s own data, got', reprintNoticeText);
     process.exitCode = 1;
   } else {

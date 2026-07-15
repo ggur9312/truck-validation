@@ -70,6 +70,27 @@ function sendScan(page, text){
   if (toteText.indexOf('TOTE001') === -1 || toteText.indexOf('7') === -1) { console.error('FAIL: tote info missing'); process.exitCode = 1; }
   else console.log('OK: tote barcode + qty shown');
 
+  // Every pictographic icon in the verify modal (delivery-type header icon,
+  // type banner icon, vendor/tote stat tile icons, close button) is now a
+  // hand-drawn inline SVG, not an emoji glyph -- lock that in.
+  var verifyIconSelectors = ['.tv-verify-header-icon svg', '.tv-type-icon svg', '.tv-stat-icon.vendor svg', '.tv-stat-icon.tote svg', '.tv-verify-close svg'];
+  var allVerifyIconsSvg = true;
+  for (var vi = 0; vi < verifyIconSelectors.length; vi++) {
+    var count = await page.locator(verifyIconSelectors[vi]).count();
+    if (count !== 1) { console.error('FAIL: expected exactly one <svg> for', verifyIconSelectors[vi], 'got', count); allVerifyIconsSvg = false; process.exitCode = 1; }
+  }
+  if (allVerifyIconsSvg) console.log('OK: verify modal delivery-type + stat-tile + close icons are all hand-drawn SVG, not emoji');
+
+  // 집품 수량 caption should now match the 토트바코드 value's font-size/color.
+  var captionStyle = await page.locator('.tv-stat-caption').evaluate(function(el){ return { fontSize: getComputedStyle(el).fontSize, color: getComputedStyle(el).color }; });
+  var valueStyle = await page.locator('.tv-stat-tile .tv-stat-value').last().evaluate(function(el){ return { fontSize: getComputedStyle(el).fontSize, color: getComputedStyle(el).color }; });
+  if (captionStyle.fontSize !== valueStyle.fontSize || captionStyle.color !== valueStyle.color) {
+    console.error('FAIL: 집품 수량 caption should match 토트바코드 value font-size/color, got', captionStyle, 'vs', valueStyle);
+    process.exitCode = 1;
+  } else {
+    console.log('OK: 집품 수량 caption matches 토트바코드 value font-size/color:', captionStyle);
+  }
+
   var barcodeTexts = await page.locator('.tv-product-barcode').allTextContents();
   if (barcodeTexts.indexOf('BAR001') === -1 || barcodeTexts.indexOf('BAR002') === -1) {
     console.error('FAIL: product barcode values not shown in verify modal', barcodeTexts);
@@ -110,6 +131,11 @@ function sendScan(page, text){
   if (heroAfterOne !== '검증 중 (1/3)') { console.error('FAIL: hero counter should read "검증 중 (1/3)" after scanning 1 of 3 total required units, got', heroAfterOne); process.exitCode = 1; }
   else console.log('OK: hero counter tracks scanned units against total required units:', heroAfterOne);
 
+  var pillHasSvg = await page.locator('.tv-scan-status-pill svg').count();
+  var pillText = (await page.locator('.tv-scan-status-pill').textContent()).trim();
+  if (pillHasSvg !== 1 || pillText.indexOf('정상') === -1) { console.error('FAIL: scan status pill should show a check-mark SVG plus "정상", got svg count', pillHasSvg, 'text', pillText); process.exitCode = 1; }
+  else console.log('OK: scan status pill shows a hand-drawn checkmark SVG instead of a text glyph');
+
   // Scanning even one product barcode should move the stepper to step 2
   // (검증 중): step 1 becomes done, step 2 becomes active.
   var stepClassesAfter = await page.locator('.tv-stepper-dot').evaluateAll(function(els){ return els.map(function(e){ return e.className; }); });
@@ -124,6 +150,10 @@ function sendScan(page, text){
   var afterFirstTwo = await page.locator('.tv-product-row').first().textContent();
   console.log('DEBUG product row after 2x BAR001 scan:', afterFirstTwo.trim());
 
+  var doneRowIconCount = await page.locator('.tv-product-row.done .tv-product-status svg').count();
+  if (doneRowIconCount !== 1) { console.error('FAIL: a fully-scanned product row should show a checkmark SVG, got count', doneRowIconCount); process.exitCode = 1; }
+  else console.log('OK: fully-scanned product row shows a hand-drawn checkmark SVG instead of a text glyph');
+
   await sendScan(page, 'BAR002');
 
   await page.locator('.tv-verify-overlay').waitFor({ state: 'hidden', timeout: 5000 });
@@ -134,6 +164,14 @@ function sendScan(page, text){
 
   await page.locator('.tv-status-badge-waybill canvas').waitFor({ state: 'visible', timeout: 5000 });
   console.log('OK: virtual waybill barcode rendered inside the status badge and visible while the WMS waybill modal is open');
+
+  var waybillLabelStyle = await page.locator('.tv-status-badge-waybill-label').evaluate(function(el){ return { justifyContent: getComputedStyle(el).justifyContent, iconCount: el.querySelectorAll('svg').length }; });
+  if (waybillLabelStyle.justifyContent !== 'center' || waybillLabelStyle.iconCount !== 1) {
+    console.error('FAIL: 운송장생성 label should be center-aligned with one hand-drawn icon, got', waybillLabelStyle);
+    process.exitCode = 1;
+  } else {
+    console.log('OK: 운송장생성 label is center-aligned and uses a hand-drawn SVG icon instead of an emoji');
+  }
 
   var boxInputVal = await page.locator('#waybill-modal-barcode-input').inputValue();
   if (boxInputVal !== '') { console.error('FAIL: box input should remain untouched, got', boxInputVal); process.exitCode = 1; }
@@ -146,6 +184,10 @@ function sendScan(page, text){
 
   await page.locator('.tv-reprint-area canvas').waitFor({ state: 'visible', timeout: 5000 });
   console.log('OK: reprint virtual barcode shown top-left after re-search (proves the post-waybill re-search completed)');
+
+  var reprintLabelIconCount = await page.locator('.tv-float-label svg').count();
+  if (reprintLabelIconCount !== 1) { console.error('FAIL: reprint label should use a hand-drawn printer SVG icon, got count', reprintLabelIconCount); process.exitCode = 1; }
+  else console.log('OK: reprint label uses a hand-drawn printer SVG icon instead of an emoji');
 
   await sendScan(page, 'TVCR');
 
