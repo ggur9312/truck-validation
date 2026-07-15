@@ -13,6 +13,16 @@ require('./server.js');
   await page.evaluate(src);
   await page.locator('.tv-card').waitFor({ timeout: 3000 });
 
+  var titleJustify = await page.locator('.tv-settings-title').evaluate(function(el){ return getComputedStyle(el).justifyContent; });
+  var titleIconCount = await page.locator('.tv-settings-title-icon svg').count();
+  var titleText = (await page.locator('.tv-settings-title').textContent()).trim();
+  if (titleJustify !== 'center' || titleIconCount !== 1 || titleText !== 'INC14 Return') {
+    console.error('FAIL: settings title should be centered with a rocket icon and read "INC14 Return", got justify=', titleJustify, 'iconCount=', titleIconCount, 'text=', titleText);
+    process.exitCode = 1;
+  } else {
+    console.log('OK: settings title is centered with a rocket icon ahead of "INC14 Return"');
+  }
+
   var initialBtnText = (await page.locator('.tv-activate-btn').textContent()).trim();
   if (initialBtnText !== '활성화') { console.error('FAIL: settings button should say "활성화" before first activation, got', initialBtnText); process.exitCode = 1; }
   else console.log('OK: settings button says "활성화" before first activation');

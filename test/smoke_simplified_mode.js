@@ -70,6 +70,22 @@ function sendEnter(page){
     console.log('OK: status badge shows "간소화 활성화" once simplified mode is on');
   }
 
+  var simplifiedHeaderColor = await page.locator('.tv-status-badge-simplified-header').evaluate(function(el){ return getComputedStyle(el).color; });
+  var mainHeaderColor = await page.locator('.tv-status-badge-main').evaluate(function(el){ return getComputedStyle(el).color; });
+  var simplifiedDotBg = await page.locator('.tv-simplified-status-dot').evaluate(function(el){ return getComputedStyle(el).backgroundColor; });
+  if (simplifiedHeaderColor !== mainHeaderColor) {
+    console.error('FAIL: "간소화 활성화" text color should match "트럭검증 활성화" (white), got', simplifiedHeaderColor, 'vs', mainHeaderColor);
+    process.exitCode = 1;
+  } else {
+    console.log('OK: "간소화 활성화" text color matches "트럭검증 활성화" (white):', simplifiedHeaderColor);
+  }
+  if (simplifiedDotBg !== 'rgb(79, 124, 255)') {
+    console.error('FAIL: "간소화 활성화" dot should use the blue accent color, got', simplifiedDotBg);
+    process.exitCode = 1;
+  } else {
+    console.log('OK: "간소화 활성화" has a blue dot ahead of the text, matching the "트럭검증 활성화" dot pattern');
+  }
+
   var badgeOrder = await page.locator('.tv-status-badge').evaluate(function(el){
     return Array.prototype.map.call(el.children, function(c){ return c.className; });
   });

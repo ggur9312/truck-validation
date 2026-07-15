@@ -75,6 +75,12 @@ var ICONS = {
     '<path d="M6 3H15L19 7V21H6V3Z" stroke="currentColor" stroke-width="2.3" stroke-linejoin="round"/>' +
     '<path d="M15 3V7H19" stroke="currentColor" stroke-width="2.3" stroke-linejoin="round"/>' +
     '<path d="M9 12H15M9 15H15M9 18H12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>' +
+    '</svg>',
+  rocket: '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+    '<path d="M12 2C15 4 17 8 17 12C17 15 15.5 18 12 21C8.5 18 7 15 7 12C7 8 9 4 12 2Z" stroke="currentColor" stroke-width="2.3" stroke-linejoin="round"/>' +
+    '<circle cx="12" cy="10" r="2" fill="currentColor"/>' +
+    '<path d="M7 14L4 17V21L8 18" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>' +
+    '<path d="M17 14L20 17V21L16 18" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>' +
     '</svg>'
 };
 
@@ -209,7 +215,9 @@ var CSS =
   '@keyframes tvSlideUp{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:translateY(0)}}' +
 
   '.tv-settings-card{width:340px;max-width:88vw;padding:24px}' +
-  '.tv-settings-title{font-size:20.5px;font-weight:600;margin-bottom:14px;letter-spacing:-.2px}' +
+  '.tv-settings-title{display:flex;align-items:center;justify-content:center;gap:8px;font-size:20.5px;font-weight:600;margin-bottom:14px;letter-spacing:-.2px}' +
+  '.tv-settings-title-icon{display:flex;color:var(--tv-accent)}' +
+  '.tv-settings-title-icon svg{width:22px;height:22px}' +
   '.tv-verify{width:680px;max-width:95vw;max-height:88vh;padding:0;overflow:hidden;display:flex;flex-direction:column}' +
   '.tv-verify.truck{box-shadow:0 0 0 5px rgba(248,113,113,.6),var(--tv-elev-2)}' +
   '.tv-verify.courier{box-shadow:0 0 0 5px rgba(52,211,153,.6),var(--tv-elev-2)}' +
@@ -299,7 +307,7 @@ var CSS =
   '--tv-surface:#1b2132;--tv-surface-2:#242b40;--tv-surface-3:#2d3552;--tv-text:#f2f4fa;--tv-text-soft:#aab3c6;--tv-border:rgba(255,255,255,.09)}' +
   '.tv-status-badge.tv-hidden{display:none}' +
   '.tv-status-badge-main{display:flex;align-items:center;justify-content:center;gap:10px;font-size:19.5px;font-weight:600;letter-spacing:.1px;text-align:center}' +
-  '.tv-status-badge-simplified-header{font-size:19.5px;font-weight:600;letter-spacing:.1px;color:var(--tv-accent);text-align:center}' +
+  '.tv-status-badge-simplified-header{display:flex;align-items:center;justify-content:center;gap:10px;font-size:19.5px;font-weight:600;letter-spacing:.1px;text-align:center}' +
   '.tv-status-badge-simplified-header.tv-hidden{display:none}' +
   '.tv-status-badge-restrict-header{display:flex;align-items:center;justify-content:center;gap:8px;font-size:19.5px;font-weight:600;letter-spacing:.1px;color:var(--tv-restricted-fg);text-align:center}' +
   '.tv-status-badge-restrict-icon svg{width:18px;height:18px}' +
@@ -308,6 +316,8 @@ var CSS =
   '.tv-restrict-detail-line.tv-hidden{display:none}' +
   '.tv-status-dot{width:11px;height:11px;border-radius:50%;background:var(--tv-success);box-shadow:0 0 0 0 rgba(52,211,153,.6);animation:tvStatusPulse 2s ease-in-out infinite}' +
   '@keyframes tvStatusPulse{0%{box-shadow:0 0 0 0 rgba(52,211,153,.5)}70%{box-shadow:0 0 0 8px rgba(52,211,153,0)}100%{box-shadow:0 0 0 0 rgba(52,211,153,0)}}' +
+  '.tv-simplified-status-dot{width:11px;height:11px;border-radius:50%;background:var(--tv-accent);box-shadow:0 0 0 0 rgba(79,124,255,.6);animation:tvStatusPulseBlue 2s ease-in-out infinite}' +
+  '@keyframes tvStatusPulseBlue{0%{box-shadow:0 0 0 0 rgba(79,124,255,.5)}70%{box-shadow:0 0 0 8px rgba(79,124,255,0)}100%{box-shadow:0 0 0 0 rgba(79,124,255,0)}}' +
 
   '.tv-ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.35);transform:scale(0);animation:tvRipple .5s var(--tv-ease) forwards;pointer-events:none}' +
   '@keyframes tvRipple{to{transform:scale(1);opacity:0}}' +
@@ -417,7 +427,7 @@ function initUI(){
     '<div class="tv-float-area tv-simplified-notice tv-bottom-right" popover="manual"></div>' +
     '<div class="tv-status-badge tv-hidden">' +
     '<div class="tv-status-badge-main"><span class="tv-status-dot"></span>트럭검증 활성화</div>' +
-    '<div class="tv-status-badge-simplified-header tv-hidden">간소화 활성화</div>' +
+    '<div class="tv-status-badge-simplified-header tv-hidden"><span class="tv-simplified-status-dot"></span>간소화 활성화</div>' +
     '<div class="tv-status-badge-restrict-header tv-hidden"><span class="tv-status-badge-restrict-icon">' + ICONS.restricted + '</span>상차제한 활성화</div>' +
     '<div class="tv-restrict-detail-line tv-restrict-group-line tv-hidden"></div>' +
     '<div class="tv-restrict-detail-line tv-restrict-date-line tv-hidden"></div>' +
@@ -538,7 +548,7 @@ function renderSettingsHTML(){
   var groupFieldHidden = state.settings.restrictionEnabled ? '' : ' tv-hidden';
   var dateFieldHidden = state.settings.dateRestrictionEnabled ? '' : ' tv-hidden';
   return '<div class="tv-card tv-settings-card">' +
-    '<div class="tv-settings-title">INC14 Return</div>' +
+    '<div class="tv-settings-title"><span class="tv-settings-title-icon">' + ICONS.rocket + '</span>INC14 Return</div>' +
     renderToggleRow(findSettingDef('simplifiedMode')) +
     renderToggleRow(findSettingDef('restrictionEnabled')) +
     '<div class="tv-field-row tv-group-field-row' + groupFieldHidden + '">' +
