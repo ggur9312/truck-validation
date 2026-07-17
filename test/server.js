@@ -12,7 +12,7 @@ var DETAIL_HTML = '<html><body>' +
 
 var TYPE_HTML = '<html><body>' +
   '<table><tr><td>GRP1</td><td>x</td><td>x</td><td>x</td><td>x</td><td>2026-01-15</td></tr></table>' +
-  '<table><tr><td>제한업체A</td><td>x</td><td>x</td><td>택배</td></tr></table>' +
+  '<table><tr><td>제한업체A</td><td>x</td><td>x</td><td>택배</td><td>x</td><td>x</td></tr></table>' +
   '</body></html>';
 
 var DETAIL_HTML_2 = '<html><body>' +
@@ -22,7 +22,7 @@ var DETAIL_HTML_2 = '<html><body>' +
 
 var TYPE_HTML_2 = '<html><body>' +
   '<table><tr><td>GRP2</td><td>x</td><td>x</td><td>x</td><td>x</td><td>2026-02-20</td></tr></table>' +
-  '<table><tr><td>제한업체B</td><td>x</td><td>x</td><td>트럭</td></tr></table>' +
+  '<table><tr><td>제한업체B</td><td>x</td><td>x</td><td>트럭</td><td>x</td><td>x</td></tr></table>' +
   '</body></html>';
 
 var manyProductRows = '';
@@ -36,7 +36,7 @@ var DETAIL_HTML_MANY = '<html><body>' +
 
 var TYPE_HTML_MANY = '<html><body>' +
   '<table><tr><td>GRP3</td><td>x</td><td>x</td><td>x</td><td>x</td><td>2026-03-10</td></tr></table>' +
-  '<table><tr><td>제한업체C</td><td>x</td><td>x</td><td>택배</td></tr></table>' +
+  '<table><tr><td>제한업체C</td><td>x</td><td>x</td><td>택배</td><td>x</td><td>x</td></tr></table>' +
   '</body></html>';
 
 var DETAIL_HTML_REPRINT = '<html><body>' +
@@ -46,7 +46,36 @@ var DETAIL_HTML_REPRINT = '<html><body>' +
 
 var TYPE_HTML_REPRINT = '<html><body>' +
   '<table><tr><td>GRP1</td><td>x</td><td>x</td><td>x</td><td>x</td><td>2026-01-15</td></tr></table>' +
-  '<table><tr><td>제한업체R</td><td>x</td><td>x</td><td>택배</td></tr></table>' +
+  '<table><tr><td>제한업체R</td><td>x</td><td>x</td><td>택배</td><td>x</td><td>x</td></tr></table>' +
+  '</body></html>';
+
+// TOTE_EXTRACOL simulates a WMS row with an unexpected extra <td> inserted
+// before the delivery-type field -- a stray front-indexed td[3] read would
+// land on "x" (neither 트럭 nor 택배) and silently default to courier, even
+// though this tote is genuinely a truck delivery. Counting from the end of
+// the row (3rd-from-last) still lands on "트럭" correctly regardless of the
+// extra column.
+var DETAIL_HTML_EXTRACOL = '<html><body>' +
+  '<table><tr><td>TOTE_EXTRACOL</td><td>x</td><td>x</td><td>x</td><td>업체X</td><td>x</td><td>x</td><td>3</td></tr></table>' +
+  '<table><tr><td>x</td><td>x</td><td>x</td><td>상품X</td><td>BARX001</td><td>3</td></tr></table>' +
+  '</body></html>';
+
+var TYPE_HTML_EXTRACOL = '<html><body>' +
+  '<table><tr><td>GRP4</td><td>x</td><td>x</td><td>x</td><td>x</td><td>2026-04-05</td></tr></table>' +
+  '<table><tr><td>제한업체X</td><td>x</td><td>EXTRA</td><td>x</td><td>트럭</td><td>x</td><td>x</td></tr></table>' +
+  '</body></html>';
+
+// TOTE_BADTYPE simulates a delivery-type value that is neither 트럭 nor
+// 택배 -- the bookmarklet must not default to courier here; it should block
+// with a warning instead of silently generating a courier waybill.
+var DETAIL_HTML_BADTYPE = '<html><body>' +
+  '<table><tr><td>TOTE_BADTYPE</td><td>x</td><td>x</td><td>x</td><td>업체Y</td><td>x</td><td>x</td><td>1</td></tr></table>' +
+  '<table><tr><td>x</td><td>x</td><td>x</td><td>상품Y</td><td>BARY001</td><td>1</td></tr></table>' +
+  '</body></html>';
+
+var TYPE_HTML_BADTYPE = '<html><body>' +
+  '<table><tr><td>GRP5</td><td>x</td><td>x</td><td>x</td><td>x</td><td>2026-05-01</td></tr></table>' +
+  '<table><tr><td>제한업체Y</td><td>x</td><td>x</td><td>미정</td><td>x</td><td>x</td></tr></table>' +
   '</body></html>';
 
 var routes = {
@@ -57,7 +86,11 @@ var routes = {
   '/detail/TOTE_MANY': DETAIL_HTML_MANY,
   '/type/TOTE_MANY': TYPE_HTML_MANY,
   '/detail/TOTE_REPRINT': DETAIL_HTML_REPRINT,
-  '/type/TOTE_REPRINT': TYPE_HTML_REPRINT
+  '/type/TOTE_REPRINT': TYPE_HTML_REPRINT,
+  '/detail/TOTE_EXTRACOL': DETAIL_HTML_EXTRACOL,
+  '/type/TOTE_EXTRACOL': TYPE_HTML_EXTRACOL,
+  '/detail/TOTE_BADTYPE': DETAIL_HTML_BADTYPE,
+  '/type/TOTE_BADTYPE': TYPE_HTML_BADTYPE
 };
 
 var server = http.createServer(function(req, res){

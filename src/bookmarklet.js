@@ -911,10 +911,13 @@ function parseDeliveryType(doc){
   if (!table) return null;
   var rows = getRows(table);
   if (!rows[0]) return null;
-  var val = td(rows[0], 3);
+  var tds = rows[0].querySelectorAll('td');
+  var idx = tds.length - 3;
+  if (idx < 0) return null;
+  var val = tds[idx].textContent.trim();
   if (val.indexOf('트럭') !== -1) return true;
   if (val.indexOf('택배') !== -1) return false;
-  return false;
+  return null;
 }
 
 function parseRestrictionInfo(doc){
@@ -988,6 +991,12 @@ function processRow(row){
     var isRestricted = groupRestricted || dateRestricted;
     var info = parseToteAndProducts(docs[0]);
     if (!info) { showStatus('상품 정보를 해석하지 못했습니다', 'error'); state.mode = 'IDLE'; return; }
+    if (isTruck === null) {
+      hideStatus();
+      showMismatchModal('운송유형을 판별할 수 없는 토트입니다', info.toteBarcode);
+      state.mode = 'IDLE';
+      return;
+    }
     state.toteInfo = Object.assign({
       isTruck: isTruck,
       isRestricted: isRestricted,
